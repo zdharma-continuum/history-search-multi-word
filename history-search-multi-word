@@ -1,0 +1,136 @@
+emulate -LR zsh
+setopt typesetsilent extendedglob noshortloops
+
+# When an error, then no cursor keys bindings
+zmodload zsh/terminfo 2>/dev/null
+zmodload zsh/termcap 2>/dev/null
+
+typeset -g __hsmw_hcw_index
+typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
+typeset -gaU __hsmw_hcw_found
+
+(( __hsmw_hcw_call_count ++ ))
+
+_zhcw_main() {
+    # First call or restart?
+    if [[ "$__hsmw_hcw_call_count" -le 1 || "$__hsmw_hcw_restart" = "1" ]]; then
+        # '0' will get changed into $to_display limit
+        [[ "$WIDGET" != *-backwards ]] && __hsmw_hcw_index="1" || __hsmw_hcw_index="0"
+        __hsmw_hcw_widget_name="${WIDGET%-backwards}"
+        __hsmw_hcw_found=( )
+        __hsmw_hcw_finished="0"
+        __hsmw_hcw_restart="0"
+    else
+        # Consecutive call
+        [[ "$WIDGET" != *-backwards ]] && (( __hsmw_hcw_index ++ )) || (( __hsmw_hcw_index -- ))
+    fi
+
+    # Find history entries matching pattern *word1*~^*word2*~^*word3* etc.
+    if [ "$#__hsmw_hcw_found" -eq "0" ]; then
+        local search_buffer="${BUFFER%% ##}"
+        search_buffer="${search_buffer## ##}"
+        search_buffer="${search_buffer//(#m)[][*?|#~^()><\\]/\\$MATCH}"
+        local search_pattern=""
+        search_pattern="${search_buffer// ##/*~^*}"
+        # The repeat will make the matching work on a fresh heap arena
+        repeat 1; do
+            __hsmw_hcw_found=( "${(@M)history:#(#i)*$~search_pattern*}" )
+            echo "searched for: $search_pattern, found #${#__hsmw_hcw_found}" >> /tmp/reply
+        done
+    fi
+
+    if [ "$#__hsmw_hcw_found" -le "0" ]; then
+        zle -M "No matches found"
+        return 0
+    fi
+
+    #
+    # Pagination, index value guards
+    #
+
+    integer page_size=$(( LINES / 2 ))
+    integer max_index="$#__hsmw_hcw_found"
+    [ "$page_size" -gt "$max_index" ] && page_size="$max_index"
+    [ "$__hsmw_hcw_index" -le 0 ] && __hsmw_hcw_index="$max_index"
+    [ "$__hsmw_hcw_index" -gt "$max_index" ] && __hsmw_hcw_index=1
+    integer page_start_idx=$(( ((__hsmw_hcw_index-1)/page_size)*page_size+1 ))
+    integer on_page_idx=$(( (__hsmw_hcw_index-1) % page_size + 1 ))
+
+    #
+    # Prepare display
+    #
+
+    typeset -a disp_list
+    disp_list=( "${(@)__hsmw_hcw_found[page_start_idx,page_start_idx+page_size-1]}" )
+
+    # All entries should have multilines replaced
+    disp_list=( "${(@)disp_list//$'\n'/\\n}" )
+
+    disp_list[on_page_idx]="> ${disp_list[on_page_idx]} <"
+
+    zle -M -- \
+"Searching for '$BUFFER'. "\
+"Element #$__hsmw_hcw_index of $max_index"$'\n'"${(F)disp_list}"
+
+}
+
+_zhcw_self_insert() {
+    LBUFFER+="${KEYS[-1]}"
+    __hsmw_hcw_restart="1"
+    _zhcw_main
+}
+
+_zhcw_backward_delete_char() {
+    LBUFFER="${LBUFFER%?}"
+    __hsmw_hcw_restart="1"
+    _zhcw_main
+}
+
+_zhcw_delete_char() {
+    RBUFFER="${RBUFFER#?}"
+    __hsmw_hcw_restart="1"
+    _zhcw_main
+}
+
+_zhcw_main
+
+if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
+    # Make the zhcw keymap a copy of the current main
+    bindkey -N zhcw main
+
+    local down_widget="${WIDGET%-backwards}"
+    local up_widget="${down_widget}-backwards"
+
+    # Manual, termcap, terminfo
+    bindkey -M zhcw '^[OA' "$up_widget"
+    bindkey -M zhcw '^[OB' "$down_widget"
+    bindkey -M zhcw '^[[A' "$up_widget"
+    bindkey -M zhcw '^[[B' "$down_widget"
+    [ -n "$termcap[ku]" ] && bindkey -M zhcw "$termcap[ku]" "$up_widget"
+    [ -n "$termcap[kd]" ] && bindkey -M zhcw "$termcap[kd]" "$down_widget"
+    [ -n "$terminfo[kcuu1]" ] && bindkey -M zhcw "$terminfo[kcuu1]" "$up_widget"
+    [ -n "$terminfo[kcud1]" ] && bindkey -M zhcw "$terminfo[kcud1]" "$down_widget"
+
+    # Substitute self-insert, backward-delete-char, delete-char
+    zle -A self-insert saved-self-insert
+    zle -A backward-delete-char saved-backward-delete-char
+    zle -A delete-char saved-delete-char
+
+    zle -N self-insert _zhcw_self_insert
+    zle -N backward-delete-char _zhcw_backward_delete_char
+    zle -N delete-char _zhcw_delete_char
+
+    zle recursive-edit -K zhcw
+    BUFFER="${__hsmw_hcw_found[__hsmw_hcw_index]}"
+    zle -M ""
+
+    zle -A saved-self-insert self-insert
+    zle -A saved-backward-delete-char backward-delete-char
+    zle -A saved-delete-char delete-char
+    zle -D saved-self-insert saved-backward-delete-char saved-delete-char
+
+    # Full reinitialisation at next call
+    __hsmw_hcw_call_count="0"
+fi
+
+# vim:ft=zsh

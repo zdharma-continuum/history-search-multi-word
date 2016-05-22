@@ -73,10 +73,7 @@ _zhcw_main() {
     entry[1]='>'
     disp_list[on_page_idx]="$entry"
 
-    zle -M -- \
-"Searching for '$BUFFER'. "\
-"Element #$__hsmw_hcw_index of $max_index"$'\n'"${(F)disp_list}"
-
+    POSTDISPLAY=$'\n'"Searching for: $BUFFER"$'\n'"Element #$__hsmw_hcw_index of $max_index"$'\n'"${(F)disp_list}"
 }
 
 _zhcw_self_insert() {
@@ -129,7 +126,7 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
         BUFFER="${__hsmw_hcw_found[__hsmw_hcw_index]}"
         CURSOR="${#BUFFER}"
     fi
-    zle -M ""
+    POSTDISPLAY=""
 
     zle -A saved-self-insert self-insert
     zle -A saved-backward-delete-char backward-delete-char

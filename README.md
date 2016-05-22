@@ -24,7 +24,10 @@ Adding `antigen bundle psprint/history-search-multi-word` to your .zshrc file. A
 
 Add `zgen load psprint/history-search-multi-word` to your .zshrc file in the same function you're doing your other `zgen load` calls in.
 
-After adding the plugin, add
+### Manual installation
+
+Copy the file `history-search-multi-word` to your `site-functions` directory and add:
+
 ```zsh
 autoload history-search-multi-word
 zle -N history-search-multi-word

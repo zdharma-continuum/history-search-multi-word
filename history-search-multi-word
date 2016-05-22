@@ -26,12 +26,13 @@ _zhcw_main() {
     fi
 
     # Find history entries matching pattern *word1*~^*word2*~^*word3* etc.
+    local search_buffer="${BUFFER%% ##}" search_pattern="" colsearch_pattern=""
+    search_buffer="${search_buffer## ##}"
+    search_buffer="${search_buffer//(#m)[][*?|#~^()><\\]/\\$MATCH}"
+    search_pattern="${search_buffer// ##/*~^*}"
+    colsearch_pattern="${search_buffer// ##/|}"
+
     if [ "$#__hsmw_hcw_found" -eq "0" ]; then
-        local search_buffer="${BUFFER%% ##}"
-        search_buffer="${search_buffer## ##}"
-        search_buffer="${search_buffer//(#m)[][*?|#~^()><\\]/\\$MATCH}"
-        local search_pattern=""
-        search_pattern="${search_buffer// ##/*~^*}"
         # The repeat will make the matching work on a fresh heap arena
         repeat 1; do
             __hsmw_hcw_found=( "${(@M)history:#(#i)*$~search_pattern*}" )
@@ -69,11 +70,25 @@ _zhcw_main() {
     # also preceeded by two spaces
     disp_list=( "${(@)disp_list/(#m)*/  ${MATCH[1,COLUMNS-8]}}" )
 
+    local nl=$'\n'
     local entry="${disp_list[on_page_idx]}"
     entry[1]='>'
     disp_list[on_page_idx]="$entry"
 
-    POSTDISPLAY=$'\n'"Searching for: $BUFFER"$'\n'"Element #$__hsmw_hcw_index of $max_index"$'\n'"${(F)disp_list}"
+    #
+    # Colorify
+    #
+
+    local preamble=$'\n'"Searching for: $BUFFER"$'\n'"Element #$__hsmw_hcw_index of $max_index"$'\n'
+    local text="${(F)disp_list}"
+    integer offset=${#preamble}+${#BUFFER}
+
+    POSTDISPLAY="$preamble$text"
+
+    region_highlight=()
+    if [ -n "$colsearch_pattern" ]; then
+        region_highlight+=( "${(f)${(S)text//*(#b)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) fg=yellow,bold${nl}}%$nl*}" )
+    fi
 }
 
 _zhcw_self_insert() {

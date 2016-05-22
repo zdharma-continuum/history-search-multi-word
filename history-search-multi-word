@@ -65,6 +65,8 @@ _zhcw_main() {
 
     # All entries should have multilines replaced
     disp_list=( "${(@)disp_list//$'\n'/\\n}" )
+    # ... and truncated to display width
+    disp_list=( "${(@)disp_list/(#m)*/${MATCH[1,COLUMNS-6]}}" )
 
     disp_list[on_page_idx]="> ${disp_list[on_page_idx]} <"
 

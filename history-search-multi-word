@@ -65,10 +65,13 @@ _zhcw_main() {
 
     # All entries should have multilines replaced
     disp_list=( "${(@)disp_list//$'\n'/\\n}" )
-    # ... and truncated to display width
-    disp_list=( "${(@)disp_list/(#m)*/${MATCH[1,COLUMNS-6]}}" )
+    # ... and truncated to display width, and
+    # also preceeded by two spaces
+    disp_list=( "${(@)disp_list/(#m)*/  ${MATCH[1,COLUMNS-8]}}" )
 
-    disp_list[on_page_idx]="> ${disp_list[on_page_idx]} <"
+    local entry="${disp_list[on_page_idx]}"
+    entry[1]='>'
+    disp_list[on_page_idx]="$entry"
 
     zle -M -- \
 "Searching for '$BUFFER'. "\

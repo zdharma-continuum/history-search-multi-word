@@ -36,7 +36,6 @@ _zhcw_main() {
         # The repeat will make the matching work on a fresh heap arena
         repeat 1; do
             __hsmw_hcw_found=( "${(@M)history:#(#i)*$~search_pattern*}" )
-            echo "searched for: $search_pattern, found #${#__hsmw_hcw_found}" >> /tmp/reply
         done
     fi
 

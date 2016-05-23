@@ -86,7 +86,7 @@ _zhcw_main() {
 
     region_highlight=()
     if [ -n "$colsearch_pattern" ]; then
-        region_highlight+=( "${(f)${(S)text//*(#b)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) fg=yellow,bold${nl}}%$nl*}" )
+        region_highlight+=( "${(f)${(S)text//*(#bi)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) fg=yellow,bold${nl}}%$nl*}" )
     fi
 }
 

@@ -10,9 +10,19 @@ https://asciinema.org/a/46371
 
 ## Installation
 
+### [Zplugin](https://github.com/psprint/zplugin)
+
+Add `zplugin load psprint/history-search-multi-word` to your `.zshrc` file.
+Zplugin will handle cloning the plugin for you automatically the next time you
+start zsh.
+
 ### [Antigen](https://github.com/zsh-users/antigen)
 
-Adding `antigen bundle psprint/history-search-multi-word` to your .zshrc file. Antigen will handle cloning the plugin for you automatically the next time you start zsh. You can also add the plugin to a running zsh with `antigen bundle psprint/history-search-multi-word` for testing before adding it to your `.zshrc`.
+Add `antigen bundle psprint/history-search-multi-word` to your `.zshrc` file.
+Antigen will handle cloning the plugin for you automatically the next time you
+start zsh. You can also add the plugin to a running zsh with `antigen bundle
+psprint/history-search-multi-word` for testing before adding it to your
+`.zshrc`.
 
 ### [Oh-My-Zsh](http://ohmyz.sh/)
 

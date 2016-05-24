@@ -112,7 +112,7 @@ _zhcw_main
 
 if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     # Make the zhcw keymap a copy of the current main
-    bindkey -N zhcw main
+    bindkey -N zhcw emacs
 
     local down_widget="${WIDGET%-backwards}"
     local up_widget="${down_widget}-backwards"

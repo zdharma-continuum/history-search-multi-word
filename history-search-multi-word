@@ -133,6 +133,9 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     [ -n "$terminfo[kcud1]" ] && bindkey -M zhcw "$terminfo[kcud1]" "$down_widget"
     [ -n "$terminfo[kdch1]" ] && bindkey -M zhcw "$terminfo[kdch1]" delete-char
 
+    # Needed for Fedora 23, zsh-5.1.1
+    bindkey -M zhcw ' ' self-insert
+
     # Substitute self-insert, backward-delete-char, delete-char
     zle -A self-insert saved-self-insert
     zle -A backward-delete-char saved-backward-delete-char

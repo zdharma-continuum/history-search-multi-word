@@ -14,6 +14,11 @@ https://asciinema.org/a/46371
   - Cooperation with
     [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
     plugin
+  - Configuration option to set page size, example use:
+
+    ```zsh
+    zstyle ":history-search-multi-word" page-size "5"
+    ```
 
 ## Installation
 

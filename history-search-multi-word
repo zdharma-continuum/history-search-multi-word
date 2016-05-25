@@ -7,6 +7,9 @@
 # bindkey "^R" history-search-multi-word
 #
 # This will bind to Ctrl-R
+#
+# Example zstyles:
+# zstyle ":history-search-multi-word" page-size "5"
 
 emulate -LR zsh
 setopt typesetsilent extendedglob noshortloops
@@ -17,11 +20,17 @@ zmodload zsh/termcap 2>/dev/null
 
 typeset -g __hsmw_hcw_index
 typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
+typeset -g __hsmw_page_size
 typeset -gaU __hsmw_hcw_found
 
 _hsmw_main() {
     # First call or restart?
     if [[ "$__hsmw_hcw_call_count" -le 1 || "$__hsmw_hcw_restart" = "1" ]]; then
+        if [[ "$__hsmw_hcw_call_count" -le 1 ]]; then
+            # Read configuration data
+            zstyle -s ':history-search-multi-word' page-size __hsmw_page_size || __hsmw_page_size=$(( LINES / 2 ))
+        fi
+
         # '0' will get changed into $to_display limit
         [[ "$WIDGET" != *-backwards ]] && __hsmw_hcw_index="1" || __hsmw_hcw_index="0"
         __hsmw_hcw_widget_name="${WIDGET%-backwards}"
@@ -56,7 +65,7 @@ _hsmw_main() {
     # Pagination, index value guards
     #
 
-    integer page_size=$(( LINES / 2 ))
+    integer page_size="$__hsmw_page_size"
     integer max_index="$#__hsmw_hcw_found"
     [ "$page_size" -gt "$max_index" ] && page_size="$max_index"
     [ "$__hsmw_hcw_index" -le 0 ] && __hsmw_hcw_index="$max_index"

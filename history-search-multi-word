@@ -1,3 +1,13 @@
+# To use (when not using as plugin) copy to site-functions and issue
+# (add to ~/.zshrc):
+#
+# autoload history-search-multi-word
+# zle -N history-search-multi-word
+# zle -N history-search-multi-word-backwards history-search-multi-word
+# bindkey "^R" history-search-multi-word
+#
+# This will bind to Ctrl-R
+
 emulate -LR zsh
 setopt typesetsilent extendedglob noshortloops
 

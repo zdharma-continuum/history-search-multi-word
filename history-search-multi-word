@@ -124,6 +124,7 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     bindkey -M zhcw '^[[B' "$down_widget"
     [ -n "$termcap[ku]" ] && bindkey -M zhcw "$termcap[ku]" "$up_widget"
     [ -n "$termcap[kd]" ] && bindkey -M zhcw "$termcap[kd]" "$down_widget"
+    [ -n "$termcap[kD]" ] && bindkey -M zhcw "$termcap[kD]" delete-char
     [ -n "$terminfo[kcuu1]" ] && bindkey -M zhcw "$terminfo[kcuu1]" "$up_widget"
     [ -n "$terminfo[kcud1]" ] && bindkey -M zhcw "$terminfo[kcud1]" "$down_widget"
     [ -n "$terminfo[kdch1]" ] && bindkey -M zhcw "$terminfo[kdch1]" delete-char

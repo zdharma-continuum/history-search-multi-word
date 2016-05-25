@@ -138,7 +138,7 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     zle -N backward-delete-char _zhcw_backward_delete_char
     zle -N delete-char _zhcw_delete_char
 
-    if zle recursive-edit -K zhcw; then
+    if zle .recursive-edit -K zhcw; then
         BUFFER="${__hsmw_hcw_found[__hsmw_hcw_index]}"
         CURSOR="${#BUFFER}"
     fi

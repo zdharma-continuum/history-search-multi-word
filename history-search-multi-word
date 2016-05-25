@@ -9,7 +9,7 @@ typeset -g __hsmw_hcw_index
 typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
 typeset -gaU __hsmw_hcw_found
 
-_zhcw_main() {
+_hsmw_main() {
     # First call or restart?
     if [[ "$__hsmw_hcw_call_count" -le 1 || "$__hsmw_hcw_restart" = "1" ]]; then
         # '0' will get changed into $to_display limit
@@ -89,69 +89,69 @@ _zhcw_main() {
 }
 
 (( __hsmw_hcw_call_count ++ ))
-_zhcw_main
+_hsmw_main
 
-_zhcw_simulate_widget() {
+_hsmw_simulate_widget() {
     (( __hsmw_hcw_call_count ++ ))
-    _zhcw_main
+    _hsmw_main
 }
 
-_zhcw_self_insert() {
+_hsmw_self_insert() {
     LBUFFER+="${KEYS[-1]}"
     __hsmw_hcw_restart="1"
-    _zhcw_main
+    _hsmw_main
 }
 
-_zhcw_backward_delete_char() {
+_hsmw_backward_delete_char() {
     LBUFFER="${LBUFFER%?}"
     __hsmw_hcw_restart="1"
-    _zhcw_main
+    _hsmw_main
 }
 
-_zhcw_delete_char() {
+_hsmw_delete_char() {
     RBUFFER="${RBUFFER#?}"
     __hsmw_hcw_restart="1"
-    _zhcw_main
+    _hsmw_main
 }
 
 if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
-    # Make the zhcw keymap a copy of the current main
-    bindkey -N zhcw emacs
+    # Make the hsmw keymap a copy of the current main
+    bindkey -N hsmw emacs
 
     local down_widget="${WIDGET%-backwards}"
     local up_widget="${down_widget}-backwards"
 
     # Manual, termcap, terminfo
-    bindkey -M zhcw '^[OA' "$up_widget"
-    bindkey -M zhcw '^[OB' "$down_widget"
-    bindkey -M zhcw '^[[A' "$up_widget"
-    bindkey -M zhcw '^[[B' "$down_widget"
-    [ -n "$termcap[ku]" ] && bindkey -M zhcw "$termcap[ku]" "$up_widget"
-    [ -n "$termcap[kd]" ] && bindkey -M zhcw "$termcap[kd]" "$down_widget"
-    [ -n "$termcap[kD]" ] && bindkey -M zhcw "$termcap[kD]" delete-char
-    [ -n "$terminfo[kcuu1]" ] && bindkey -M zhcw "$terminfo[kcuu1]" "$up_widget"
-    [ -n "$terminfo[kcud1]" ] && bindkey -M zhcw "$terminfo[kcud1]" "$down_widget"
-    [ -n "$terminfo[kdch1]" ] && bindkey -M zhcw "$terminfo[kdch1]" delete-char
+    bindkey -M hsmw '^[OA' "$up_widget"
+    bindkey -M hsmw '^[OB' "$down_widget"
+    bindkey -M hsmw '^[[A' "$up_widget"
+    bindkey -M hsmw '^[[B' "$down_widget"
+    [ -n "$termcap[ku]" ] && bindkey -M hsmw "$termcap[ku]" "$up_widget"
+    [ -n "$termcap[kd]" ] && bindkey -M hsmw "$termcap[kd]" "$down_widget"
+    [ -n "$termcap[kD]" ] && bindkey -M hsmw "$termcap[kD]" delete-char
+    [ -n "$terminfo[kcuu1]" ] && bindkey -M hsmw "$terminfo[kcuu1]" "$up_widget"
+    [ -n "$terminfo[kcud1]" ] && bindkey -M hsmw "$terminfo[kcud1]" "$down_widget"
+    [ -n "$terminfo[kdch1]" ] && bindkey -M hsmw "$terminfo[kdch1]" delete-char
 
     # Needed for Fedora 23, zsh-5.1.1
-    bindkey -M zhcw ' ' self-insert
+    bindkey -M hsmw ' ' self-insert
 
     # Substitute self-insert, backward-delete-char, delete-char
     zle -A self-insert saved-self-insert
     zle -A backward-delete-char saved-backward-delete-char
     zle -A delete-char saved-delete-char
-    zle -N self-insert _zhcw_self_insert
-    zle -N backward-delete-char _zhcw_backward_delete_char
-    zle -N delete-char _zhcw_delete_char
+    zle -N self-insert _hsmw_self_insert
+    zle -N backward-delete-char _hsmw_backward_delete_char
+    zle -N delete-char _hsmw_delete_char
 
     # Override ourselves with what we actually are
     # because zsh-autosuggestions change us
     zle -A "$down_widget" saved-"$down_widget"
     zle -A "$up_widget" saved-"$up_widget"
-    zle -N "$down_widget" _zhcw_simulate_widget
-    zle -N "$up_widget" _zhcw_simulate_widget
+    zle -N "$down_widget" _hsmw_simulate_widget
+    zle -N "$up_widget" _hsmw_simulate_widget
 
-    if zle .recursive-edit -K zhcw; then
+    if zle .recursive-edit -K hsmw; then
         BUFFER="${__hsmw_hcw_found[__hsmw_hcw_index]}"
         CURSOR="${#BUFFER}"
     fi

@@ -8,6 +8,13 @@ https://asciinema.org/a/46371
 
 [![asciicast](https://asciinema.org/a/46371.png)](https://asciinema.org/a/46371)
 
+## News
+
+* 25-05-2016
+  - Cooperation with
+    [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
+    plugin
+
 ## Installation
 
 ### [Zplugin](https://github.com/psprint/zplugin)

@@ -42,7 +42,7 @@ Add `zplugin load psprint/history-search-multi-word` to your `.zshrc` file.
 Zplugin will handle cloning the plugin for you automatically the next time you
 start zsh.
 
-### [Antigen](https://github.com/zsh-users/antigen)
+### Antigen
 
 Add `antigen bundle psprint/history-search-multi-word` to your `.zshrc` file.
 Antigen will handle cloning the plugin for you automatically the next time you
@@ -50,13 +50,13 @@ start zsh. You can also add the plugin to a running zsh with `antigen bundle
 psprint/history-search-multi-word` for testing before adding it to your
 `.zshrc`.
 
-### [Oh-My-Zsh](http://ohmyz.sh/)
+### Oh-My-Zsh
 
 1. `cd ~/.oh-my-zsh/custom/plugins`
 2. `git clone git@github.com:psprint/history-search-multi-word.git`
 3. Add history-search-multi-word to your plugin list
 
-### [Zgen](https://github.com/tarjoilija/zgen)
+### Zgen
 
 Add `zgen load psprint/history-search-multi-word` to your .zshrc file in the same function you're doing your other `zgen load` calls in.
 

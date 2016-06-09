@@ -22,6 +22,20 @@ https://asciinema.org/a/46371
 
 ## Installation
 
+The plugin is "standalone", which means that only sourcing it is needed. So to
+install, unpack `history-search-multi-word` somewhere and add
+
+```zsh
+source {where-hsmw-is}/history-search-multi-word.plugin.zsh
+```
+
+to `zshrc`.
+
+If using a plugin manager, then `Zplugin` is recommended, but you can use any
+other too, and also install with `Oh My Zsh` (by copying directory to
+`~/.oh-my-zsh/custom/plugins`).
+
+
 ### [Zplugin](https://github.com/psprint/zplugin)
 
 Add `zplugin load psprint/history-search-multi-word` to your `.zshrc` file.

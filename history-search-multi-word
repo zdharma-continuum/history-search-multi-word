@@ -92,6 +92,12 @@ _hsmw_main() {
     disp_list[on_page_idx]="$entry"
 
     #
+    # Detect where "> .." entry starts
+    #
+
+    local txt_before="${(F)${(@)disp_list[1,on_page_idx-1]}}"
+
+    #
     # Colorify
     #
 
@@ -101,7 +107,7 @@ _hsmw_main() {
 
     POSTDISPLAY="$preamble$text"
 
-    region_highlight=()
+    region_highlight=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) underline" )
     if [ -n "$colsearch_pattern" ]; then
         region_highlight+=( "${(f)${(S)text//*(#bi)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) fg=magenta,bold${nl}}%$nl*}" )
     fi

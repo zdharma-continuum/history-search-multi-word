@@ -2,7 +2,7 @@
 
 Binds `Ctrl-R` to a widget that searches for multiple keywords in `AND` fashion.
 In other words, you can enter multiple words, and history entries that match
-all of them will be found. Video:
+all of them will be found.
 
 Video – view on [asciinema](https://asciinema.org/a/46371). You can resize the video by pressing `Ctrl-+` or `Cmd-+`.
 

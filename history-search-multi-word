@@ -10,6 +10,7 @@
 #
 # Example zstyles:
 # zstyle ":history-search-multi-word" page-size "5"
+# zstyle ":history-search-multi-word" highlight-color "fg=magenta,bold"
 
 emulate -LR zsh
 setopt typesetsilent extendedglob noshortloops
@@ -20,7 +21,7 @@ zmodload zsh/termcap 2>/dev/null
 
 typeset -g __hsmw_hcw_index
 typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
-typeset -g __hsmw_page_size
+typeset -g __hsmw_page_size __hsmw_hl_color
 typeset -gaU __hsmw_hcw_found
 
 _hsmw_main() {
@@ -29,6 +30,7 @@ _hsmw_main() {
         if [[ "$__hsmw_hcw_call_count" -le 1 ]]; then
             # Read configuration data
             zstyle -s ':history-search-multi-word' page-size __hsmw_page_size || __hsmw_page_size=$(( LINES / 2 ))
+            zstyle -s ':history-search-multi-word' highlight-color __hsmw_hl_color || __hsmw_hl_color="fg=magenta,bold"
         fi
 
         # '0' will get changed into $to_display limit
@@ -109,7 +111,7 @@ _hsmw_main() {
 
     region_highlight=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) underline" )
     if [ -n "$colsearch_pattern" ]; then
-        region_highlight+=( "${(f)${(S)text//*(#bi)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) fg=magenta,bold${nl}}%$nl*}" )
+        region_highlight+=( "${(f)${(S)text//*(#bi)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) ${__hsmw_hl_color}${nl}}%$nl*}" )
     fi
 }
 

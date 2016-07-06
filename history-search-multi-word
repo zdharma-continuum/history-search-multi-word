@@ -181,6 +181,8 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     if zle .recursive-edit -K hsmw; then
         BUFFER="${__hsmw_hcw_found[__hsmw_hcw_index]}"
         CURSOR="${#BUFFER}"
+    else
+        BUFFER=""
     fi
     POSTDISPLAY=""
 

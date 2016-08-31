@@ -111,7 +111,7 @@ _hsmw_main() {
 
     region_highlight=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) underline" )
     if [ -n "$colsearch_pattern" ]; then
-        # Following line is taken from Zaw (GH zsh-users/zaw) – license is in LICENSE_zaw
+        # Following line is taken from Zaw (GH zsh-users/zaw) – license is named "Zaw", it is in LICENSE file
         region_highlight+=( "${(f)${(S)text//*(#bi)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) ${__hsmw_hl_color}${nl}}%$nl*}" )
     fi
 }

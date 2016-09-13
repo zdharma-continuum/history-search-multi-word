@@ -22,7 +22,7 @@ Video – view on [asciinema](https://asciinema.org/a/46371). You can resize th
 
 ## Installation
 
-The plugin is "standalone", which means that only sourcing it is needed. So to
+**The plugin is "standalone"**, which means that only sourcing it is needed. So to
 install, unpack `history-search-multi-word` somewhere and add
 
 ```zsh
@@ -54,11 +54,12 @@ psprint/history-search-multi-word` for testing before adding it to your
 
 1. `cd ~/.oh-my-zsh/custom/plugins`
 2. `git clone git@github.com:psprint/history-search-multi-word.git`
-3. Add history-search-multi-word to your plugin list
+3. Add `history-search-multi-word` to your plugin list
 
 ### Zgen
 
-Add `zgen load psprint/history-search-multi-word` to your .zshrc file in the same function you're doing your other `zgen load` calls in.
+Add `zgen load psprint/history-search-multi-word` to your .zshrc file in the same
+place you're doing your other `zgen load` calls in.
 
 ### Manual installation
 

@@ -48,6 +48,8 @@ _hsmw_main() {
     local search_buffer="${BUFFER%% ##}" search_pattern="" colsearch_pattern=""
     search_buffer="${search_buffer## ##}"
     search_buffer="${search_buffer//(#m)[][*?|#~^()><\\]/\\$MATCH}"
+    # Pattern will be *foo*~^*bar* (inventor: Mikael Magnusson)
+    # It's: foo and not what doesn't contain bar, etc.
     search_pattern="${search_buffer// ##/*~^*}"
     colsearch_pattern="${search_buffer// ##/|}"
 

@@ -156,10 +156,10 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     bindkey -M hsmw '^[[B' "$down_widget"
     [ -n "$termcap[ku]" ] && bindkey -M hsmw "$termcap[ku]" "$up_widget"
     [ -n "$termcap[kd]" ] && bindkey -M hsmw "$termcap[kd]" "$down_widget"
-    [ -n "$termcap[kD]" ] && bindkey -M hsmw "$termcap[kD]" delete-char
+    [ -n "$termcap[kD]" ] && bindkey -M hsmw "$termcap[kD]" .delete-char
     [ -n "$terminfo[kcuu1]" ] && bindkey -M hsmw "$terminfo[kcuu1]" "$up_widget"
     [ -n "$terminfo[kcud1]" ] && bindkey -M hsmw "$terminfo[kcud1]" "$down_widget"
-    [ -n "$terminfo[kdch1]" ] && bindkey -M hsmw "$terminfo[kdch1]" delete-char
+    [ -n "$terminfo[kdch1]" ] && bindkey -M hsmw "$terminfo[kdch1]" .delete-char
 
     # More bindkeys, to remove influence of plugins that overload things (z-sy-h, z-au-s)
     bindkey -M hsmw '^[[D' .backward-char

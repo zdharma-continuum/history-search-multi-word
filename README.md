@@ -12,8 +12,8 @@ Video – view on [asciinema](https://asciinema.org/a/46371). You can resize th
 
 * 19-09-2016
   - better immunity to [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
-    and [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) – left
-    and right cursor keys now work smoothly
+    and [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) – home,
+    end, left and right cursor keys now work smoothly
 
 * 25-05-2016
   - Cooperation with

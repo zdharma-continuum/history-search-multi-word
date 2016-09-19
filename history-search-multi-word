@@ -168,6 +168,17 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     [ -n "$termcap[kr]" ] && bindkey -M hsmw "$termcap[kr]" .forward-char
     [ -n "$terminfo[kcub1]" ] && bindkey -M hsmw "$terminfo[kcub1]" .backward-char
     [ -n "$terminfo[kcuf1]" ] && bindkey -M hsmw "$terminfo[kcuf1]" .forward-char
+    # Now Home/End keys, first few recorded in my .zshrc during the years sequences
+    bindkey -M hsmw "\e[1~" .beginning-of-line
+    bindkey -M hsmw "\e[7~" .beginning-of-line
+    bindkey -M hsmw "\e[H"  .beginning-of-line
+    bindkey -M hsmw "\e[4~" .end-of-line
+    bindkey -M hsmw "\e[F"  .end-of-line
+    bindkey -M hsmw "\e[8~" .end-of-line
+    [ -n "$termcap[kh]" ] && bindkey -M hsmw "$termcap[kh]" .beginning-of-line
+    [ -n "$termcap[@7]" ] && bindkey -M hsmw "$termcap[@7]" .end-of-line
+    [ -n "$terminfo[khome]" ] && bindkey -M hsmw "$terminfo[khome]" .beginning-of-line
+    [ -n "$terminfo[kend]" ] && bindkey -M hsmw "$terminfo[kend]" .end-of-line
 
     # Needed for Fedora 23, zsh-5.1.1
     bindkey -M hsmw ' ' self-insert

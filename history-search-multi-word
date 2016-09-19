@@ -161,6 +161,14 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     [ -n "$terminfo[kcud1]" ] && bindkey -M hsmw "$terminfo[kcud1]" "$down_widget"
     [ -n "$terminfo[kdch1]" ] && bindkey -M hsmw "$terminfo[kdch1]" delete-char
 
+    # More bindkeys, to remove influence of plugins that overload things (z-sy-h, z-au-s)
+    bindkey -M hsmw '^[[D' .backward-char
+    bindkey -M hsmw '^[[C' .forward-char
+    [ -n "$termcap[kl]" ] && bindkey -M hsmw "$termcap[kl]" .backward-char
+    [ -n "$termcap[kr]" ] && bindkey -M hsmw "$termcap[kr]" .forward-char
+    [ -n "$terminfo[kcub1]" ] && bindkey -M hsmw "$terminfo[kcub1]" .backward-char
+    [ -n "$terminfo[kcuf1]" ] && bindkey -M hsmw "$terminfo[kcuf1]" .forward-char
+
     # Needed for Fedora 23, zsh-5.1.1
     bindkey -M hsmw ' ' self-insert
 

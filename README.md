@@ -10,8 +10,11 @@ Video – view on [asciinema](https://asciinema.org/a/46371). You can resize th
 
 ## News
 
+* 20-09-2016
+  - Keys Page Up and Page Down work and page-wise move along history
+
 * 19-09-2016
-  - better immunity to [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
+  - Better immunity to [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
     and [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) – home,
     end, left and right cursor keys now work smoothly
 
@@ -74,6 +77,8 @@ Copy the file `history-search-multi-word` to your `site-functions` directory and
 autoload history-search-multi-word
 zle -N history-search-multi-word
 zle -N history-search-multi-word-backwards history-search-multi-word
+zle -N history-search-multi-word-pbackwards history-search-multi-word
+zle -N history-search-multi-word-pforwards history-search-multi-word
 bindkey "^R" history-search-multi-word
 ```
 

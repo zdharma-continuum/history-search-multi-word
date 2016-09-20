@@ -4,6 +4,8 @@
 # autoload history-search-multi-word
 # zle -N history-search-multi-word
 # zle -N history-search-multi-word-backwards history-search-multi-word
+# zle -N history-search-multi-word-pbackwards history-search-multi-word
+# zle -N history-search-multi-word-pforwards history-search-multi-word
 # bindkey "^R" history-search-multi-word
 #
 # This will bind to Ctrl-R
@@ -34,14 +36,18 @@ _hsmw_main() {
         fi
 
         # '0' will get changed into $to_display limit
-        [[ "$WIDGET" != *-backwards ]] && __hsmw_hcw_index="1" || __hsmw_hcw_index="0"
-        __hsmw_hcw_widget_name="${WIDGET%-backwards}"
+        [[ "$WIDGET" = *-word || "$WIDGET" = *-pforwards ]] && __hsmw_hcw_index="1"
+        [[ "$WIDGET" = *-backwards || "$WIDGET" = *-pbackwards ]] && __hsmw_hcw_index="0"
+        __hsmw_hcw_widget_name="${${${WIDGET%-backwards}-pbackwards}-pforwards}"
         __hsmw_hcw_found=( )
         __hsmw_hcw_finished="0"
         __hsmw_hcw_restart="0"
     else
         # Consecutive call
-        [[ "$WIDGET" != *-backwards ]] && (( __hsmw_hcw_index ++ )) || (( __hsmw_hcw_index -- ))
+        [[ "$WIDGET" = *-word ]] && (( __hsmw_hcw_index ++ ))
+        [[ "$WIDGET" = *-backwards ]] && (( __hsmw_hcw_index -- ))
+        [[ "$WIDGET" = *-pforwards ]] && (( __hsmw_hcw_index = __hsmw_hcw_index + __hsmw_page_size ))
+        [[ "$WIDGET" = *-pbackwards ]] && (( __hsmw_hcw_index = __hsmw_hcw_index - __hsmw_page_size ))
     fi
 
     # Find history entries matching pattern *word1*~^*word2*~^*word3* etc.
@@ -148,8 +154,10 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     # Make the hsmw keymap a copy of the current main
     bindkey -N hsmw emacs
 
-    local down_widget="${WIDGET%-backwards}"
+    local down_widget="${${${WIDGET%-backwards}%-pbackwards}-pforwards}"
     local up_widget="${down_widget}-backwards"
+    local pdown_widget="${down_widget}-pforwards"
+    local pup_widget="${down_widget}-pbackwards"
 
     # Manual, termcap, terminfo
     bindkey -M hsmw '^[OA' "$up_widget"
@@ -186,6 +194,12 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     bindkey -M hsmw '^P' "$up_widget"
     bindkey -M hsmw '^N' "$down_widget"
 
+    # Page Up, Page Down keys
+    [ -n "$termcap[kP]" ] && bindkey -M hsmw "$termcap[kP]" "$pup_widget"
+    [ -n "$termcap[kN]" ] && bindkey -M hsmw "$termcap[kN]" "$pdown_widget"
+    [ -n "$terminfo[kpp]" ] && bindkey -M hsmw "$terminfo[kpp]" "$pup_widget"
+    [ -n "$terminfo[knp]" ] && bindkey -M hsmw "$terminfo[knp]" "$pdown_widget"
+
     # Needed for Fedora 23, zsh-5.1.1
     bindkey -M hsmw ' ' self-insert
 
@@ -203,6 +217,8 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     zle -A "$up_widget" saved-"$up_widget"
     zle -N "$down_widget" _hsmw_simulate_widget
     zle -N "$up_widget" _hsmw_simulate_widget
+    zle -N "$pdown_widget" _hsmw_simulate_widget
+    zle -N "$pup_widget" _hsmw_simulate_widget
 
     if zle .recursive-edit -K hsmw; then
         BUFFER="${__hsmw_hcw_found[__hsmw_hcw_index]}"

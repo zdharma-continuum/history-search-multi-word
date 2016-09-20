@@ -13,4 +13,6 @@ fi
 autoload history-search-multi-word
 zle -N history-search-multi-word
 zle -N history-search-multi-word-backwards history-search-multi-word
+zle -N history-search-multi-word-pbackwards history-search-multi-word
+zle -N history-search-multi-word-pforwards history-search-multi-word
 bindkey "^R" history-search-multi-word

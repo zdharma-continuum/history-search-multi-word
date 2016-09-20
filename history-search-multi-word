@@ -182,6 +182,10 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     [ -n "$terminfo[khome]" ] && bindkey -M hsmw "$terminfo[khome]" .beginning-of-line
     [ -n "$terminfo[kend]" ] && bindkey -M hsmw "$terminfo[kend]" .end-of-line
 
+    # Additional keys
+    bindkey -M hsmw '^P' "$up_widget"
+    bindkey -M hsmw '^N' "$down_widget"
+
     # Needed for Fedora 23, zsh-5.1.1
     bindkey -M hsmw ' ' self-insert
 

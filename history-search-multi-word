@@ -135,19 +135,19 @@ _hsmw_simulate_widget() {
 _hsmw_self_insert() {
     LBUFFER+="${KEYS[-1]}"
     __hsmw_hcw_restart="1"
-    _hsmw_main
+    _hsmw_simulate_widget
 }
 
 _hsmw_backward_delete_char() {
     LBUFFER="${LBUFFER%?}"
     __hsmw_hcw_restart="1"
-    _hsmw_main
+    _hsmw_simulate_widget
 }
 
 _hsmw_delete_char() {
     RBUFFER="${RBUFFER#?}"
     __hsmw_hcw_restart="1"
-    _hsmw_main
+    _hsmw_simulate_widget
 }
 
 if [ "$__hsmw_hcw_call_count" -eq "1" ]; then

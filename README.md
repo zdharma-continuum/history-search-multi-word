@@ -11,7 +11,8 @@ Video – view on [asciinema](https://asciinema.org/a/46371). You can resize th
 ## News
 
 * 20-09-2016
-  - Keys Page Up and Page Down work and page-wise move along history
+  - Keys Page Up and Page Down work and page-wise move along history. Also, `Ctrl-P`, `Ctrl-N`
+    move to previous and next entries
 
 * 19-09-2016
   - Better immunity to [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)

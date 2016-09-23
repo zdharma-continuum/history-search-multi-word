@@ -217,6 +217,9 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     zle -A "$up_widget" saved-"$up_widget"
     zle -N "$down_widget" _hsmw_simulate_widget
     zle -N "$up_widget" _hsmw_simulate_widget
+
+    zle -A "$pdown_widget" saved-"$pdown_widget"
+    zle -A "$pup_widget" saved-"$pup_widget"
     zle -N "$pdown_widget" _hsmw_simulate_widget
     zle -N "$pup_widget" _hsmw_simulate_widget
 
@@ -238,6 +241,10 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     zle -A saved-"$down_widget" "$down_widget"
     zle -A saved-"$up_widget" "$up_widget"
     zle -D saved-"$down_widget" saved-"$up_widget"
+
+    zle -A saved-"$pdown_widget" "$pdown_widget"
+    zle -A saved-"$pup_widget" "$pup_widget"
+    zle -D saved-"$pdown_widget" saved-"$pup_widget"
 
     # Full reinitialisation at next call
     __hsmw_hcw_call_count="0"

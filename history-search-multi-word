@@ -251,6 +251,9 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
 
     # Full reinitialisation at next call
     __hsmw_hcw_call_count="0"
+
+    # Free memory
+    __hsmw_hcw_found=( )
 fi
 
 # vim:ft=zsh

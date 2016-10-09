@@ -130,7 +130,7 @@ _hsmw_main() {
 }
 
 (( __hsmw_hcw_call_count ++ ))
-[[ "$__HSMW_MH_SOURCED" != "1" ]] && source "$HSMW_REPO_DIR/-hsmw-highlight"
+[[ "$__HSMW_MH_SOURCED" != "1" ]] && source "$HSMW_REPO_DIR/hsmw-highlight"
 
 _hsmw_main
 

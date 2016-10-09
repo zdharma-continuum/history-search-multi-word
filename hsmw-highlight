@@ -27,7 +27,7 @@
 # vim: ft=zsh sw=2 ts=2 et
 # -------------------------------------------------------------------------------------------------
 
-typeset -gA _hsmw_highlight_main__command_type_cache
+typeset -gA __hsmw_highlight_main__command_type_cache
 
 # Define default styles.
 typeset -gA HSMW_HIGHLIGHT_STYLES
@@ -61,28 +61,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 : ${HSMW_HIGHLIGHT_STYLES[redirection]:=none}
 : ${HSMW_HIGHLIGHT_STYLES[comment]:=fg=black,bold}
 
-# Whether the highlighter should be called or not.
-_zsh_highlight_highlighter_main_predicate()
-{
-  # may need to remove path_prefix highlighting when the line ends
-  [[ $WIDGET == zle-line-finish ]] || _zsh_highlight_buffer_modified
-}
-
-# Helper to deal with tokens crossing line boundaries.
-_zsh_highlight_main_add_region_highlight() {
-  integer start=$1 end=$2
-  shift 2
-
-  # The calculation was relative to $PREBUFFER$BUFFER, but region_highlight is
-  # relative to $BUFFER.
-  (( start -= $#PREBUFFER ))
-  (( end -= $#PREBUFFER ))
-
-  (( end < 0 )) && return # having end<0 would be a bug
-  (( start < 0 )) && start=0 # having start<0 is normal with e.g. multiline strings
-  _zsh_highlight_add_highlight $start $end "$@"
-}
-
 # Get the type of a command.
 #
 # Uses the zsh/parameter module if available to avoid forks, and a
@@ -91,9 +69,9 @@ _zsh_highlight_main_add_region_highlight() {
 # Takes a single argument.
 #
 # The result will be stored in REPLY.
-_zsh_highlight_main__type() {
-  if (( $+_hsmw_highlight_main__command_type_cache )); then
-    REPLY=$_hsmw_highlight_main__command_type_cache[(e)$1]
+-hsmw-highlight-main-type() {
+  if (( $+__hsmw_highlight_main__command_type_cache )); then
+    REPLY=$__hsmw_highlight_main__command_type_cache[(e)$1]
     if [[ -n "$REPLY" ]]; then
       return
     fi
@@ -129,8 +107,8 @@ _zsh_highlight_main__type() {
   if ! (( $+REPLY )); then
     REPLY="${$(LC_ALL=C builtin type -w -- $1 2>/dev/null)#*: }"
   fi
-  if (( $+_hsmw_highlight_main__command_type_cache )); then
-    _hsmw_highlight_main__command_type_cache[(e)$1]=$REPLY
+  if (( $+__hsmw_highlight_main__command_type_cache )); then
+    __hsmw_highlight_main__command_type_cache[(e)$1]=$REPLY
   fi
 }
 
@@ -382,7 +360,7 @@ _hsmw_highlight_process()
       else
         style=unknown-token # prematurely terminated
       fi
-      _zsh_highlight_main_add_region_highlight $start_pos $end_pos $style
+      -hsmw-add-highlight $start_pos $end_pos $style
       already_added=1
       continue
     fi
@@ -435,7 +413,7 @@ _hsmw_highlight_process()
      else
       _zsh_highlight_main_highlighter_expand_path $arg
       local expanded_arg="$REPLY"
-      _zsh_highlight_main__type ${expanded_arg}
+      -hsmw-highlight-main-type ${expanded_arg}
       local res="$REPLY"
       () {
         # Special-case: command word is '$foo', like that, without braces or anything.
@@ -450,7 +428,7 @@ _hsmw_highlight_process()
            [[ ${arg[1]} == \$ ]] && [[ ${arg:1} =~ ^([A-Za-z_][A-Za-z0-9_]*|[0-9]+)$ ]] &&
            (( ${+parameters[${MATCH}]} ))
            then
-          _zsh_highlight_main__type ${(P)MATCH}
+          -hsmw-highlight-main-type ${(P)MATCH}
           res=$REPLY
         fi
       }
@@ -530,10 +508,10 @@ _hsmw_highlight_process()
                           # We highlight just the opening parentheses, as a reserved word; this
                           # is how [[ ... ]] is highlighted, too.
                           style=reserved-word
-                          _zsh_highlight_main_add_region_highlight $start_pos $((start_pos + 2)) $style
+                          -hsmw-add-highlight $start_pos $((start_pos + 2)) $style
                           already_added=1
                           if [[ $arg[-2,-1] == '))' ]]; then
-                            _zsh_highlight_main_add_region_highlight $((end_pos - 2)) $end_pos $style
+                            -hsmw-add-highlight $((end_pos - 2)) $end_pos $style
                             already_added=1
                           fi
                         elif [[ $arg == '()' ]]; then
@@ -551,7 +529,7 @@ _hsmw_highlight_process()
                           fi
                         fi
                         ;;
-        *)              _zsh_highlight_main_add_region_highlight $start_pos $end_pos commandtypefromthefuture-$res
+        *)              -hsmw-add-highlight $start_pos $end_pos commandtypefromthefuture-$res
                         already_added=1
                         ;;
       esac
@@ -595,12 +573,12 @@ _hsmw_highlight_process()
         '-'*)    style=single-hyphen-option;;
         "'"*)    style=single-quoted-argument;;
         '"'*)    style=double-quoted-argument
-                 _zsh_highlight_main_add_region_highlight $start_pos $end_pos $style
+                 -hsmw-add-highlight $start_pos $end_pos $style
                  _zsh_highlight_main_highlighter_highlight_string
                  already_added=1
                  ;;
         \$\'*)   style=dollar-quoted-argument
-                 _zsh_highlight_main_add_region_highlight $start_pos $end_pos $style
+                 -hsmw-add-highlight $start_pos $end_pos $style
                  _zsh_highlight_main_highlighter_highlight_dollar_string
                  already_added=1
                  ;;
@@ -631,7 +609,7 @@ _hsmw_highlight_process()
       esac
     fi
     if ! (( already_added )); then
-      _zsh_highlight_main_add_region_highlight $start_pos $end_pos $style
+      -hsmw-add-highlight $start_pos $end_pos $style
       [[ $style == path || $style == path_prefix ]] && _zsh_highlight_main_highlighter_highlight_path_separators
     fi
     if [[ -n ${(M)ZSH_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
@@ -683,7 +661,7 @@ _zsh_highlight_main_highlighter_highlight_path_separators()
   [[ -z "$HSMW_HIGHLIGHT_STYLES[$style_pathsep]" || "$HSMW_HIGHLIGHT_STYLES[$style]" == "$HSMW_HIGHLIGHT_STYLES[$style_pathsep]" ]] && return 0
   for (( pos = start_pos; $pos <= end_pos; pos++ )) ; do
     if [[ $BUFFER[pos] == / ]]; then
-      _zsh_highlight_main_add_region_highlight $((pos - 1)) $pos $style_pathsep
+      -hsmw-add-highlight $((pos - 1)) $pos $style_pathsep
     fi
   done
 }
@@ -758,7 +736,7 @@ _zsh_highlight_main_highlighter_highlight_string()
       *) continue ;;
 
     esac
-    _zsh_highlight_main_add_region_highlight $j $k $style
+    -hsmw-add-highlight $j $k $style
   done
 }
 
@@ -801,7 +779,7 @@ _zsh_highlight_main_highlighter_highlight_dollar_string()
       *) continue ;;
 
     esac
-    _zsh_highlight_main_add_region_highlight $j $k $style
+    -hsmw-add-highlight $j $k $style
   done
 }
 
@@ -825,10 +803,10 @@ _zsh_highlight_main_highlighter_expand_path()
 # -------------------------------------------------------------------------------------------------
 
 _hsmw_highlight_init() {
-  _hsmw_highlight_main__command_type_cache=()
+  __hsmw_highlight_main__command_type_cache=()
 }
 
-_zsh_highlight_add_highlight()
+-hsmw-add-highlight()
 {
   local -i start end
   local highlight

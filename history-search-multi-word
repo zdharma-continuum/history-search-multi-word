@@ -117,7 +117,12 @@ _hsmw_main() {
 
     POSTDISPLAY="$preamble$text"
 
-    region_highlight=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) underline" )
+    region_highlight=( )
+    _hsmw_highlight_init
+    _hsmw_highlight_process "$text"
+    region_highlight=( "${region_highlight[@]//(#b)([[:digit:]]##)/$(( ${match[1]} + offset ))}" )
+
+    region_highlight+=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) underline" )
     if [ -n "$colsearch_pattern" ]; then
         # Following line is taken from Zaw (GH zsh-users/zaw) – license is named "Zaw", it is in LICENSE file
         region_highlight+=( "${(f)${(S)text//*(#bi)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) ${__hsmw_hl_color}${nl}}%$nl*}" )
@@ -125,6 +130,8 @@ _hsmw_main() {
 }
 
 (( __hsmw_hcw_call_count ++ ))
+[[ "$__HSMW_MH_SOURCED" != "1" ]] && source "$HSMW_REPO_DIR/-hsmw-highlight"
+
 _hsmw_main
 
 _hsmw_simulate_widget() {
@@ -253,7 +260,7 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     __hsmw_hcw_call_count="0"
 
     # Free memory
-    __hsmw_hcw_found=( )
+    #__hsmw_hcw_found=( )
 fi
 
 # vim:ft=zsh

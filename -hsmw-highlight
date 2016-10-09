@@ -27,37 +27,39 @@
 # vim: ft=zsh sw=2 ts=2 et
 # -------------------------------------------------------------------------------------------------
 
+typeset -gA _hsmw_highlight_main__command_type_cache
 
 # Define default styles.
-: ${ZSH_HIGHLIGHT_STYLES[default]:=none}
-: ${ZSH_HIGHLIGHT_STYLES[unknown-token]:=fg=red,bold}
-: ${ZSH_HIGHLIGHT_STYLES[reserved-word]:=fg=yellow}
-: ${ZSH_HIGHLIGHT_STYLES[alias]:=fg=green}
-: ${ZSH_HIGHLIGHT_STYLES[suffix-alias]:=fg=green,underline}
-: ${ZSH_HIGHLIGHT_STYLES[builtin]:=fg=green}
-: ${ZSH_HIGHLIGHT_STYLES[function]:=fg=green}
-: ${ZSH_HIGHLIGHT_STYLES[command]:=fg=green}
-: ${ZSH_HIGHLIGHT_STYLES[precommand]:=fg=green,underline}
-: ${ZSH_HIGHLIGHT_STYLES[commandseparator]:=none}
-: ${ZSH_HIGHLIGHT_STYLES[hashed-command]:=fg=green}
-: ${ZSH_HIGHLIGHT_STYLES[path]:=underline}
-: ${ZSH_HIGHLIGHT_STYLES[path_pathseparator]:=}
-: ${ZSH_HIGHLIGHT_STYLES[path_prefix]:=underline}
-: ${ZSH_HIGHLIGHT_STYLES[path_prefix_pathseparator]:=}
-: ${ZSH_HIGHLIGHT_STYLES[globbing]:=fg=blue}
-: ${ZSH_HIGHLIGHT_STYLES[history-expansion]:=fg=blue}
-: ${ZSH_HIGHLIGHT_STYLES[single-hyphen-option]:=none}
-: ${ZSH_HIGHLIGHT_STYLES[double-hyphen-option]:=none}
-: ${ZSH_HIGHLIGHT_STYLES[back-quoted-argument]:=none}
-: ${ZSH_HIGHLIGHT_STYLES[single-quoted-argument]:=fg=yellow}
-: ${ZSH_HIGHLIGHT_STYLES[double-quoted-argument]:=fg=yellow}
-: ${ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]:=fg=yellow}
-: ${ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]:=fg=cyan}
-: ${ZSH_HIGHLIGHT_STYLES[back-double-quoted-argument]:=fg=cyan}
-: ${ZSH_HIGHLIGHT_STYLES[back-dollar-quoted-argument]:=fg=cyan}
-: ${ZSH_HIGHLIGHT_STYLES[assign]:=none}
-: ${ZSH_HIGHLIGHT_STYLES[redirection]:=none}
-: ${ZSH_HIGHLIGHT_STYLES[comment]:=fg=black,bold}
+typeset -gA HSMW_HIGHLIGHT_STYLES
+: ${HSMW_HIGHLIGHT_STYLES[default]:=none}
+: ${HSMW_HIGHLIGHT_STYLES[unknown-token]:=fg=red,bold}
+: ${HSMW_HIGHLIGHT_STYLES[reserved-word]:=fg=yellow}
+: ${HSMW_HIGHLIGHT_STYLES[alias]:=fg=green}
+: ${HSMW_HIGHLIGHT_STYLES[suffix-alias]:=fg=green}
+: ${HSMW_HIGHLIGHT_STYLES[builtin]:=fg=green}
+: ${HSMW_HIGHLIGHT_STYLES[function]:=fg=green}
+: ${HSMW_HIGHLIGHT_STYLES[command]:=fg=green}
+: ${HSMW_HIGHLIGHT_STYLES[precommand]:=fg=green}
+: ${HSMW_HIGHLIGHT_STYLES[commandseparator]:=none}
+: ${HSMW_HIGHLIGHT_STYLES[hashed-command]:=fg=green}
+: ${HSMW_HIGHLIGHT_STYLES[path]:=magenta}
+: ${HSMW_HIGHLIGHT_STYLES[path_pathseparator]:=}
+: ${HSMW_HIGHLIGHT_STYLES[path_prefix]:=magenta}
+: ${HSMW_HIGHLIGHT_STYLES[path_prefix_pathseparator]:=}
+: ${HSMW_HIGHLIGHT_STYLES[globbing]:=fg=blue}
+: ${HSMW_HIGHLIGHT_STYLES[history-expansion]:=fg=blue}
+: ${HSMW_HIGHLIGHT_STYLES[single-hyphen-option]:=none}
+: ${HSMW_HIGHLIGHT_STYLES[double-hyphen-option]:=none}
+: ${HSMW_HIGHLIGHT_STYLES[back-quoted-argument]:=none}
+: ${HSMW_HIGHLIGHT_STYLES[single-quoted-argument]:=fg=yellow}
+: ${HSMW_HIGHLIGHT_STYLES[double-quoted-argument]:=fg=yellow}
+: ${HSMW_HIGHLIGHT_STYLES[dollar-quoted-argument]:=fg=yellow}
+: ${HSMW_HIGHLIGHT_STYLES[dollar-double-quoted-argument]:=fg=cyan}
+: ${HSMW_HIGHLIGHT_STYLES[back-double-quoted-argument]:=fg=cyan}
+: ${HSMW_HIGHLIGHT_STYLES[back-dollar-quoted-argument]:=fg=cyan}
+: ${HSMW_HIGHLIGHT_STYLES[assign]:=none}
+: ${HSMW_HIGHLIGHT_STYLES[redirection]:=none}
+: ${HSMW_HIGHLIGHT_STYLES[comment]:=fg=black,bold}
 
 # Whether the highlighter should be called or not.
 _zsh_highlight_highlighter_main_predicate()
@@ -90,8 +92,8 @@ _zsh_highlight_main_add_region_highlight() {
 #
 # The result will be stored in REPLY.
 _zsh_highlight_main__type() {
-  if (( $+_zsh_highlight_main__command_type_cache )); then
-    REPLY=$_zsh_highlight_main__command_type_cache[(e)$1]
+  if (( $+_hsmw_highlight_main__command_type_cache )); then
+    REPLY=$_hsmw_highlight_main__command_type_cache[(e)$1]
     if [[ -n "$REPLY" ]]; then
       return
     fi
@@ -127,8 +129,8 @@ _zsh_highlight_main__type() {
   if ! (( $+REPLY )); then
     REPLY="${$(LC_ALL=C builtin type -w -- $1 2>/dev/null)#*: }"
   fi
-  if (( $+_zsh_highlight_main__command_type_cache )); then
-    _zsh_highlight_main__command_type_cache[(e)$1]=$REPLY
+  if (( $+_hsmw_highlight_main__command_type_cache )); then
+    _hsmw_highlight_main__command_type_cache[(e)$1]=$REPLY
   fi
 }
 
@@ -170,7 +172,7 @@ _zsh_highlight_main__stack_pop() {
 }
 
 # Main syntax highlighting function.
-_zsh_highlight_highlighter_main_paint()
+_hsmw_highlight_process()
 {
   ## Before we even 'emulate -L', we must test a few options that would reset.
   if [[ -o interactive_comments ]]; then
@@ -194,15 +196,6 @@ _zsh_highlight_highlighter_main_paint()
   emulate -L zsh
   setopt localoptions extendedglob bareglobqual
 
-  # At the PS3 prompt and in vared, highlight nothing.
-  #
-  # (We can't check this in _zsh_highlight_highlighter_main_predicate because
-  # if the predicate returns false, the previous value of region_highlight
-  # would be reused.)
-  if [[ $CONTEXT == (select|vared) ]]; then
-    return
-  fi
-
   ## Variable declarations and initializations
   local start_pos=0 end_pos highlight_glob=true arg style
   local in_array_assignment=false # true between 'a=(' and the matching ')'
@@ -210,7 +203,7 @@ _zsh_highlight_highlighter_main_paint()
   typeset -a ZSH_HIGHLIGHT_TOKENS_PRECOMMANDS
   typeset -a ZSH_HIGHLIGHT_TOKENS_CONTROL_FLOW
   local -a options_to_set # used in callees
-  local buf="$PREBUFFER$BUFFER"
+  local buf="$1"
   integer len="${#buf}"
   integer pure_buf_len=$(( len - ${#PREBUFFER} ))   # == $#BUFFER, used e.g. in *_check_path
 
@@ -687,7 +680,7 @@ _zsh_highlight_main_highlighter_highlight_path_separators()
 {
   local pos style_pathsep
   style_pathsep=${style}_pathseparator
-  [[ -z "$ZSH_HIGHLIGHT_STYLES[$style_pathsep]" || "$ZSH_HIGHLIGHT_STYLES[$style]" == "$ZSH_HIGHLIGHT_STYLES[$style_pathsep]" ]] && return 0
+  [[ -z "$HSMW_HIGHLIGHT_STYLES[$style_pathsep]" || "$HSMW_HIGHLIGHT_STYLES[$style]" == "$HSMW_HIGHLIGHT_STYLES[$style_pathsep]" ]] && return 0
   for (( pos = start_pos; $pos <= end_pos; pos++ )) ; do
     if [[ $BUFFER[pos] == / ]]; then
       _zsh_highlight_main_add_region_highlight $((pos - 1)) $pos $style_pathsep
@@ -815,6 +808,7 @@ _zsh_highlight_main_highlighter_highlight_dollar_string()
 # Called with a single positional argument.
 # Perform filename expansion (tilde expansion) on the argument and set $REPLY to the expanded value.
 #
+#_hsmw_highlight_init
 # Does not perform filename generation (globbing).
 _zsh_highlight_main_highlighter_expand_path()
 {
@@ -830,8 +824,8 @@ _zsh_highlight_main_highlighter_expand_path()
 # Main highlighter initialization
 # -------------------------------------------------------------------------------------------------
 
-_zsh_highlight_main__precmd_hook() {
-  _zsh_highlight_main__command_type_cache=()
+_hsmw_highlight_init() {
+  _hsmw_highlight_main__command_type_cache=()
 }
 
 _zsh_highlight_add_highlight()
@@ -842,19 +836,11 @@ _zsh_highlight_add_highlight()
   end=$2
   shift 2
   for highlight; do
-    if (( $+ZSH_HIGHLIGHT_STYLES[$highlight] )); then
-      region_highlight+=("$start $end $ZSH_HIGHLIGHT_STYLES[$highlight]")
+    if (( $+HSMW_HIGHLIGHT_STYLES[$highlight] )); then
+      region_highlight+=("$start $end $HSMW_HIGHLIGHT_STYLES[$highlight]")
       break
     fi
   done
 }
 
-autoload -U add-zsh-hook
-if add-zsh-hook precmd _zsh_highlight_main__precmd_hook 2>/dev/null; then
-  # Initialize command type cache
-  typeset -gA _zsh_highlight_main__command_type_cache
-else
-  print -r -- >&2 'zsh-syntax-highlighting: Failed to load add-zsh-hook. Some speed optimizations will not be used.'
-  # Make sure the cache is unset
-  unset _zsh_highlight_main__command_type_cache
-fi
+__HSMW_MH_SOURCED=1

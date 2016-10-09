@@ -4,10 +4,10 @@
 # to ~/.zshrc.
 #
 
-0="${(%):-%N}" # this gives immunity to functionargzero being unset
-REPO_DIR="${0%/*}"
-if [[ -z "$ZPLG_CUR_PLUGIN" && "${fpath[(r)$REPO_DIR]}" != $REPO_DIR ]]; then
-    fpath+=( "$REPO_DIR" )
+ZERO="${(%):-%N}" # this gives immunity to functionargzero being unset
+HSMW_REPO_DIR="${ZERO%/*}"
+if [[ -z "$ZPLG_CUR_PLUGIN" && "${fpath[(r)$HSMW_REPO_DIR]}" != $HSMW_REPO_DIR ]]; then
+    fpath+=( "$HSMW_REPO_DIR" )
 fi
 
 autoload history-search-multi-word

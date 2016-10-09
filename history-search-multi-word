@@ -118,8 +118,8 @@ _hsmw_main() {
     POSTDISPLAY="$preamble$text"
 
     region_highlight=( )
-    _hsmw_highlight_init
-    _hsmw_highlight_process "$text"
+    -hsmw-highlight-init
+    -hsmw-highlight-process "$text"
     region_highlight=( "${region_highlight[@]//(#b)([[:digit:]]##)/$(( ${match[1]} + offset ))}" )
 
     region_highlight+=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) underline" )

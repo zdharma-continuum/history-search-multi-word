@@ -114,7 +114,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 
 # Check whether the first argument is a redirection operator token.
 # Report result via the exit code.
-_zsh_highlight_main__is_redirection() {
+-hsmw-highlight-is-redirection() {
   # A redirection operator token:
   # - starts with an optional single-digit number;
   # - then, has a '<' or '>' character;
@@ -127,7 +127,7 @@ _zsh_highlight_main__is_redirection() {
 # Takes a single argument.
 #
 # The result will be stored in REPLY.
-_zsh_highlight_main__resolve_alias() {
+-hsmw-highlight-resolve-alias() {
   if zmodload -e zsh/parameter; then
     REPLY=${aliases[$arg]}
   else
@@ -140,7 +140,7 @@ _zsh_highlight_main__resolve_alias() {
 #
 # $1: character expected to be at the top of $braces_stack
 # $2: assignment to execute it if matches
-_zsh_highlight_main__stack_pop() {
+-hsmw-highlight-stack-pop() {
   if [[ $braces_stack[1] == $1 ]]; then
     braces_stack=${braces_stack:1}
     eval "$2"
@@ -150,7 +150,7 @@ _zsh_highlight_main__stack_pop() {
 }
 
 # Main syntax highlighting function.
-_hsmw_highlight_process()
+-hsmw-highlight-process()
 {
   ## Before we even 'emulate -L', we must test a few options that would reset.
   if [[ -o interactive_comments ]]; then
@@ -177,9 +177,9 @@ _hsmw_highlight_process()
   ## Variable declarations and initializations
   local start_pos=0 end_pos highlight_glob=true arg style
   local in_array_assignment=false # true between 'a=(' and the matching ')'
-  typeset -a ZSH_HIGHLIGHT_TOKENS_COMMANDSEPARATOR
-  typeset -a ZSH_HIGHLIGHT_TOKENS_PRECOMMANDS
-  typeset -a ZSH_HIGHLIGHT_TOKENS_CONTROL_FLOW
+  typeset -a __HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR
+  typeset -a __HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS
+  typeset -a __HSMW_HIGHLIGHT_TOKENS_CONTROL_FLOW
   local -a options_to_set # used in callees
   local buf="$1"
   integer len="${#buf}"
@@ -192,21 +192,21 @@ _hsmw_highlight_process()
   fi
   unset path_dirs_was_set
 
-  ZSH_HIGHLIGHT_TOKENS_COMMANDSEPARATOR=(
+  __HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR=(
     '|' '||' ';' '&' '&&'
     '|&'
     '&!' '&|'
     # ### 'case' syntax, but followed by a pattern, not by a command
     # ';;' ';&' ';|'
   )
-  ZSH_HIGHLIGHT_TOKENS_PRECOMMANDS=(
+  __HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS=(
     'builtin' 'command' 'exec' 'nocorrect' 'noglob'
     'pkexec' # immune to #121 because it's usually not passed --option flags
   )
 
   # Tokens that, at (naively-determined) "command position", are followed by
   # a de jure command position.  All of these are reserved words.
-  ZSH_HIGHLIGHT_TOKENS_CONTROL_FLOW=(
+  __HSMW_HIGHLIGHT_TOKENS_CONTROL_FLOW=(
     $'\x7b' # block
     $'\x28' # subshell
     '()' # anonymous function
@@ -366,7 +366,7 @@ _hsmw_highlight_process()
     fi
 
     # Analyse the current word.
-    if _zsh_highlight_main__is_redirection $arg ; then
+    if -hsmw-highlight-is-redirection $arg ; then
       # A '<' or '>', possibly followed by a digit
       in_redirection=2
     fi
@@ -403,7 +403,7 @@ _hsmw_highlight_process()
      style=reserved-word # de facto a reserved word, although not de jure
      next_word=':start:'
    elif [[ $this_word == *':start:'* ]] && (( in_redirection == 0 )); then # $arg is the command word
-     if [[ -n ${(M)ZSH_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$arg"} ]]; then
+     if [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$arg"} ]]; then
       style=precommand
      elif [[ "$arg" = "sudo" ]]; then
       style=precommand
@@ -411,7 +411,7 @@ _hsmw_highlight_process()
       next_word+=':sudo_opt:'
       next_word+=':start:'
      else
-      _zsh_highlight_main_highlighter_expand_path $arg
+      -hsmw-highlight-expand-path $arg
       local expanded_arg="$REPLY"
       -hsmw-highlight-main-type ${expanded_arg}
       local res="$REPLY"
@@ -439,7 +439,7 @@ _hsmw_highlight_process()
                           braces_stack='Y'"$braces_stack"
                         elif [[ $arg == $'\x7d' ]]; then
                           # We're at command word, so no need to check $right_brace_is_recognised_everywhere
-                          _zsh_highlight_main__stack_pop 'Y' style=reserved-word
+                          -hsmw-highlight-stack-pop 'Y' style=reserved-word
                           if [[ $style == reserved-word ]]; then
                             next_word+=':always:'
                           fi
@@ -464,9 +464,9 @@ _hsmw_highlight_process()
                             style=unknown-token
                           else
                             style=alias
-                            _zsh_highlight_main__resolve_alias $arg
+                            -hsmw-highlight-resolve-alias $arg
                             local alias_target="$REPLY"
-                            [[ -n ${(M)ZSH_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$alias_target"} && -z ${(M)ZSH_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$arg"} ]] && ZSH_HIGHLIGHT_TOKENS_PRECOMMANDS+=($arg)
+                            [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$alias_target"} && -z ${(M)__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$arg"} ]] && __HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS+=($arg)
                           fi
                         }
                         ;;
@@ -474,7 +474,7 @@ _hsmw_highlight_process()
         function)       style=function;;
         command)        style=command;;
         hashed)         style=hashed-command;;
-        none)           if _zsh_highlight_main_highlighter_check_assign; then
+        none)           if -hsmw-highlight-check-assign; then
                           style=assign
                           if [[ $arg[-1] == '(' ]]; then
                             in_array_assignment=true
@@ -487,7 +487,7 @@ _hsmw_highlight_process()
                           style=history-expansion
                         elif [[ $arg[0,1] == $histchars[2,2] ]]; then
                           style=history-expansion
-                        elif [[ -n ${(M)ZSH_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
+                        elif [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
                           if [[ $this_word == *':regular:'* ]]; then
                             # This highlights empty commands (semicolon follows nothing) as an error.
                             # Zsh accepts them, though.
@@ -522,7 +522,7 @@ _hsmw_highlight_process()
                           style=reserved-word
                           braces_stack='R'"$braces_stack"
                         else
-                          if _zsh_highlight_main_highlighter_check_path; then
+                          if -hsmw-highlight-check-path; then
                             style=$REPLY
                           else
                             style=unknown-token
@@ -545,7 +545,7 @@ _hsmw_highlight_process()
                    in_array_assignment=false
                    next_word+=':start:'
                  else
-                   _zsh_highlight_main__stack_pop 'R' style=reserved-word
+                   -hsmw-highlight-stack-pop 'R' style=reserved-word
                  fi;;
         $'\x28\x29') # possibly a function definition
                  if (( multi_func_def )) || false # TODO: or if the previous word was a command word
@@ -561,7 +561,7 @@ _hsmw_highlight_process()
                  #     Additionally, `tt(})' is recognized in any position if neither the
                  #     tt(IGNORE_BRACES) option nor the tt(IGNORE_CLOSE_BRACES) option is set."""
                  if $right_brace_is_recognised_everywhere; then
-                   _zsh_highlight_main__stack_pop 'Y' style=reserved-word
+                   -hsmw-highlight-stack-pop 'Y' style=reserved-word
                    if [[ $style == reserved-word ]]; then
                      next_word+=':always:'
                    fi
@@ -574,12 +574,12 @@ _hsmw_highlight_process()
         "'"*)    style=single-quoted-argument;;
         '"'*)    style=double-quoted-argument
                  -hsmw-add-highlight $start_pos $end_pos $style
-                 _zsh_highlight_main_highlighter_highlight_string
+                 -hsmw-highlight-string
                  already_added=1
                  ;;
         \$\'*)   style=dollar-quoted-argument
                  -hsmw-add-highlight $start_pos $end_pos $style
-                 _zsh_highlight_main_highlighter_highlight_dollar_string
+                 -hsmw-highlight-dollar-string
                  already_added=1
                  ;;
         '`'*)    style=back-quoted-argument;;
@@ -590,7 +590,7 @@ _hsmw_highlight_process()
                    # was handled by the $'\x7d' case above
                  elif [[ $arg[0,1] = $histchars[0,1] ]] && (( $#arg[0,2] == 2 )); then
                    style=history-expansion
-                 elif [[ -n ${(M)ZSH_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
+                 elif [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
                    if [[ $this_word == *':regular:'* ]]; then
                      style=commandseparator
                    else
@@ -599,7 +599,7 @@ _hsmw_highlight_process()
                  elif (( in_redirection == 2 )); then
                    style=redirection
                  else
-                   if _zsh_highlight_main_highlighter_check_path; then
+                   if -hsmw-highlight-check-path; then
                      style=$REPLY
                    else
                      style=default
@@ -610,9 +610,9 @@ _hsmw_highlight_process()
     fi
     if ! (( already_added )); then
       -hsmw-add-highlight $start_pos $end_pos $style
-      [[ $style == path || $style == path_prefix ]] && _zsh_highlight_main_highlighter_highlight_path_separators
+      [[ $style == path || $style == path_prefix ]] && -hsmw-highlight-path-separators
     fi
-    if [[ -n ${(M)ZSH_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
+    if [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
       if [[ $arg == ';' ]] && $in_array_assignment; then
         # literal newline inside an array assignment
         next_word=':regular:'
@@ -621,8 +621,8 @@ _hsmw_highlight_process()
         highlight_glob=true
       fi
     elif
-       [[ -n ${(M)ZSH_HIGHLIGHT_TOKENS_CONTROL_FLOW:#"$arg"} && $this_word == *':start:'* ]] ||
-       [[ -n ${(M)ZSH_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$arg"} && $this_word == *':start:'* ]]; then
+       [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_CONTROL_FLOW:#"$arg"} && $this_word == *':start:'* ]] ||
+       [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$arg"} && $this_word == *':start:'* ]]; then
       next_word=':start:'
     elif [[ $arg == "repeat" && $this_word == *':start:'* ]]; then
       # skip the repeat-count word
@@ -647,14 +647,14 @@ _hsmw_highlight_process()
 }
 
 # Check if $arg is variable assignment
-_zsh_highlight_main_highlighter_check_assign()
+-hsmw-highlight-check-assign()
 {
     setopt localoptions extended_glob
     [[ $arg == [[:alpha:]_][[:alnum:]_]#(|\[*\])(|[+])=* ]] ||
       [[ $arg == [0-9]##(|[+])=* ]]
 }
 
-_zsh_highlight_main_highlighter_highlight_path_separators()
+-hsmw-highlight-path-separators()
 {
   local pos style_pathsep
   style_pathsep=${style}_pathseparator
@@ -669,9 +669,9 @@ _zsh_highlight_main_highlighter_highlight_path_separators()
 # Check if $arg is a path.
 # If yes, return 0 and in $REPLY the style to use.
 # Else, return non-zero (and the contents of $REPLY is undefined).
-_zsh_highlight_main_highlighter_check_path()
+-hsmw-highlight-check-path()
 {
-  _zsh_highlight_main_highlighter_expand_path $arg;
+  -hsmw-highlight-expand-path $arg;
   local expanded_path="$REPLY"
 
   REPLY=path
@@ -702,7 +702,7 @@ _zsh_highlight_main_highlighter_check_path()
 }
 
 # Highlight special chars inside double-quoted strings
-_zsh_highlight_main_highlighter_highlight_string()
+-hsmw-highlight-string()
 {
   setopt localoptions noksharrays
   local -a match mbegin mend
@@ -741,7 +741,7 @@ _zsh_highlight_main_highlighter_highlight_string()
 }
 
 # Highlight special chars inside dollar-quoted strings
-_zsh_highlight_main_highlighter_highlight_dollar_string()
+-hsmw-highlight-dollar-string()
 {
   setopt localoptions noksharrays
   local -a match mbegin mend
@@ -785,12 +785,10 @@ _zsh_highlight_main_highlighter_highlight_dollar_string()
 
 # Called with a single positional argument.
 # Perform filename expansion (tilde expansion) on the argument and set $REPLY to the expanded value.
-#
-#_hsmw_highlight_init
 # Does not perform filename generation (globbing).
-_zsh_highlight_main_highlighter_expand_path()
+-hsmw-highlight-expand-path()
 {
-  (( $# == 1 )) || print -r -- >&2 "zsh-syntax-highlighting: BUG: _zsh_highlight_main_highlighter_expand_path: called without argument"
+  (( $# == 1 )) || print -r -- >&2 "hsmw-highlight: BUG: -hsmw-highlight-expand-path: called without argument"
 
   # The $~1 syntax normally performs filename generation, but not when it's on the right-hand side of ${x:=y}.
   setopt localoptions nonomatch
@@ -802,7 +800,7 @@ _zsh_highlight_main_highlighter_expand_path()
 # Main highlighter initialization
 # -------------------------------------------------------------------------------------------------
 
-_hsmw_highlight_init() {
+-hsmw-highlight-init() {
   __hsmw_highlight_main__command_type_cache=()
 }
 

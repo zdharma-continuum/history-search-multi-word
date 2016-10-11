@@ -32,7 +32,7 @@ _hsmw_main() {
         if [[ "$__hsmw_hcw_call_count" -le 1 ]]; then
             # Read configuration data
             zstyle -s ':history-search-multi-word' page-size __hsmw_page_size || __hsmw_page_size=$(( LINES / 2 ))
-            zstyle -s ':history-search-multi-word' highlight-color __hsmw_hl_color || __hsmw_hl_color="fg=magenta,bold"
+            zstyle -s ':history-search-multi-word' highlight-color __hsmw_hl_color || __hsmw_hl_color="fg=yellow,bold"
         fi
 
         # '0' will get changed into $to_display limit

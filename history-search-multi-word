@@ -101,11 +101,11 @@ _hsmw_main() {
     #
 
     local txt_before="${(F)${(@)disp_list[1,on_page_idx-1]}}"
-    local for_syntax_text="${(F)disp_list}"
     local entry="${disp_list[on_page_idx]}"
-    entry[1]='>'
-    disp_list[on_page_idx]="$entry"
     local text="${(F)disp_list}"
+    integer replace_idx=${#txt_before}+2
+    (( replace_idx == 2 )) && replace_idx=1
+    text[replace_idx]=">"
 
     #
     # Colorify
@@ -117,8 +117,14 @@ _hsmw_main() {
 
     region_highlight=( )
     -hsmw-highlight-init
-    -hsmw-highlight-process "$for_syntax_text"
-    region_highlight=( "${region_highlight[@]//(#b)([[:digit:]]##)/$(( ${match[1]} + offset ))}" )
+    integer pre_index=0
+    local line
+    for line in "${disp_list[@]}"; do
+        reply=( )
+        -hsmw-highlight-process "$line"
+        region_highlight+=( "${reply[@]//(#b)([[:digit:]]##)/$(( ${match[1]} + pre_index + offset ))}" )
+        pre_index+=${#line}+1
+    done
 
     region_highlight+=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) underline" )
     if [ -n "$colsearch_pattern" ]; then

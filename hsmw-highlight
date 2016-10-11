@@ -813,7 +813,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   shift 2
   for highlight; do
     if (( $+HSMW_HIGHLIGHT_STYLES[$highlight] )); then
-      region_highlight+=("$start $end $HSMW_HIGHLIGHT_STYLES[$highlight]")
+      reply+=("$start $end $HSMW_HIGHLIGHT_STYLES[$highlight]")
       break
     fi
   done

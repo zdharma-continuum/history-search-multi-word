@@ -46,8 +46,8 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 : ${HSMW_HIGHLIGHT_STYLES[path_pathseparator]:=}
 : ${HSMW_HIGHLIGHT_STYLES[path_prefix]:=magenta}
 : ${HSMW_HIGHLIGHT_STYLES[path_prefix_pathseparator]:=}
-: ${HSMW_HIGHLIGHT_STYLES[globbing]:=fg=blue}
-: ${HSMW_HIGHLIGHT_STYLES[history-expansion]:=fg=blue}
+: ${HSMW_HIGHLIGHT_STYLES[globbing]:=fg=blue,bold}
+: ${HSMW_HIGHLIGHT_STYLES[history-expansion]:=fg=blue,bold}
 : ${HSMW_HIGHLIGHT_STYLES[single-hyphen-option]:=none}
 : ${HSMW_HIGHLIGHT_STYLES[double-hyphen-option]:=none}
 : ${HSMW_HIGHLIGHT_STYLES[back-quoted-argument]:=none}

@@ -690,8 +690,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   [[ ! -d ${expanded_path:h} ]] && return 1
 
   # If this word ends the buffer, check if it's the prefix of a valid path.
-  if [[ ${buf[1]} != "-" && $pure_buf_len == $end_pos ]] &&
-     [[ $WIDGET != zle-line-finish ]]; then
+  if [[ ${buf[1]} != "-" && $pure_buf_len == $end_pos ]]; then
     local -a tmp
     tmp=( ${expanded_path}*(N) )
     (( $#tmp > 0 )) && REPLY=path_prefix && return 0

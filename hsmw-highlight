@@ -820,3 +820,5 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 }
 
 __HSMW_MH_SOURCED=1
+
+# vim:ft=zsh

@@ -42,9 +42,9 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 : ${HSMW_HIGHLIGHT_STYLES[precommand]:=fg=green}
 : ${HSMW_HIGHLIGHT_STYLES[commandseparator]:=none}
 : ${HSMW_HIGHLIGHT_STYLES[hashed-command]:=fg=green}
-: ${HSMW_HIGHLIGHT_STYLES[path]:=magenta}
+: ${HSMW_HIGHLIGHT_STYLES[path]:=fg=magenta}
 : ${HSMW_HIGHLIGHT_STYLES[path_pathseparator]:=}
-: ${HSMW_HIGHLIGHT_STYLES[path_prefix]:=magenta}
+: ${HSMW_HIGHLIGHT_STYLES[path_prefix]:=fg=magenta}
 : ${HSMW_HIGHLIGHT_STYLES[path_prefix_pathseparator]:=}
 : ${HSMW_HIGHLIGHT_STYLES[globbing]:=fg=blue,bold}
 : ${HSMW_HIGHLIGHT_STYLES[history-expansion]:=fg=blue,bold}

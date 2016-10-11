@@ -660,7 +660,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   style_pathsep=${style}_pathseparator
   [[ -z "$HSMW_HIGHLIGHT_STYLES[$style_pathsep]" || "$HSMW_HIGHLIGHT_STYLES[$style]" == "$HSMW_HIGHLIGHT_STYLES[$style_pathsep]" ]] && return 0
   for (( pos = start_pos; $pos <= end_pos; pos++ )) ; do
-    if [[ $BUFFER[pos] == / ]]; then
+    if [[ ${buf[pos]} == "/" ]]; then
       -hsmw-add-highlight $((pos - 1)) $pos $style_pathsep
     fi
   done

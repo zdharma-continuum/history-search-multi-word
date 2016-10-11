@@ -183,7 +183,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   local -a options_to_set # used in callees
   local buf="$1"
   integer len="${#buf}"
-  integer pure_buf_len=$(( len - ${#PREBUFFER} ))   # == $#BUFFER, used e.g. in *_check_path
+  integer pure_buf_len=len   # historical, was $#BUFFER, i.e. len without $PREBUFFER; used e.g. in *_check_path
 
   local braces_stack # "R" for round, "Q" for square, "Y" for curly
 

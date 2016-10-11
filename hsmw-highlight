@@ -425,7 +425,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
         local -a match mbegin mend
         local MATCH; integer MBEGIN MEND
         if [[ $res == none ]] && (( ${+parameters} )) &&
-           [[ ${arg[1]} == \$ ]] && [[ ${arg:1} =~ ^([A-Za-z_][A-Za-z0-9_]*|[0-9]+)$ ]] &&
+           [[ ${arg[1]} == \$ ]] && [[ ${arg:1} = ([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##) ]] &&
            (( ${+parameters[${MATCH}]} ))
            then
           -hsmw-highlight-main-type ${(P)MATCH}
@@ -715,10 +715,10 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     case "$arg[$i]" in
       '$' ) style=dollar-double-quoted-argument
             # Look for an alphanumeric parameter name.
-            if [[ ${arg:$i} =~ ^([A-Za-z_][A-Za-z0-9_]*|[0-9]+) ]] ; then
+            if [[ ${arg:$i} = ([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##) ]] ; then
               (( k += $#MATCH )) # highlight the parameter name
               (( i += $#MATCH )) # skip past it
-            elif [[ ${arg:$i} =~ ^[{]([A-Za-z_][A-Za-z0-9_]*|[0-9]+)[}] ]] ; then
+            elif [[ ${arg:$i} = [{]([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##)[}]* ]] ; then
               (( k += $#MATCH )) # highlight the parameter name and braces
               (( i += $#MATCH )) # skip past it
             else

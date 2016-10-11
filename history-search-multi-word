@@ -10,9 +10,10 @@
 #
 # This will bind to Ctrl-R
 #
-# Example zstyles:
+# Zstyles:
 # zstyle ":history-search-multi-word" page-size "5"
 # zstyle ":history-search-multi-word" highlight-color "fg=magenta,bold"
+# zstyle ":plugin:history-search-multi-word" synhl "yes"
 
 emulate -LR zsh
 setopt typesetsilent extendedglob noshortloops
@@ -23,7 +24,7 @@ zmodload zsh/termcap 2>/dev/null
 
 typeset -g __hsmw_hcw_index
 typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
-typeset -g __hsmw_page_size __hsmw_hl_color
+typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl
 typeset -gaU __hsmw_hcw_found
 
 _hsmw_main() {
@@ -33,6 +34,8 @@ _hsmw_main() {
             # Read configuration data
             zstyle -s ':history-search-multi-word' page-size __hsmw_page_size || __hsmw_page_size=$(( LINES / 2 ))
             zstyle -s ':history-search-multi-word' highlight-color __hsmw_hl_color || __hsmw_hl_color="fg=yellow,bold"
+            zstyle -s ":plugin:history-search-multi-word" synhl __hsmw_synhl || __hsmw_synhl="yes"
+            [[ "$__hsmw_synhl" != "1" && "$__hsmw_synhl" != "yes" && "$__hsmw_synhl" != "true" ]] && __hsmw_synhl="no" || __hsmw_synhl="yes"
         fi
 
         # '0' will get changed into $to_display limit
@@ -116,15 +119,17 @@ _hsmw_main() {
     POSTDISPLAY="$preamble$text"
 
     region_highlight=( )
-    -hsmw-highlight-init
-    integer pre_index=0
-    local line
-    for line in "${disp_list[@]}"; do
-        reply=( )
-        -hsmw-highlight-process "$line"
-        region_highlight+=( "${reply[@]//(#b)([[:digit:]]##)/$(( ${match[1]} + pre_index + offset ))}" )
-        pre_index+=${#line}+1
-    done
+    if [[ "$__hsmw_synhl" = "yes" ]]; then
+        -hsmw-highlight-init
+        integer pre_index=0
+        local line
+        for line in "${disp_list[@]}"; do
+            reply=( )
+            -hsmw-highlight-process "$line"
+            region_highlight+=( "${reply[@]//(#b)([[:digit:]]##)/$(( ${match[1]} + pre_index + offset ))}" )
+            pre_index+=${#line}+1
+        done
+    fi
 
     region_highlight+=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) underline" )
     if [ -n "$colsearch_pattern" ]; then

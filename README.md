@@ -10,6 +10,12 @@ Video – view on [asciinema](https://asciinema.org/a/46371). You can resize th
 
 ## News
 
+* 11-10-2016
+  - Syntax highlighting of history – adapted, fine crafted part of [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
+    to color what `hsmw` shows:
+
+    ![syntax highlighting](http://imagizer.imageshack.us/a/img921/1503/bMAF59.gif)
+
 * 20-09-2016
   - Keys Page Up and Page Down work and page-wise move along history. Also, `Ctrl-P`, `Ctrl-N`
     move to previous and next entries

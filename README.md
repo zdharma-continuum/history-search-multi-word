@@ -86,6 +86,15 @@ zstyle ":history-search-multi-word" highlight-color "fg=yellow,bold"   # Color i
 zstyle ":plugin:history-search-multi-word" synhl "yes"                 # Whether to perform syntax highlighting
 ```
 
+### Syntax highlighting
+
+Syntax highlighting is customized via `HSMW_HIGHLIGHT_STYLES` associative array.
+It has keys like `reserved-word`, `alias`, `command`, `path`, which are assigned
+with strings like `fg=blue,bold`, to configure how given elements are to be
+colored. If you assign this array you will change the defaults. Complete list
+of available keys is [at the beginning](https://github.com/psprint/history-search-multi-word/blob/master/hsmw-highlight#L34-L62)
+of `hsmw-highlight` file.
+
 ## IRC Channel
 
 Channel `#zplugin@freenode` is a support place for all author's projects. Connect to:

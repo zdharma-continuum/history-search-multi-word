@@ -94,7 +94,7 @@ with strings like `fg=blue,bold`, to configure how given elements are to be
 colored. If you assign this array before loading `hsmw` you will change the defaults. Complete list
 of available keys is [at the beginning](https://github.com/psprint/history-search-multi-word/blob/master/hsmw-highlight#L34-L62)
 of `hsmw-highlight` file. Example `~/.zshrc` addition that sets `path` key –
-paths will be highlighted with background magenta, foreground white, bold:
+paths that exist will be highlighted with background magenta, foreground white, bold:
 
 ```zsh
 typeset -gA HSMW_HIGHLIGHT_STYLES

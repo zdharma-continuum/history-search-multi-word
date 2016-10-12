@@ -76,20 +76,15 @@ psprint/history-search-multi-word` for testing before adding it to your
 Add `zgen load psprint/history-search-multi-word` to your .zshrc file in the same
 place you're doing your other `zgen load` calls in.
 
-### Manual installation
+## Customizing
 
-Copy the file `history-search-multi-word` to your `site-functions` directory and add:
+### Zstyles
 
 ```zsh
-autoload history-search-multi-word
-zle -N history-search-multi-word
-zle -N history-search-multi-word-backwards history-search-multi-word
-zle -N history-search-multi-word-pbackwards history-search-multi-word
-zle -N history-search-multi-word-pforwards history-search-multi-word
-bindkey "^R" history-search-multi-word
+zstyle ":history-search-multi-word" page-size "8"                      # Number of entries to show, default is LINES/3
+zstyle ":history-search-multi-word" highlight-color "fg=yellow,bold"   # Color in which to highlight matched, searched text
+zstyle ":plugin:history-search-multi-word" synhl "yes"                 # Whether to perform syntax highlighting
 ```
-
-to your `~/zshrc`.
 
 ## IRC Channel
 

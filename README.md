@@ -101,6 +101,14 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 HSMW_HIGHLIGHT_STYLES[path]="bg=magenta,fg=white,bold"
 ```
 
+Following code will enable coloring of options of form "-o" and "--option", with cyan:
+
+```zsh
+typeset -gA HSMW_HIGHLIGHT_STYLES
+HSMW_HIGHLIGHT_STYLES[single-hyphen-option]="fg=cyan"
+HSMW_HIGHLIGHT_STYLES[double-hyphen-option]="fg=cyan"
+```
+
 ## IRC Channel
 
 Channel `#zplugin@freenode` is a support place for all author's projects. Connect to:

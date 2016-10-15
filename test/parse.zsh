@@ -27,6 +27,8 @@ else
     exit 1
 fi
 
+autoload is-at-least
+
 # Own input?
 if [[ "$1" = "-o" ]]; then
     typeset -a input

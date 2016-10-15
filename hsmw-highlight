@@ -399,7 +399,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
         local -a match mbegin mend
         local MATCH; integer MBEGIN MEND
         if [[ $res == none ]] && (( ${+parameters} )) &&
-           [[ ${arg[1]} == \$ ]] && [[ ${arg:1} = ([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##) ]] &&
+           [[ ${arg[1]} == \$ ]] && [[ ${arg:1} = (#m)([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##) ]] &&
            (( ${+parameters[${MATCH}]} ))
            then
           -hsmw-highlight-main-type ${(P)MATCH}

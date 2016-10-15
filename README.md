@@ -2,7 +2,7 @@
 
 Binds `Ctrl-R` to a widget that searches for multiple keywords in `AND` fashion.
 In other words, you can enter multiple words, and history entries that match
-all of them will be found.
+all of them will be found. The entries are syntax highlighted.
 
 Video – view on [asciinema](https://asciinema.org/a/88954). You can resize the video by pressing `Ctrl-+` or `Cmd-+`.
 
@@ -11,7 +11,7 @@ Video – view on [asciinema](https://asciinema.org/a/88954). You can resize th
 ## News
 
 * 11-10-2016
-  - Syntax highlighting of history – adapted, fine crafted part of [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
+  - Syntax highlighting of history – adapted, fine crafted, **small** part of [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)
     to color what `hsmw` shows:
 
     ![syntax highlighting](http://imagizer.imageshack.us/a/img921/1503/bMAF59.gif)

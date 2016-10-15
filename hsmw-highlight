@@ -313,11 +313,10 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       (( start_pos += offset ))
       (( end_pos = start_pos + $#arg ))
     else
+      integer offset=0
       if [[ "$proc_buf" = (#b)(#s)(([[:space:]]|\\[[:space:]])##)* ]]; then
           # The first, outer parenthesis
-          integer offset="${#match[1]}"
-      else
-          integer offset=0
+          offset="${#match[1]}"
       fi
       ((start_pos+=offset))
       ((end_pos=$start_pos+${#arg}))

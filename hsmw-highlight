@@ -200,6 +200,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     # ### 'case' syntax, but followed by a pattern, not by a command
     # ';;' ';&' ';|'
   )
+
   __HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS=(
     'builtin' 'command' 'exec' 'nocorrect' 'noglob'
     'pkexec' # immune to #121 because it's usually not passed --option flags
@@ -261,7 +262,10 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   # $in_redirection.  The value of $next_word from the iteration that processed
   # the operator is discarded.
   #
-  local this_word=':start:' next_word
+
+  integer BIT_start=1 BIT_regular=2 BIT_sudo_opt=4 BIT_sudo_arg=8 BIT_always=16
+  integer this_word=BIT_start next_word=0
+
   integer in_redirection
   # Processing buffer
   local proc_buf="$buf"
@@ -273,7 +277,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     fi
     if (( in_redirection == 0 )); then
       # Initialize $next_word to its default value.
-      next_word=':regular:'
+      next_word=BIT_regular
     else
       # Stall $next_word.
     fi
@@ -291,7 +295,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     # the string's color.
     integer already_added=0
     style=unknown-token
-    if [[ $this_word == *':start:'* ]]; then
+    if (( this_word & BIT_start )); then
       in_array_assignment=false
       if [[ $arg == 'noglob' ]]; then
         highlight_glob=false
@@ -328,7 +332,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     #
     # We use the (Z+c+) flag so the entire comment is presented as one token in $arg.
     if [[ -n ${interactive_comments+'set'} && $arg[1] == $histchars[3] ]]; then
-      if [[ $this_word == *(':regular:'|':start:')* ]]; then
+      if (( this_word & BIT_regular + this_word & BIT_start )); then
         style=comment
       else
         style=unknown-token # prematurely terminated
@@ -347,43 +351,47 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 
     # Special-case the first word after 'sudo'.
     if (( ! in_redirection )); then
-      if [[ $this_word == *':sudo_opt:'* ]] && [[ $arg != -* ]]; then
-        this_word=${this_word//:sudo_opt:/}
+      if (( this_word & BIT_sudo_opt )) && [[ $arg != -* ]]; then
+        (( this_word = this_word ^ BIT_sudo_opt ))
       fi
     fi
 
     # Parse the sudo command line
     if (( ! in_redirection )); then
-      if [[ $this_word == *':sudo_opt:'* ]]; then
+      if (( this_word & BIT_sudo_opt )); then
         case "$arg" in
           # Flag that requires an argument
-          '-'[Cgprtu]) this_word=${this_word//:start:/};
-                       next_word=':sudo_arg:';;
+          '-'[Cgprtu])
+                       (( this_word & BIT_start )) && (( this_word = this_word ^ BIT_start ))
+                       (( next_word = BIT_sudo_arg ))
+                       ;;
           # This prevents misbehavior with sudo -u -otherargument
-          '-'*)        this_word=${this_word//:start:/};
-                       next_word+=':start:';
-                       next_word+=':sudo_opt:';;
+          '-'*)
+                       (( this_word & BIT_start )) && (( this_word = this_word ^ BIT_start ))
+                       (( next_word = next_word | BIT_start ))
+                       (( next_word = next_word | BIT_sudo_opt ))
+                       ;;
           *)           ;;
         esac
-      elif [[ $this_word == *':sudo_arg:'* ]]; then
-        next_word+=':sudo_opt:'
-        next_word+=':start:'
+      elif (( this_word & BIT_sudo_arg )); then
+        (( next_word = next_word | BIT_sudo_opt ))
+        (( next_word = next_word | BIT_start ))
       fi
    fi
 
    # The Great Fork: is this a command word?  Is this a non-command word?
-   if [[ $this_word == *':always:'* && $arg == 'always' ]]; then
+   if (( this_word & BIT_always )) && [[ $arg == 'always' ]]; then
      # try-always construct
      style=reserved-word # de facto a reserved word, although not de jure
-     next_word=':start:'
-   elif [[ $this_word == *':start:'* ]] && (( in_redirection == 0 )); then # $arg is the command word
+     (( next_word = BIT_start ))
+   elif (( this_word & BIT_start )) && (( in_redirection == 0 )); then # $arg is the command word
      if [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$arg"} ]]; then
       style=precommand
      elif [[ "$arg" = "sudo" ]]; then
       style=precommand
-      next_word=${next_word//:regular:/}
-      next_word+=':sudo_opt:'
-      next_word+=':start:'
+      (( next_word & BIT_regular )) && (( next_word = next_word ^ BIT_regular ))
+      (( next_word = next_word | BIT_sudo_opt ))
+      (( next_word = next_word | BIT_start ))
      else
       -hsmw-highlight-expand-path $arg
       -hsmw-highlight-main-type $REPLY
@@ -411,7 +419,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
                           # We're at command word, so no need to check $right_brace_is_recognised_everywhere
                           -hsmw-highlight-stack-pop 'Y' style=reserved-word
                           if [[ $style == reserved-word ]]; then
-                            next_word+=':always:'
+                            (( next_word = next_word | BIT_always ))
                           fi
                         fi
                         ;;
@@ -451,14 +459,14 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
                           else
                             # assignment to a scalar parameter.
                             # (For array assignments, the command doesn't start until the ")" token.)
-                            next_word+=':start:'
+                            (( next_word = next_word | BIT_start ))
                           fi
                         elif [[ $arg[0,1] = $histchars[0,1] ]] && (( $#arg[0,2] == 2 )); then
                           style=history-expansion
                         elif [[ $arg[0,1] == $histchars[2,2] ]]; then
                           style=history-expansion
                         elif [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
-                          if [[ $this_word == *':regular:'* ]]; then
+                          if (( this_word & BIT_regular )); then
                             # This highlights empty commands (semicolon follows nothing) as an error.
                             # Zsh accepts them, though.
                             style=commandseparator
@@ -510,21 +518,21 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
      fi
    fi
    if (( ! already_added )) && [[ $style == unknown-token ]] && # not handled by the 'command word' codepath
-      { (( in_redirection )) || [[ $this_word == *':regular:'* ]] || [[ $this_word == *':sudo_opt:'* ]] || [[ $this_word == *':sudo_arg:'* ]] }
+      { (( in_redirection )) || (( this_word & BIT_regular )) || (( this_word & BIT_sudo_opt )) || (( this_word & BIT_sudo_arg )) }
    then # $arg is a non-command word
       case $arg in
         $'\x29') # subshell or end of array assignment
                  if $in_array_assignment; then
                    style=assign
                    in_array_assignment=false
-                   next_word+=':start:'
+                   (( next_word = next_word | BIT_start ))
                  else
                    -hsmw-highlight-stack-pop 'R' style=reserved-word
                  fi;;
         $'\x28\x29') # possibly a function definition
                  if (( multi_func_def )) || false # TODO: or if the previous word was a command word
                  then
-                   next_word+=':start:'
+                   (( next_word = next_word | BIT_start ))
                  fi
                  style=reserved-word
                  ;;
@@ -537,7 +545,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
                  if $right_brace_is_recognised_everywhere; then
                    -hsmw-highlight-stack-pop 'Y' style=reserved-word
                    if [[ $style == reserved-word ]]; then
-                     next_word+=':always:'
+                     (( next_word = next_word | BIT_always ))
                    fi
                  else
                    # Fall through to the catchall case at the end.
@@ -567,7 +575,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
                  elif [[ $arg[0,1] = $histchars[0,1] ]] && (( $#arg[0,2] == 2 )); then
                    style=history-expansion
                  elif [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
-                   if [[ $this_word == *':regular:'* ]]; then
+                   if (( this_word & BIT_regular )); then
                      style=commandseparator
                    else
                      style=unknown-token
@@ -592,16 +600,16 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     if [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
       if [[ $arg == ';' ]] && $in_array_assignment; then
         # literal newline inside an array assignment
-        next_word=':regular:'
+        (( next_word = BIT_regular ))
       else
-        next_word=':start:'
+        (( next_word = BIT_start ))
         highlight_glob=true
       fi
-    elif
-       [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_CONTROL_FLOW:#"$arg"} && $this_word == *':start:'* ]] ||
-       [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$arg"} && $this_word == *':start:'* ]]; then
-      next_word=':start:'
-    elif [[ $arg == "repeat" && $this_word == *':start:'* ]]; then
+    elif [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_CONTROL_FLOW:#"$arg"} ]] && (( this_word & BIT_start )); then
+         (( next_word = BIT_start ))
+    elif [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$arg"} ]] && (( this_word & BIT_start )); then
+         (( next_word = BIT_start ))
+    elif [[ $arg == "repeat" ]] && (( this_word & BIT_start )); then
       # skip the repeat-count word
       in_redirection=2
       # The redirection mechanism assumes $this_word describes the word
@@ -611,12 +619,12 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       # or a command separator (`repeat 2; ls` or `repeat 2; do ls; done`).
       #
       # The repeat-count word will be handled like a redirection target.
-      this_word=':start::regular:'
+      (( this_word = BIT_start | BIT_regular ))
     fi
     start_pos=$end_pos
     if (( in_redirection == 0 )); then
       # This is the default/common codepath.
-      this_word=$next_word
+      (( this_word = next_word ))
     else
       # Stall $this_word.
     fi
@@ -784,4 +792,4 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 
 __HSMW_MH_SOURCED=1
 
-# vim:ft=zsh
+# vim:ft=zsh:sw=2

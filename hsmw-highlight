@@ -334,7 +334,8 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       else
         style=unknown-token # prematurely terminated
       fi
-      -hsmw-add-highlight $start_pos $end_pos $style
+      # ADD
+      reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
       already_added=1
       continue
     fi
@@ -478,10 +479,12 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
                           # We highlight just the opening parentheses, as a reserved word; this
                           # is how [[ ... ]] is highlighted, too.
                           style=reserved-word
-                          -hsmw-add-highlight $start_pos $((start_pos + 2)) $style
+                          # ADD
+                          reply+=("$start_pos $(( start_pos + 2 )) ${HSMW_HIGHLIGHT_STYLES[$style]}")
                           already_added=1
                           if [[ $arg[-2,-1] == '))' ]]; then
-                            -hsmw-add-highlight $((end_pos - 2)) $end_pos $style
+                            # ADD
+                            reply+=("$(( end_pos - 2 )) $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
                             already_added=1
                           fi
                         elif [[ $arg == '()' ]]; then
@@ -499,7 +502,9 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
                           fi
                         fi
                         ;;
-        *)              -hsmw-add-highlight $start_pos $end_pos commandtypefromthefuture-$REPLY
+        *)
+                        # ADD
+                        reply+=("$start_pos $end_pos commandtypefromthefuture-$REPLY")
                         already_added=1
                         ;;
       esac
@@ -543,12 +548,14 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
         '-'*)    style=single-hyphen-option;;
         "'"*)    style=single-quoted-argument;;
         '"'*)    style=double-quoted-argument
-                 -hsmw-add-highlight $start_pos $end_pos $style
+                 # ADD
+                 reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
                  -hsmw-highlight-string
                  already_added=1
                  ;;
         \$\'*)   style=dollar-quoted-argument
-                 -hsmw-add-highlight $start_pos $end_pos $style
+                 # ADD
+                 reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
                  -hsmw-highlight-dollar-string
                  already_added=1
                  ;;
@@ -579,7 +586,8 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       esac
     fi
     if ! (( already_added )); then
-      -hsmw-add-highlight $start_pos $end_pos $style
+      # ADD
+      reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
       [[ $style == path || $style == path_prefix ]] && -hsmw-highlight-path-separators
     fi
     if [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
@@ -631,7 +639,8 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   [[ -z "$HSMW_HIGHLIGHT_STYLES[$style_pathsep]" || "$HSMW_HIGHLIGHT_STYLES[$style]" == "$HSMW_HIGHLIGHT_STYLES[$style_pathsep]" ]] && return 0
   for (( pos = start_pos; $pos <= end_pos; pos++ )) ; do
     if [[ ${buf[pos]} == "/" ]]; then
-      -hsmw-add-highlight $((pos - 1)) $pos $style_pathsep
+      # ADD
+      reply+=("$(( pos - 1 )) $pos ${HSMW_HIGHLIGHT_STYLES[$style_pathsep]}")
     fi
   done
 }
@@ -704,7 +713,8 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       *) continue ;;
 
     esac
-    -hsmw-add-highlight $j $k $style
+    # ADD
+    reply+=("$j $k ${HSMW_HIGHLIGHT_STYLES[$style]}")
   done
 }
 
@@ -747,7 +757,8 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       *) continue ;;
 
     esac
-    -hsmw-add-highlight $j $k $style
+    # ADD
+    reply+=("$j $k ${HSMW_HIGHLIGHT_STYLES[$style]}")
   done
 }
 
@@ -770,15 +781,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 
 -hsmw-highlight-init() {
   __hsmw_highlight_main__command_type_cache=()
-}
-
-#
-# $1 - start position
-# $2 - end position
-# $3 - style name
--hsmw-add-highlight()
-{
-    (( ${+HSMW_HIGHLIGHT_STYLES[$3]} )) && reply+=("$1 $2 ${HSMW_HIGHLIGHT_STYLES[$3]}")
 }
 
 __HSMW_MH_SOURCED=1

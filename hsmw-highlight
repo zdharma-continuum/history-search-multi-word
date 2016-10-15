@@ -678,7 +678,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 {
   setopt localoptions noksharrays
   local -a match mbegin mend
-  local MATCH; integer MBEGIN MEND
   local i j k style
   # Starting quote is at 1, so start parsing at offset 2 in the string.
   for (( i = 2 ; i < end_pos - start_pos ; i += 1 )) ; do
@@ -687,12 +686,12 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     case "$arg[$i]" in
       '$' ) style=dollar-double-quoted-argument
             # Look for an alphanumeric parameter name.
-            if [[ ${arg:$i} = ([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##) ]] ; then
-              (( k += $#MATCH )) # highlight the parameter name
-              (( i += $#MATCH )) # skip past it
-            elif [[ ${arg:$i} = [{]([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##)[}]* ]] ; then
-              (( k += $#MATCH )) # highlight the parameter name and braces
-              (( i += $#MATCH )) # skip past it
+            if [[ ${arg:$i} = (#b)([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##)* ]] ; then
+              (( k += ${#match[1]} )) # highlight the parameter name
+              (( i += ${#match[1]} )) # skip past it
+            elif [[ ${arg:$i} = (#b)([{]([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##)[}])* ]] ; then
+              (( k += ${#match[1]} )) # highlight the parameter name and braces
+              (( i += ${#match[1]} )) # skip past it
             else
               continue
             fi

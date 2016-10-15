@@ -22,6 +22,8 @@ setopt typesetsilent extendedglob noshortloops
 zmodload zsh/terminfo 2>/dev/null
 zmodload zsh/termcap 2>/dev/null
 
+autoload is-at-least
+
 typeset -g __hsmw_hcw_index
 typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
 typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl

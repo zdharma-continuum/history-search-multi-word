@@ -686,10 +686,10 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     case "$arg[$i]" in
       '$' ) style=dollar-double-quoted-argument
             # Look for an alphanumeric parameter name.
-            if [[ ${arg:$i} = (#b)([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##)* ]] ; then
+            if [[ ${arg:$i} = (#b)(([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##)(\[[^[:space:]]#\])(#c0,1))* ]] ; then
               (( k += ${#match[1]} )) # highlight the parameter name
               (( i += ${#match[1]} )) # skip past it
-            elif [[ ${arg:$i} = (#b)([{](\([a-zA-Z0@%#]##\))(#c0,1)([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##)[}])* ]] ; then
+            elif [[ ${arg:$i} = (#b)([{](\([a-zA-Z0@%#]##\))(#c0,1)([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##)(\[[^[:space:]]#\])(#c0,1)[}])* ]] ; then
               (( k += ${#match[1]} )) # highlight the parameter name and braces
               (( i += ${#match[1]} )) # skip past it
             else

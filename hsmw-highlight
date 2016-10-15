@@ -82,18 +82,18 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   fi
   unset REPLY
   if zmodload -e zsh/parameter; then
-    if (( $+aliases[(e)$1] )); then
+    if (( $+commands[(e)$1] )); then
+      REPLY=command
+    elif (( $+builtins[(e)$1] )); then
+      REPLY=builtin
+    elif (( $+aliases[(e)$1] )); then
       REPLY=alias
+    elif (( $+functions[(e)$1] )); then
+      REPLY=function
     elif (( $+saliases[(e)${1##*.}] )); then
       REPLY='suffix alias'
     elif (( $reswords[(Ie)$1] )); then
       REPLY=reserved
-    elif (( $+functions[(e)$1] )); then
-      REPLY=function
-    elif (( $+builtins[(e)$1] )); then
-      REPLY=builtin
-    elif (( $+commands[(e)$1] )); then
-      REPLY=command
     # zsh 5.2 and older have a bug whereby running 'type -w ./sudo' implicitly
     # runs 'hash ./sudo=/usr/local/bin/./sudo' (assuming /usr/local/bin/sudo
     # exists and is in $PATH).  Avoid triggering the bug, at the expense of

@@ -78,7 +78,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     fi
   fi
   if (( $#options_to_set )); then
-    setopt localoptions $options_to_set;
+    setopt localoptions "${options_to_set[@]}";
   fi
   unset REPLY
   if zmodload -e zsh/parameter; then

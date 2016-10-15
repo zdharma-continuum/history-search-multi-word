@@ -9,6 +9,9 @@ Video – view on [asciinema](https://asciinema.org/a/88954). You can resize th
 [![asciicast](https://asciinema.org/a/88954.png)](https://asciinema.org/a/88954)
 
 ## News
+* 15-10-2016
+  - The compact, already optimized (by me) [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) part has been further optimized by 21%!
+    Also, more tokens are highlighted – variable expressions like `"${(@)var[1,3]}"` (when quoted).
 
 * 11-10-2016
   - Syntax highlighting of history – adapted, fine crafted, **small** part of [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting)

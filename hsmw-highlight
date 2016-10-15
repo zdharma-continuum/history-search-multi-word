@@ -594,7 +594,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     fi
     if ! (( already_added )); then
       # ADD
-      reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
+      [[ "${HSMW_HIGHLIGHT_STYLES[$style]}" != "none" ]] && reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
       [[ $style == path || $style == path_prefix ]] && -hsmw-highlight-path-separators
     fi
     if [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then

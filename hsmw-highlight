@@ -396,7 +396,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
         # word, the parameter expansion will be highlighted as a reserved word --- but that
         # incorrectness is outweighed by the usability improvement of permitting the use of
         # parameters that refer to commands, functions, and builtins.
-        local -a match mbegin mend
         local MATCH; integer MBEGIN MEND
         if [[ $res == none ]] && (( ${+parameters} )) &&
            [[ ${arg[1]} == \$ ]] && [[ ${arg:1} = (#m)([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##) ]] &&

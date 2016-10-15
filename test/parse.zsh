@@ -27,6 +27,7 @@ else
     exit 1
 fi
 
+zmodload zsh/zprof
 autoload is-at-least
 
 # Own input?
@@ -57,6 +58,7 @@ if [[ "$1" = "-o" ]]; then
     done
 
     print "Running time: $SECONDS"
+    zprof | head
 # File input?
 elif [[ -r "$1" ]]; then
     # Load from given file
@@ -70,6 +72,7 @@ elif [[ -r "$1" ]]; then
     -hsmw-highlight-process "$buf"
 
     print "Running time: $SECONDS"
+    zprof | head
 
     # This output can be diffed to detect changes in operation
     if [[ -z "$2" ]]; then

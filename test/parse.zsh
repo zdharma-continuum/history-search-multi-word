@@ -6,6 +6,9 @@
 # running time (stderr) and resulting region_highlight
 # (file parse.out, or $2 if given).
 #
+# Can be also run in line-wise mode on own input (-o
+# option in $1), no region_highlight file then.
+#
 
 [[ -z "$ZSH_VERSION" ]] && exec /usr/bin/env zsh -f -c "source \"$0\" \"$1\" \"$2\" \"$3\""
 
@@ -24,7 +27,36 @@ else
     exit 1
 fi
 
-if [[ -r "$1" ]]; then
+# Own input?
+if [[ "$1" = "-o" ]]; then
+    typeset -a input
+    input+=( "./parse.zsh ../hsmw-highlight parse2.out" )
+    input+=( "rm -f parse*.out" )
+    input+=( "./mh-parse.zsh ../hsmw-highlight > out" )
+    input+=( "if [[ -o multibyte ]]; then echo multibyte is set; fi" )
+    input+=( "[[ \"a\" = *[[:alpha:]_-][[:alpha:]]# ]] && echo yes" )
+    input+=( 'git tag -a v0.98 -m "Syntax highlighting of the history entries"' )
+    input+=( 'func() { echo "a" >! phist2.db; echo "b" >>! phist2.db; fc -Rap "phist2.db"; list=( ${history[@]} ); echo "${history[1]}"; }' )
+
+    typeset -a long_input
+    integer i
+    for (( i=1; i<= 50; i ++ )); do
+        long_input+=( "${input[@]}" )
+    done
+
+    typeset -F SECONDS
+    SECONDS=0
+
+    -hsmw-highlight-init
+    local line
+    for line in "${long_input[@]}"; do
+        reply=( )
+        -hsmw-highlight-process "$line"
+    done
+
+    print "Running time: $SECONDS"
+# File input?
+elif [[ -r "$1" ]]; then
     # Load from given file
     local buf="$(<$1)"
 

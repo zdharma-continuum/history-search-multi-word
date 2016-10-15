@@ -776,19 +776,13 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   __hsmw_highlight_main__command_type_cache=()
 }
 
+#
+# $1 - start position
+# $2 - end position
+# $3 - style name
 -hsmw-add-highlight()
 {
-  local -i start end
-  local highlight
-  start=$1
-  end=$2
-  shift 2
-  for highlight; do
-    if (( $+HSMW_HIGHLIGHT_STYLES[$highlight] )); then
-      reply+=("$start $end $HSMW_HIGHLIGHT_STYLES[$highlight]")
-      break
-    fi
-  done
+    (( ${+HSMW_HIGHLIGHT_STYLES[$3]} )) && reply+=("$1 $2 ${HSMW_HIGHLIGHT_STYLES[$3]}")
 }
 
 __HSMW_MH_SOURCED=1

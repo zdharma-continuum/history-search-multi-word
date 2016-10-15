@@ -312,16 +312,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       (( start_pos += offset ))
       (( end_pos = start_pos + $#arg ))
     else
-      # The line was:
-      #
-      # integer offset=$(((len-start_pos)-${#${proc_buf##([[:space:]]|\\[[:space:]])#}}))
-      #
-      # - len-start_pos is length of current proc_buf; basically: initial length minus where
-      #   we are, and proc_buf is chopped to the "where we are" (compare the "previous value
-      #   of start_pos" below, and the len-(start_pos-offset) = len-start_pos+offset)
-      # - what's after main minus sign is: length of proc_buf without spaces at the beginning
-      # - so what the line actually did, was computing length of the spaces!
-      # - this can be done via (#b) flag, like below
       if [[ "$proc_buf" = (#b)(#s)(([[:space:]]|\\[[:space:]])##)* ]]; then
           # The first, outer parenthesis
           integer offset="${#match[1]}"
@@ -332,23 +322,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       ((end_pos=$start_pos+${#arg}))
     fi
 
-    # Compute the new $proc_buf. We advance it
-    # (chop off characters from the beginning)
-    # beyond what end_pos points to, by skipping
-    # as many characters as end_pos was advanced.
-    #
-    # end_pos was advanced by $offset (via start_pos)
-    # and by $#arg. Note the `start_pos=$end_pos`
-    # below.
-    #
-    # As for the [,len]. We could use [,len-start_pos+offset]
-    # here, but to make it easier on eyes, we use len and
-    # rely on the fact that Zsh simply handles that. The
-    # length of proc_buf is len-start_pos+offset because
-    # we're chopping it to match current start_pos, so its
-    # length matches the previous value of start_pos.
-    #
-    # Why [,-1] is slower than [,length] isn't clear.
     proc_buf="${proc_buf[offset + $#arg + 1,len]}"
 
     # Handle the INTERACTIVE_COMMENTS option.

@@ -8,7 +8,14 @@ Video – view on [asciinema](https://asciinema.org/a/88954). You can resize th
 
 [![asciicast](https://asciinema.org/a/88954.png)](https://asciinema.org/a/88954)
 
+HSMW is **FAST** – highlighting 20 concurent complex history entries do not cause real slow down:
+
+[![asciicast](https://asciinema.org/a/89406.png)](https://asciinema.org/a/89406)
+
 ## News
+* 16-10-2016
+  - More optimizations (40% in total for the two days) – new video above
+
 * 15-10-2016
   - The compact, already optimized (by me) [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) part has been further optimized by 21%!
     Also, more tokens are highlighted – variable expressions like `"${(@)var[1,3]}"` (when quoted).

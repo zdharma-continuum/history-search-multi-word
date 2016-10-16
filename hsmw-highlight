@@ -695,14 +695,14 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   local mybuf="$arg"
   integer idx=start_pos end_idx
 
-  while [[ "$mybuf" = (#b)([^\$\\]#)((\$[[:alnum:]_]##(\[[^[:space:]]#\])(#c0,1))|(\$[{](\([a-zA-Z0@%#]##\))(#c0,1)[[:alnum:]_]##(\[[^[:space:]]#\])(#c0,1)[}])|[\\][\'\"\$]|[\\](*))(*) ]]; do
-    [[ -n "${match[8]}" ]] && {
-      idx+="${#match[1]}"+1
-      mybuf="${match[8]}"
+  while [[ "$mybuf" = (#b)[^\$\\]#((\$[[:alnum:]_]##(\[[^[:space:]]#\])(#c0,1))|(\$[{](\([a-zA-Z0@%#]##\))(#c0,1)[[:alnum:]_]##(\[[^[:space:]]#\])(#c0,1)[}])|[\\][\'\"\$]|[\\](*))(*) ]]; do
+    [[ -n "${match[7]}" ]] && {
+      idx+=${mbegin[1]}
+      mybuf="${match[7]}"
     } || {
-      idx+="${#match[1]}"
-      end_idx=idx+"${#match[2]}"
-      mybuf="${match[9]}"
+      idx+=${mbegin[1]}-1
+      end_idx=idx+${mend[1]}-${mbegin[1]}+1
+      mybuf="${match[8]}"
 
       # ADD
       reply+=("$idx $end_idx ${HSMW_HIGHLIGHT_STYLES[dollar-double-quoted-argument]}")

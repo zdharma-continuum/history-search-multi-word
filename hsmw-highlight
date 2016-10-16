@@ -112,16 +112,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   fi
 }
 
-# Check whether the first argument is a redirection operator token.
-# Report result via the exit code.
--hsmw-highlight-is-redirection() {
-  # A redirection operator token:
-  # - starts with an optional single-digit number;
-  # - then, has a '<' or '>' character;
-  # - is not a process substitution [<(...) or >(...)].
-  [[ $1 == (<0-9>|)(\<|\>)* ]] && [[ $1 != (\<|\>)$'\x28'* ]]
-}
-
 # Resolve alias.
 #
 # Takes a single argument.
@@ -343,7 +333,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     fi
 
     # Analyse the current word.
-    if -hsmw-highlight-is-redirection $arg ; then
+    if [[ $arg == (<0-9>|)(\<|\>)* ]] && [[ $arg != (\<|\>)$'\x28'* ]]; then
       # A '<' or '>', possibly followed by a digit
       in_redirection=2
     fi

@@ -162,7 +162,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     integer multi_func_def=0
   fi
   emulate -L zsh
-  setopt localoptions extendedglob bareglobqual
+  setopt localoptions extendedglob bareglobqual nonomatch
 
   ## Variable declarations and initializations
   local start_pos=0 end_pos highlight_glob=true arg style
@@ -382,7 +382,8 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       (( next_word = next_word | BIT_sudo_opt ))
       (( next_word = next_word | BIT_start ))
      else
-      -hsmw-highlight-expand-path $arg
+      unset REPLY
+      : ${REPLY:=${(Q)~arg}}
       -hsmw-highlight-main-type $REPLY
       () {
         # Special-case: command word is '$foo', like that, without braces or anything.
@@ -646,7 +647,8 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 # Else, return non-zero (and the contents of $REPLY is undefined).
 -hsmw-highlight-check-path()
 {
-  -hsmw-highlight-expand-path $arg;
+  unset REPLY
+  : ${REPLY:=${(Q)~arg}}
   local expanded_path="$REPLY"
 
   REPLY=path
@@ -735,19 +737,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     # ADD
     reply+=("$j $k ${HSMW_HIGHLIGHT_STYLES[$style]}")
   done
-}
-
-# Called with a single positional argument.
-# Perform filename expansion (tilde expansion) on the argument and set $REPLY to the expanded value.
-# Does not perform filename generation (globbing).
--hsmw-highlight-expand-path()
-{
-  (( $# == 1 )) || print -r -- >&2 "hsmw-highlight: BUG: -hsmw-highlight-expand-path: called without argument"
-
-  # The $~1 syntax normally performs filename generation, but not when it's on the right-hand side of ${x:=y}.
-  setopt localoptions nonomatch
-  unset REPLY
-  : ${REPLY:=${(Q)~1}}
 }
 
 # -------------------------------------------------------------------------------------------------

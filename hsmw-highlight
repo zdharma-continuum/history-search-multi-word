@@ -691,38 +691,25 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 {
   setopt localoptions noksharrays
   local -a match mbegin mend
-  local i j k style
-  # Starting quote is at 1, so start parsing at offset 2 in the string.
-  for (( i = 2 ; i < end_pos - start_pos ; i += 1 )) ; do
-    (( j = i + start_pos - 1 ))
-    (( k = j + 1 ))
-    case "$arg[$i]" in
-      '$' ) style=dollar-double-quoted-argument
-            # Look for an alphanumeric parameter name.
-            if [[ ${arg:$i} = (#b)(([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##)(\[[^[:space:]]#\])(#c0,1))* ]] ; then
-              (( k += ${#match[1]} )) # highlight the parameter name
-              (( i += ${#match[1]} )) # skip past it
-            elif [[ ${arg:$i} = (#b)([{](\([a-zA-Z0@%#]##\))(#c0,1)([[:alpha:]_][[:alnum:]_]#|[[:digit:]]##)(\[[^[:space:]]#\])(#c0,1)[}])* ]] ; then
-              (( k += ${#match[1]} )) # highlight the parameter name and braces
-              (( i += ${#match[1]} )) # skip past it
-            else
-              continue
-            fi
-            ;;
-      "\\") style=back-double-quoted-argument
-            if [[ \\\`\"\$ == *$arg[$i+1]* ]]; then
-              (( k += 1 )) # Color following char too.
-              (( i += 1 )) # Skip parsing the escaped char.
-            else
-              continue
-            fi
-            ;;
-      *) continue ;;
 
-    esac
+  local mybuf="$arg"
+  integer idx=start_pos end_idx
+
+  while (( 1 )); do
+    match=()
+    mybuf="${(S)mybuf/(#b)(*)((((\$[[:alnum:]_]##)[^[:alnum:]]|\$[[:alnum:]_]##(#e))(\[[^[:space:]]#\])(#c0,1))|(\$\{(\([a-zA-Z0@%#]##\))(#c0,1)[[:alnum:]_]##(\[[^[:space:]]#\])(#c0,1)\})|[\\][\'\"\$])/}"
+
+    [[ -n "${match[5]}" ]] && match[2]="${match[5]}"
+    [[ -z "${match[2]}" ]] && break
+
+    idx+="${#match[1]}"
+    end_idx=idx+"${#match[2]}"
+
     # ADD
-    reply+=("$j $k ${HSMW_HIGHLIGHT_STYLES[$style]}")
+    reply+=("$idx $end_idx ${HSMW_HIGHLIGHT_STYLES[dollar-double-quoted-argument]}")
   done
+
+  return 0
 }
 
 # Highlight special chars inside dollar-quoted strings

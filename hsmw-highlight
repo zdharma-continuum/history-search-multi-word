@@ -661,16 +661,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     [[ -e "$cdpath_dir/$expanded_path" ]] && return 0
   done
 
-  # If dirname($arg) doesn't exist, neither does $arg.
-  [[ ! -d ${expanded_path:h} ]] && return 1
-
-  # If this word ends the buffer, check if it's the prefix of a valid path.
-  if [[ ${buf[1]} != "-" && $pure_buf_len == $end_pos ]]; then
-    local -a tmp
-    tmp=( ${expanded_path}*(N) )
-    (( $#tmp > 0 )) && REPLY=path_prefix && return 0
-  fi
-
   # It's not a path.
   return 1
 }

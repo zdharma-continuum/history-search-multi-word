@@ -76,7 +76,7 @@ elif [[ -r "$1" ]]; then
 
     # This output can be diffed to detect changes in operation
     if [[ -z "$2" ]]; then
-        print -rl -- "${reply[@]}" >! parse.out
+        print -rl -- "${reply[@]}" >! out.parse
     else
         print -rl -- "${reply[@]}" >! "$2"
     fi

@@ -55,8 +55,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 : ${HSMW_HIGHLIGHT_STYLES[single-quoted-argument]:=fg=yellow}
 : ${HSMW_HIGHLIGHT_STYLES[double-quoted-argument]:=fg=yellow}
 : ${HSMW_HIGHLIGHT_STYLES[dollar-quoted-argument]:=fg=yellow}
-: ${HSMW_HIGHLIGHT_STYLES[dollar-double-quoted-argument]:=fg=cyan}
-: ${HSMW_HIGHLIGHT_STYLES[back-double-quoted-argument]:=fg=cyan}
+: ${HSMW_HIGHLIGHT_STYLES[back-or-dollar-double-quoted-argument]:=fg=cyan}
 : ${HSMW_HIGHLIGHT_STYLES[back-dollar-quoted-argument]:=fg=cyan}
 : ${HSMW_HIGHLIGHT_STYLES[assign]:=none}
 : ${HSMW_HIGHLIGHT_STYLES[redirection]:=none}
@@ -705,7 +704,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       mybuf="${match[8]}"
 
       # ADD
-      reply+=("$idx $end_idx ${HSMW_HIGHLIGHT_STYLES[dollar-double-quoted-argument]}")
+      reply+=("$idx $end_idx ${HSMW_HIGHLIGHT_STYLES[back-or-dollar-double-quoted-argument]}")
 
       idx=end_idx
     }

@@ -8,7 +8,7 @@ Video – view on [asciinema](https://asciinema.org/a/88954). You can resize th
 
 [![asciicast](https://asciinema.org/a/88954.png)](https://asciinema.org/a/88954)
 
-HSMW is **FAST** – highlighting 20 concurent complex history entries do not cause real slow down:
+HSMW is **FAST** – highlighting 20 concurent complex history entries does not cause real slow down:
 
 [![asciicast](https://asciinema.org/a/89406.png)](https://asciinema.org/a/89406)
 

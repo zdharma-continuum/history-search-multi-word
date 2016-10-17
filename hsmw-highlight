@@ -255,6 +255,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   integer this_word=BIT_start next_word=0
 
   integer in_redirection
+  local expanded_path
   # Processing buffer
   local proc_buf="$buf"
   for arg in ${interactive_comments-${(z)buf}} \
@@ -367,6 +368,8 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       fi
    fi
 
+   expanded_path=""
+
    # The Great Fork: is this a command word?  Is this a non-command word?
    if (( this_word & BIT_always )) && [[ $arg == 'always' ]]; then
      # try-always construct
@@ -381,9 +384,8 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       (( next_word = next_word | BIT_sudo_opt ))
       (( next_word = next_word | BIT_start ))
      else
-      unset REPLY
-      : ${REPLY:=${(Q)~arg}}
-      -hsmw-highlight-main-type $REPLY
+       : ${expanded_path::=${(Q)~arg}}
+      -hsmw-highlight-main-type $expanded_path
       () {
         # Special-case: command word is '$foo', like that, without braces or anything.
         #
@@ -639,9 +641,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 # Else, return non-zero (and the contents of $REPLY is undefined).
 -hsmw-highlight-check-path()
 {
-  unset REPLY
-  : ${REPLY:=${(Q)~arg}}
-  local expanded_path="$REPLY"
+  : ${expanded_path:=${(Q)~arg}}
 
   REPLY=path
 

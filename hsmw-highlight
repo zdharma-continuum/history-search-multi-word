@@ -312,7 +312,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
           offset="${mend[1]}"
       fi
       ((start_pos+=offset))
-      ((end_pos=$start_pos+${#arg}))
+      ((end_pos=start_pos+${#arg}))
     fi
 
     proc_buf="${proc_buf[offset + $#arg + 1,len]}"

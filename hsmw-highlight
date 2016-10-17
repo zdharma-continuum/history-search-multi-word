@@ -162,7 +162,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     integer multi_func_def=0
   fi
   emulate -L zsh
-  setopt localoptions extendedglob bareglobqual nonomatch
+  setopt localoptions extendedglob bareglobqual nonomatch noksharrays
 
   ## Variable declarations and initializations
   local start_pos=0 end_pos highlight_glob=true arg style
@@ -663,7 +663,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 # Highlight special chars inside double-quoted strings
 -hsmw-highlight-string()
 {
-  setopt localoptions noksharrays
   local -a match mbegin mend
 
   local mybuf="$arg"
@@ -691,7 +690,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 # Highlight special chars inside dollar-quoted strings
 -hsmw-highlight-dollar-string()
 {
-  setopt localoptions noksharrays
   local -a match mbegin mend
   local MATCH; integer MBEGIN MEND
   local i j k style

@@ -669,7 +669,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   local mybuf="$arg"
   integer idx=start_pos end_idx
 
-  while [[ "$mybuf" = (#b)[^\$\\]#((\$[a-zA-Z0-9_]##(\[[^[:space:]]#\])(#c0,1))|(\$[{](\([a-zA-Z0@%#]##\))(#c0,1)[a-zA-Z0-9_]##(\[[^[:space:]]#\])(#c0,1)[}])|[\\][\'\"\$]|[\\](*))(*) ]]; do
+  while [[ "$mybuf" = (#b)[^\$\\]#((\$[a-zA-Z0-9_]##(\[[^\]]#\])(#c0,1))|(\$[{](\([a-zA-Z0@%#]##\))(#c0,1)[a-zA-Z0-9_]##(\[[^\]]#\])(#c0,1)[}])|[\\][\'\"\$]|[\\](*))(*) ]]; do
     [[ -n "${match[7]}" ]] && {
       idx+=${mbegin[1]}
       mybuf="${match[7]}"

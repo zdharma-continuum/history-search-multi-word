@@ -16,7 +16,7 @@
 # zstyle ":plugin:history-search-multi-word" synhl "yes"
 
 emulate -LR zsh
-setopt typesetsilent extendedglob noshortloops
+setopt typesetsilent extendedglob noshortloops localtraps
 
 # When an error, then no cursor keys bindings
 zmodload zsh/terminfo 2>/dev/null
@@ -28,6 +28,9 @@ typeset -g __hsmw_hcw_index
 typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
 typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl
 typeset -gaU __hsmw_hcw_found
+
+(( __hsmw_hcw_call_count ++ ))
+trap '(( __hsmw_hcw_call_count -- )); return 0;' INT
 
 _hsmw_main() {
     # First call or restart?
@@ -141,7 +144,6 @@ _hsmw_main() {
     fi
 }
 
-(( __hsmw_hcw_call_count ++ ))
 [[ "$__HSMW_MH_SOURCED" != "1" ]] && source "$HSMW_REPO_DIR/hsmw-highlight"
 
 _hsmw_main
@@ -249,7 +251,6 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     zle -N "$pup_widget" _hsmw_simulate_widget
 
     # Trap INT to manually interrupt Zle to work around a bug
-    setopt localtraps
     trap 'zle && zle .send-break' INT
 
     if zle .recursive-edit -K hsmw; then
@@ -280,6 +281,8 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
 
     # Free memory
     #__hsmw_hcw_found=( )
+elif (( __hsmw_hcw_call_count > 0 )); then
+    (( __hsmw_hcw_call_count -- ))
 fi
 
 # vim:ft=zsh

@@ -70,7 +70,9 @@ _hsmw_main() {
     if [ "$#__hsmw_hcw_found" -eq "0" ]; then
         # The repeat will make the matching work on a fresh heap arena
         repeat 1; do
-            __hsmw_hcw_found=( "${(@M)history:#(#i)*$~search_pattern*}" )
+            # Tip: these are equal:
+            #__hsmw_hcw_found=( "${(@M)history:#(#i)*$~search_pattern*}" )
+            __hsmw_hcw_found=( "${(@)history[(R)(#i)*$~search_pattern*]}" )
         done
     fi
 

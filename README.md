@@ -125,6 +125,12 @@ HSMW_HIGHLIGHT_STYLES[single-hyphen-option]="fg=cyan"
 HSMW_HIGHLIGHT_STYLES[double-hyphen-option]="fg=cyan"
 ```
 
+Following code will use 256 colors to highlight command separators (like ";" or "&&"):
+
+```zsh
+HSMW_HIGHLIGHT_STYLES[commandseparator]="fg=241,bg=17"
+```
+
 ## IRC Channel
 
 Channel `#zplugin@freenode` is a support place for all author's projects. Connect to:

@@ -13,8 +13,13 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
 [![asciicast](https://asciinema.org/a/89406.png)](https://asciinema.org/a/89406)
 
 ## News
+* 22-10-2016
+  - Search process has been optimized by 20%! History sizes like 100000 are now supported.
+  - Active history entry can be `underline`, `standout` (i.e. inverse video), `bold`, `bg=blue`, etc. with
+    the new Zstyle `:plugin:history-search-multi-word / active` (see Zstyles section).
+
 * 16-10-2016
-  - More optimizations (40% in total for the two days) – new video above
+  - More optimizations (40% in total for the two days) – new video above.
 
 * 15-10-2016
   - The compact, already optimized (by me) [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) part has been further optimized by 21%!
@@ -28,12 +33,12 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
 
 * 20-09-2016
   - Keys Page Up and Page Down work and page-wise move along history. Also, `Ctrl-P`, `Ctrl-N`
-    move to previous and next entries
+    move to previous and next entries.
 
 * 19-09-2016
   - Better immunity to [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions)
     and [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) – home,
-    end, left and right cursor keys now work smoothly
+    end, left and right cursor keys now work smoothly.
 
 * 25-05-2016
   - Cooperation with

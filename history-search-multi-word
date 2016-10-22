@@ -68,7 +68,7 @@ _hsmw_main() {
     search_pattern="${search_buffer// ##/*~^*}"
     colsearch_pattern="${search_buffer// ##/|}"
 
-    if [ "$#__hsmw_hcw_found" -eq "0" ]; then
+    if [[ "${#__hsmw_hcw_found[@]}" -eq "0" ]]; then
         # The repeat will make the matching work on a fresh heap arena
         repeat 1; do
             # Tip: these are equal:
@@ -77,7 +77,8 @@ _hsmw_main() {
         done
     fi
 
-    if [ "$#__hsmw_hcw_found" -le "0" ]; then
+    integer max_index="${#__hsmw_hcw_found[@]}"
+    if [[ "$max_index" -le "0" ]]; then
         POSTDISPLAY=$'\n'"No matches found"
         return 0
     fi
@@ -87,10 +88,9 @@ _hsmw_main() {
     #
 
     integer page_size="$__hsmw_page_size"
-    integer max_index="$#__hsmw_hcw_found"
-    [ "$page_size" -gt "$max_index" ] && page_size="$max_index"
-    [ "$__hsmw_hcw_index" -le 0 ] && __hsmw_hcw_index="$max_index"
-    [ "$__hsmw_hcw_index" -gt "$max_index" ] && __hsmw_hcw_index=1
+    [[ "$page_size" -gt "$max_index" ]] && page_size="$max_index"
+    [[ "$__hsmw_hcw_index" -le 0 ]] && __hsmw_hcw_index="$max_index"
+    [[ "$__hsmw_hcw_index" -gt "$max_index" ]] && __hsmw_hcw_index=1
     integer page_start_idx=$(( ((__hsmw_hcw_index-1)/page_size)*page_size+1 ))
     integer on_page_idx=$(( (__hsmw_hcw_index-1) % page_size + 1 ))
 

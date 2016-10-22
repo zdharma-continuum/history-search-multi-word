@@ -19,7 +19,7 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
     the new Zstyle `:plugin:history-search-multi-word / active` (see Zstyles section).
 
 * 16-10-2016
-  - More optimizations (40% in total for the two days) – new video above.
+  - More optimizations of syntax highlighting (40% in total for the two days) – new video above.
 
 * 15-10-2016
   - The compact, already optimized (by me) [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) part has been further optimized by 21%!

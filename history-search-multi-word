@@ -134,7 +134,7 @@ _hsmw_main() {
         for line in "${disp_list[@]}"; do
             reply=( )
             -hsmw-highlight-process "$line"
-            region_highlight+=( "${reply[@]//(#b)([[:digit:]]##)/$(( ${match[1]} + pre_index + offset ))}" )
+            region_highlight+=( "${reply[@]//(#b)([[:digit:]]##) ([[:digit:]]##)/$(( ${match[1]} + pre_index + offset )) $(( ${match[2]} + pre_index + offset ))}" )
             pre_index+=${#line}+1
         done
     fi

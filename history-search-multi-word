@@ -26,7 +26,7 @@ autoload is-at-least
 
 typeset -g __hsmw_hcw_index
 typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
-typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl
+typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl __hsmw_active
 typeset -gaU __hsmw_hcw_found
 
 (( __hsmw_hcw_call_count ++ ))
@@ -40,6 +40,7 @@ _hsmw_main() {
             zstyle -s ':history-search-multi-word' page-size __hsmw_page_size || __hsmw_page_size=$(( LINES / 3 ))
             zstyle -s ':history-search-multi-word' highlight-color __hsmw_hl_color || __hsmw_hl_color="fg=yellow,bold"
             zstyle -s ":plugin:history-search-multi-word" synhl __hsmw_synhl || __hsmw_synhl="yes"
+            zstyle -s ":plugin:history-search-multi-word" active __hsmw_active || __hsmw_active="underline"
             [[ "$__hsmw_synhl" != "1" && "$__hsmw_synhl" != "yes" && "$__hsmw_synhl" != "true" ]] && __hsmw_synhl="no" || __hsmw_synhl="yes"
         fi
 
@@ -144,7 +145,7 @@ _hsmw_main() {
         region_highlight+=( "${(f)${(S)text//*(#bi)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) ${__hsmw_hl_color}${nl}}%$nl*}" )
     fi
 
-    region_highlight+=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) underline" )
+    region_highlight+=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) $__hsmw_active" )
 }
 
 [[ "$__HSMW_MH_SOURCED" != "1" ]] && source "$HSMW_REPO_DIR/hsmw-highlight"

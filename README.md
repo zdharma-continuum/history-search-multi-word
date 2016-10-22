@@ -94,6 +94,7 @@ place you're doing your other `zgen load` calls in.
 zstyle ":history-search-multi-word" page-size "8"                      # Number of entries to show, default is LINES/3
 zstyle ":history-search-multi-word" highlight-color "fg=yellow,bold"   # Color in which to highlight matched, searched text
 zstyle ":plugin:history-search-multi-word" synhl "yes"                 # Whether to perform syntax highlighting
+zstyle ":plugin:history-search-multi-word" active "underline"          # Effect on active history entry. Try: standout, bold, bg=blue
 ```
 
 ### Syntax highlighting

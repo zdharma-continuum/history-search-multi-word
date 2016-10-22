@@ -16,7 +16,7 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
 * 22-10-2016
   - Search process has been optimized by 20%! History sizes like 100000 are now supported.
   - Active history entry can be `underline`, `standout` (i.e. inverse video), `bold`, `bg=blue`, etc. with
-    the new Zstyle `:plugin:history-search-multi-word / active` (see Zstyles section).
+    the new Zstyle `:plugin:history-search-multi-word / active` (see Zstyles section) – [video](https://asciinema.org/a/90214).
 
 * 16-10-2016
   - More optimizations of syntax highlighting (40% in total for the two days) – new video above.

@@ -27,6 +27,8 @@ autoload is-at-least
 typeset -g __hsmw_hcw_index
 typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
 typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl __hsmw_active
+typeset -ga __hsmw_disp_list
+typeset -gi __hsmw_page_start_idx
 typeset -gaU __hsmw_hcw_found
 
 (( __hsmw_hcw_call_count ++ ))
@@ -52,6 +54,7 @@ _hsmw_main() {
         __hsmw_hcw_found=( )
         __hsmw_hcw_finished="0"
         __hsmw_hcw_restart="0"
+        __hsmw_page_start_idx=0
     else
         # Consecutive call
         [[ "$WIDGET" = *-word ]] && (( __hsmw_hcw_index ++ ))
@@ -99,22 +102,25 @@ _hsmw_main() {
     # Prepare display
     #
 
-    typeset -a disp_list
-    disp_list=( "${(@)__hsmw_hcw_found[page_start_idx,page_start_idx+page_size-1]}" )
+    (( page_start_idx != __hsmw_page_start_idx )) && {
+        __hsmw_disp_list=( "${(@)__hsmw_hcw_found[page_start_idx,page_start_idx+page_size-1]}" )
 
-    # All entries should have multilines replaced
-    disp_list=( "${(@)disp_list//$'\n'/\\n}" )
-    # ... and truncated to display width, and
-    # also preceeded by two spaces
-    disp_list=( "${(@)disp_list/(#m)*/  ${MATCH[1,COLUMNS-8]}}" )
+        # All entries should have multilines replaced
+        __hsmw_disp_list=( "${(@)__hsmw_disp_list//$'\n'/\\n}" )
+        # ... and truncated to display width, and
+        # also preceeded by two spaces
+        __hsmw_disp_list=( "${(@)__hsmw_disp_list/(#m)*/  ${MATCH[1,COLUMNS-8]}}" )
+
+        __hsmw_page_start_idx=page_start_idx
+    }
 
     #
     # Detect where "> .." entry starts, add the ">" mark
     #
 
-    local txt_before="${(F)${(@)disp_list[1,on_page_idx-1]}}"
-    local entry="${disp_list[on_page_idx]}"
-    local text="${(F)disp_list}"
+    local txt_before="${(F)${(@)__hsmw_disp_list[1,on_page_idx-1]}}"
+    local entry="${__hsmw_disp_list[on_page_idx]}"
+    local text="${(F)__hsmw_disp_list}"
     integer replace_idx=${#txt_before}+2
     (( replace_idx == 2 )) && replace_idx=1
     text[replace_idx]=">"
@@ -131,7 +137,7 @@ _hsmw_main() {
     if [[ "$__hsmw_synhl" = "yes" ]]; then
         integer pre_index=0
         local line
-        for line in "${disp_list[@]}"; do
+        for line in "${__hsmw_disp_list[@]}"; do
             reply=( )
             -hsmw-highlight-process "$line"
             region_highlight+=( "${reply[@]//(#b)([[:digit:]]##) ([[:digit:]]##)/$(( ${match[1]} + pre_index + offset )) $(( ${match[2]} + pre_index + offset ))}" )

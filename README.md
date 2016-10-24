@@ -13,6 +13,11 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
 [![asciicast](https://asciinema.org/a/89406.png)](https://asciinema.org/a/89406)
 
 ## News
+* 24-10-2016
+  - Workaround for Zsh versions like 5.0.2 has been added – **Ctrl-V** cancels search. On such Zsh
+    versions Ctrl-C might not work. Fully problem-free Zsh version will be the upcoming 5.3, where
+    I have together with Zsh Hackers fully fixed the Ctrl-C issue.
+
 * 22-10-2016
   - Search process has been optimized by 20%! History sizes like 100000 are now supported.
   - Active history entry can be `underline`, `standout` (i.e. inverse video), `bold`, `bg=blue`, etc. with

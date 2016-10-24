@@ -42,6 +42,7 @@ _hsmw_main() {
             zstyle -s ":plugin:history-search-multi-word" synhl __hsmw_synhl || __hsmw_synhl="yes"
             zstyle -s ":plugin:history-search-multi-word" active __hsmw_active || __hsmw_active="underline"
             [[ "$__hsmw_synhl" != "1" && "$__hsmw_synhl" != "yes" && "$__hsmw_synhl" != "true" ]] && __hsmw_synhl="no" || __hsmw_synhl="yes"
+            -hsmw-highlight-init
         fi
 
         # '0' will get changed into $to_display limit
@@ -128,7 +129,6 @@ _hsmw_main() {
 
     region_highlight=( )
     if [[ "$__hsmw_synhl" = "yes" ]]; then
-        -hsmw-highlight-init
         integer pre_index=0
         local line
         for line in "${disp_list[@]}"; do

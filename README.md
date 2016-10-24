@@ -14,7 +14,7 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
 
 ## News
 * 24-10-2016
-  - Workaround for Zsh versions like 5.0.2 has been added – **Ctrl-V** cancels search. On such Zsh
+  - Workaround for Zsh versions like 5.0.2 has been added – **Ctrl-V** and **ESC** cancel search. On such Zsh
     versions Ctrl-C might not work. Fully problem-free Zsh version will be the upcoming 5.3, where
     I have together with Zsh Hackers fully fixed the Ctrl-C issue.
 

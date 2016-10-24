@@ -264,6 +264,7 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     # A workaround for Zsh versions like 5.0.2
     zle -N _hsmw_cancel_accept
     bindkey -M hsmw "^V" _hsmw_cancel_accept
+    bindkey -M hsmw "^[" _hsmw_cancel_accept
 
     # Trap INT to manually interrupt Zle to work around a bug
     trap 'zle && zle .send-break' INT

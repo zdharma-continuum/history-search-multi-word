@@ -175,6 +175,12 @@ _hsmw_delete_char() {
     _hsmw_simulate_widget
 }
 
+_hsmw_cancel_accept() {
+    BUFFER=""
+    __hsmw_hcw_index=-1
+    zle .accept-line
+}
+
 if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     # Make the hsmw keymap a copy of the current main
     bindkey -N hsmw emacs
@@ -254,12 +260,21 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     zle -N "$pdown_widget" _hsmw_simulate_widget
     zle -N "$pup_widget" _hsmw_simulate_widget
 
+    # Add Ctrl-V binding to cancel search
+    # A workaround for Zsh versions like 5.0.2
+    zle -N _hsmw_cancel_accept
+    bindkey -M hsmw "^V" _hsmw_cancel_accept
+
     # Trap INT to manually interrupt Zle to work around a bug
     trap 'zle && zle .send-break' INT
 
     if zle .recursive-edit -K hsmw; then
-        BUFFER="${__hsmw_hcw_found[__hsmw_hcw_index]}"
-        CURSOR="${#BUFFER}"
+        if [[ "$__hsmw_hcw_index" -gt "0" ]]; then
+            BUFFER="${__hsmw_hcw_found[__hsmw_hcw_index]}"
+            CURSOR="${#BUFFER}"
+        else
+            BUFFER=""
+        fi
     else
         BUFFER=""
     fi

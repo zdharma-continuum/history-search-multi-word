@@ -232,13 +232,10 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   # Variable declarations and initializations
   # in_array_assignment true between 'a=(' and the matching ')'
   # braces_stack: "R" for round, "Q" for square, "Y" for curly
-  local start_pos=0 end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack
+  local start_pos=0 end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack buf="$1"
   # arg_type can be 0, 1, 2 or 3, i.e. precommand, control flow, command separator
-  integer arg_type=0 MBEGIN MEND in_redirection
+  integer arg_type=0 MBEGIN MEND in_redirection len="${#buf}"
   local -a options_to_set match mbegin mend
-
-  local buf="$1"
-  integer len="${#buf}"
 
   (( path_dirs_was_set )) && options_to_set+=( PATH_DIRS )
 

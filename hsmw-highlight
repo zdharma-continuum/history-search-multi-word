@@ -153,7 +153,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
       REPLY=none
     fi
   fi
-  if ! (( $+REPLY )); then
+  if (( $+REPLY == 0 )); then
     REPLY="${$(LC_ALL=C builtin type -w -- $1 2>/dev/null)#*: }"
   fi
   if (( $+__hsmw_highlight_main__command_type_cache )); then
@@ -584,7 +584,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                  ;;
       esac
     fi
-    if ! (( already_added )); then
+    if (( already_added == 0 )); then
       # ADD
       [[ "${HSMW_HIGHLIGHT_STYLES[$style]}" != "none" ]] && reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
       [[ $style == path || $style == path_prefix ]] && -hsmw-highlight-path-separators

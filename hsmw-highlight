@@ -404,6 +404,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
          : ${expanded_path::=${(Q)~arg}}
          -hsmw-highlight-main-type $expanded_path
        fi
+
       case $REPLY in
         reserved)       # reserved word
                         style=reserved-word
@@ -412,9 +413,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                         elif [[ $arg == $'\x7d' ]]; then
                           # We're at command word, so no need to check $right_brace_is_recognised_everywhere
                           -hsmw-highlight-stack-pop 'Y' style=reserved-word
-                          if [[ $style == reserved-word ]]; then
-                            (( next_word = next_word | BIT_always ))
-                          fi
+                          [[ $style == "reserved-word" ]] && (( next_word = next_word | BIT_always ))
                         fi
                         ;;
         'suffix alias') style=suffix-alias;;

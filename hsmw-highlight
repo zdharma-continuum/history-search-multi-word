@@ -196,9 +196,9 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     local interactive_comments= # set to empty
   fi
   if [[ -o ignore_braces ]] || eval '[[ -o ignore_close_braces ]] 2>/dev/null'; then
-    local right_brace_is_recognised_everywhere=false
+    local right_brace_is_recognised_everywhere=0
   else
-    local right_brace_is_recognised_everywhere=true
+    local right_brace_is_recognised_everywhere=1
   fi
   if [[ -o path_dirs ]]; then
     integer path_dirs_was_set=1
@@ -214,8 +214,8 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   setopt localoptions extendedglob bareglobqual nonomatch noksharrays
 
   ## Variable declarations and initializations
-  local start_pos=0 end_pos highlight_glob=true arg style
-  local in_array_assignment=false # true between 'a=(' and the matching ')'
+  local start_pos=0 end_pos highlight_glob=1 arg style
+  local in_array_assignment=0 # true between 'a=(' and the matching ')'
   integer arg_type=0 # Can be 0, 1, 2 or 3 - look up ^
   local -a options_to_set # used in callees
   local buf="$1"
@@ -302,9 +302,9 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     integer already_added=0
     style=unknown-token
     if (( this_word & BIT_start )); then
-      in_array_assignment=false
+      in_array_assignment=0
       if [[ $arg == 'noglob' ]]; then
-        highlight_glob=false
+        highlight_glob=0
       fi
     fi
 
@@ -464,7 +464,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                         if [[ $arg == [[:alpha:]_][[:alnum:]_]#(|\[*\])(|[+])=* ]] || [[ $arg == [0-9]##(|[+])=* ]]; then
                           style=assign
                           if [[ $arg[-1] == '(' ]]; then
-                            in_array_assignment=true
+                            in_array_assignment=1
                           else
                             # assignment to a scalar parameter.
                             # (For array assignments, the command doesn't start until the ")" token.)
@@ -529,9 +529,9 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
    then # $arg is a non-command word
       case $arg in
         $'\x29') # subshell or end of array assignment
-                 if $in_array_assignment; then
+                 if (( in_array_assignment )); then
                    style=assign
-                   in_array_assignment=false
+                   in_array_assignment=0
                    (( next_word = next_word | BIT_start ))
                  else
                    -hsmw-highlight-stack-pop 'R' style=reserved-word
@@ -549,7 +549,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                  #
                  #     Additionally, `tt(})' is recognized in any position if neither the
                  #     tt(IGNORE_BRACES) option nor the tt(IGNORE_CLOSE_BRACES) option is set."""
-                 if $right_brace_is_recognised_everywhere; then
+                 if (( right_brace_is_recognised_everywhere )); then
                    -hsmw-highlight-stack-pop 'Y' style=reserved-word
                    if [[ $style == reserved-word ]]; then
                      (( next_word = next_word | BIT_always ))
@@ -575,8 +575,8 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                  ;;
         '`'*)    style=back-quoted-argument;;
         [*?]*|*[^\\][*?]*)
-                 $highlight_glob && style=globbing || style=default;;
-        *)       if [[ $arg = $'\x7d' ]] && $right_brace_is_recognised_everywhere; then
+                 (( highlight_glob )) && style=globbing || style=default;;
+        *)       if [[ $arg = $'\x7d' ]] && (( right_brace_is_recognised_everywhere )); then
                    # was handled by the $'\x7d' case above
                  elif [[ $arg[0,1] = $histchars[0,1] ]] && (( $#arg[0,2] == 2 )); then
                    style=history-expansion
@@ -600,12 +600,12 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
       [[ $style == path || $style == path_prefix ]] && -hsmw-highlight-path-separators
     fi
     if (( arg_type == 3 )); then
-      if [[ $arg == ';' ]] && $in_array_assignment; then
+      if [[ $arg == ';' ]] && (( in_array_assignment )); then
         # literal newline inside an array assignment
         (( next_word = BIT_regular ))
       else
         (( next_word = BIT_start ))
-        highlight_glob=true
+        highlight_glob=1
       fi
     elif (( arg_type == 2 )) && (( this_word & BIT_start )); then
          (( next_word = BIT_start ))

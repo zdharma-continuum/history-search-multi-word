@@ -456,13 +456,9 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                         elif [[ $arg[1] == $histchars[2] ]]; then
                           style=history-expansion
                         elif (( arg_type == 3 )); then
-                          if (( this_word & BIT_regular )); then
-                            # This highlights empty commands (semicolon follows nothing) as an error.
-                            # Zsh accepts them, though.
-                            style=commandseparator
-                          else
-                            style=unknown-token
-                          fi
+                          # This highlights empty commands (semicolon follows nothing) as an error.
+                          # Zsh accepts them, though.
+                          (( this_word & BIT_regular )) && style=commandseparator
                         elif (( in_redirection == 2 )); then
                           style=redirection
                         elif [[ $arg[1,2] == '((' ]]; then

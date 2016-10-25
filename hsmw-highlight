@@ -280,7 +280,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   #
 
   integer BIT_start=1 BIT_regular=2 BIT_sudo_opt=4 BIT_sudo_arg=8 BIT_always=16
-  integer this_word=BIT_start next_word=0
+  integer this_word=BIT_start next_word=0 already_added
 
   # Processing buffer
   local proc_buf="$buf"
@@ -301,7 +301,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     # for this iteration.  Currently, that is done for "" and $'' strings,
     # which add the entry early so escape sequences within the string override
     # the string's color.
-    integer already_added=0
+    already_added=0
     style=unknown-token
     if (( this_word & BIT_start )); then
       in_array_assignment=0
@@ -350,7 +350,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
       fi
       # ADD
       reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
-      already_added=1
       continue
     fi
 

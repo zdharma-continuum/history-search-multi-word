@@ -224,10 +224,10 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 # Main syntax highlighting function.
 -hsmw-highlight-process()
 {
-  (( ointeractive_comments )) && local interactive_comments= # _set_ to empty
-
   emulate -L zsh
   setopt localoptions extendedglob bareglobqual nonomatch noksharrays
+
+  (( ointeractive_comments )) && local interactive_comments= # _set_ to empty
 
   # Variable declarations and initializations
   # in_array_assignment true between 'a=(' and the matching ')'

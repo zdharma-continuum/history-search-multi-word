@@ -61,6 +61,55 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 : ${HSMW_HIGHLIGHT_STYLES[redirection]:=none}
 : ${HSMW_HIGHLIGHT_STYLES[comment]:=fg=black,bold}
 
+
+typeset -A __HSMW_HIGHLIGHT_TOKENS_TYPES
+
+__HSMW_HIGHLIGHT_TOKENS_TYPES=(
+
+  # Precommand
+
+  'builtin'     1
+  'command'     1
+  'exec'        1
+  'nocorrect'   1
+  'noglob'      1
+  'pkexec'      1 # immune to #121 because it's usually not passed --option flags
+
+  # Control flow
+  # Tokens that, at (naively-determined) "command position", are followed by
+  # a de jure command position.  All of these are reserved words.
+
+  $'\x7b'   2 # block
+  $'\x28'   2 # subshell
+  '()'      2 # anonymous function
+  'while'   2
+  'until'   2
+  'if'      2
+  'then'    2
+  'elif'    2
+  'else'    2
+  'do'      2
+  'time'    2
+  'coproc'  2
+  '!'       2 # reserved word; unrelated to $histchars[1]
+
+  # Command separators
+
+  '|'   3
+  '||'  3
+  ';'   3
+  '&'   3
+  '&&'  3
+  '|&'  3
+  '&!'  3
+  '&|'  3
+  # ### 'case' syntax, but followed by a pattern, not by a command
+  # ';;' ';&' ';|'
+)
+
+
+
+
 # Get the type of a command.
 #
 # Uses the zsh/parameter module if available to avoid forks, and a
@@ -167,9 +216,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   ## Variable declarations and initializations
   local start_pos=0 end_pos highlight_glob=true arg style
   local in_array_assignment=false # true between 'a=(' and the matching ')'
-  typeset -a __HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS
-  typeset -a __HSMW_HIGHLIGHT_TOKENS_CONTROL_FLOW
-  typeset -a __HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR
   integer arg_type=0 # Can be 0, 1, 2 or 3 - look up ^
   local -a options_to_set # used in callees
   local buf="$1"
@@ -181,37 +227,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     options_to_set+=( PATH_DIRS )
   fi
   unset path_dirs_was_set
-
-  __HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS=(
-    'builtin' 'command' 'exec' 'nocorrect' 'noglob'
-    'pkexec' # immune to #121 because it's usually not passed --option flags
-  )
-
-  # Tokens that, at (naively-determined) "command position", are followed by
-  # a de jure command position.  All of these are reserved words.
-  __HSMW_HIGHLIGHT_TOKENS_CONTROL_FLOW=(
-    $'\x7b' # block
-    $'\x28' # subshell
-    '()' # anonymous function
-    'while'
-    'until'
-    'if'
-    'then'
-    'elif'
-    'else'
-    'do'
-    'time'
-    'coproc'
-    '!' # reserved word; unrelated to $histchars[1]
-  )
-
-  __HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR=(
-    '|' '||' ';' '&' '&&'
-    '|&'
-    '&!' '&|'
-    # ### 'case' syntax, but followed by a pattern, not by a command
-    # ';;' ';&' ';|'
-  )
 
   local -a match mbegin mend
   local MATCH; integer MBEGIN MEND
@@ -318,15 +333,8 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       ((start_pos+=offset))
       ((end_pos=start_pos+${#arg}))
 
-      if [[ -n ${__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS[(r)$arg]} ]]; then
-        arg_type=1
-      elif [[ -n ${__HSMW_HIGHLIGHT_TOKENS_CONTROL_FLOW[(r)$arg]} ]]; then
-        arg_type=2
-      elif [[ -n ${__HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR[(r)$arg]} ]]; then
-        arg_type=3
-      else
-        arg_type=0
-      fi
+      # No-hit will result in value 0
+      arg_type=${__HSMW_HIGHLIGHT_TOKENS_TYPES[$arg]}
     fi
 
     proc_buf="${proc_buf[offset + $#arg + 1,len]}"
@@ -444,7 +452,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
                             style=alias
                             -hsmw-highlight-resolve-alias $arg
                             local alias_target="$REPLY"
-                            [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$alias_target"} && "$arg_type" != "1" ]] && __HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS+=($arg)
+                            [[ ${__HSMW_HIGHLIGHT_TOKENS_TYPES[$alias_target]} = "1" && "$arg_type" != "1" ]] && __HSMW_HIGHLIGHT_TOKENS_TYPES[$arg]="1"
                           fi
                         }
                         ;;

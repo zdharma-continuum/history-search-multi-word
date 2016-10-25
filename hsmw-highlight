@@ -663,8 +663,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
       idx=end_idx
     }
   done
-
-  return 0
 }
 
 # Highlight special chars inside dollar-quoted strings

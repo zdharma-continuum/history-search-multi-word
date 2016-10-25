@@ -225,7 +225,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 -hsmw-highlight-process()
 {
   emulate -L zsh
-  setopt localoptions extendedglob bareglobqual nonomatch noksharrays
+  setopt extendedglob bareglobqual nonomatch noksharrays
 
   (( ointeractive_comments )) && local interactive_comments= # _set_ to empty
 

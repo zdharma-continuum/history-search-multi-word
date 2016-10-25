@@ -531,7 +531,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                    -hsmw-highlight-stack-pop 'R' style=reserved-word
                  fi;;
         $'\x28\x29') # possibly a function definition
-                 if (( multi_func_def )) || false # TODO: or if the previous word was a command word
+                 if (( multi_func_def )) # || false # TODO: or if the previous word was a command word
                  then
                    (( next_word = next_word | BIT_start ))
                  fi

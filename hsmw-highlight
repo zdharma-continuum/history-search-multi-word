@@ -616,7 +616,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   : ${expanded_path:=${(Q)~arg}}
 
   [[ -z $expanded_path ]] && return 1
-  [[ -L $expanded_path ]] && return 0
   [[ -e $expanded_path ]] && return 0
 
   # Search the path in CDPATH

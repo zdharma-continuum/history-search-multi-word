@@ -280,10 +280,10 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   #
 
   integer BIT_start=1 BIT_regular=2 BIT_sudo_opt=4 BIT_sudo_arg=8 BIT_always=16
-  integer this_word=BIT_start next_word=0 already_added
+  integer this_word=BIT_start next_word=0 already_added offset
 
   # Processing buffer
-  local proc_buf="$buf"
+  local proc_buf="$buf" needle
   for arg in ${interactive_comments-${(z)buf}} \
              ${interactive_comments+${(zZ+c+)buf}}; do
     # Initialize $next_word to its default value?
@@ -318,14 +318,14 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
       # token altogether, so 'echo foo\necho bar' (two commands) becomes
       # indistinguishable from 'echo foo echo bar' (one command with three
       # words for arguments).
-      local needle=$'[;\n]'
-      integer offset=$(( ${proc_buf[(i)$needle]} - 1 ))
+      needle=$'[;\n]'
+      offset=$(( ${proc_buf[(i)$needle]} - 1 ))
       (( start_pos += offset ))
       (( end_pos = start_pos + $#arg ))
 
       arg_type=3
     else
-      integer offset=0
+      offset=0
       if [[ "$proc_buf" = (#b)(#s)(([[:space:]]|\\[[:space:]])##)* ]]; then
           # The first, outer parenthesis
           offset="${mend[1]}"

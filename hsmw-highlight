@@ -487,11 +487,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                           style=reserved-word
                           braces_stack='R'"$braces_stack"
                         else
-                          if -hsmw-highlight-check-path; then
-                            style=path
-                          else
-                            style=unknown-token
-                          fi
+                          -hsmw-highlight-check-path && style=path
                         fi
                         ;;
         *)

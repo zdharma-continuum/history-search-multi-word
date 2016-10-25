@@ -125,9 +125,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
       return
     fi
   fi
-  if (( $#options_to_set )); then
-    setopt localoptions "${options_to_set[@]}"
-  fi
   unset REPLY
   if zmodload -e zsh/parameter; then
     if (( $+commands[(e)$1] )); then
@@ -227,6 +224,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   emulate -L zsh
   setopt extendedglob bareglobqual nonomatch noksharrays
 
+  (( path_dirs_was_set )) && setopt PATH_DIRS
   (( ointeractive_comments )) && local interactive_comments= # _set_ to empty
 
   # Variable declarations and initializations
@@ -235,9 +233,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   local start_pos=0 end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack buf="$1"
   # arg_type can be 0, 1, 2 or 3, i.e. precommand, control flow, command separator
   integer arg_type=0 MBEGIN MEND in_redirection len="${#buf}"
-  local -a options_to_set match mbegin mend
-
-  (( path_dirs_was_set )) && options_to_set+=( PATH_DIRS )
+  local -a match mbegin mend
 
   # State machine
   #

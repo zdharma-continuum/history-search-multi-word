@@ -229,20 +229,18 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   emulate -L zsh
   setopt localoptions extendedglob bareglobqual nonomatch noksharrays
 
-  ## Variable declarations and initializations
-  local start_pos=0 end_pos highlight_glob=1 arg style
-  local in_array_assignment=0 # true between 'a=(' and the matching ')'
-  integer arg_type=0 # Can be 0, 1, 2 or 3 - look up ^
-  local -a options_to_set # used in callees
+  # Variable declarations and initializations
+  # in_array_assignment true between 'a=(' and the matching ')'
+  # braces_stack: "R" for round, "Q" for square, "Y" for curly
+  local start_pos=0 end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack
+  # arg_type can be 0, 1, 2 or 3, i.e. precommand, control flow, command separator
+  integer arg_type=0 MBEGIN MEND in_redirection
+  local -a options_to_set match mbegin mend
+
   local buf="$1"
   integer len="${#buf}"
 
-  local braces_stack # "R" for round, "Q" for square, "Y" for curly
-
   (( path_dirs_was_set )) && options_to_set+=( PATH_DIRS )
-
-  local -a match mbegin mend
-  local MATCH; integer MBEGIN MEND
 
   # State machine
   #
@@ -284,8 +282,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   integer BIT_start=1 BIT_regular=2 BIT_sudo_opt=4 BIT_sudo_arg=8 BIT_always=16
   integer this_word=BIT_start next_word=0
 
-  integer in_redirection
-  local expanded_path
   # Processing buffer
   local proc_buf="$buf"
   for arg in ${interactive_comments-${(z)buf}} \

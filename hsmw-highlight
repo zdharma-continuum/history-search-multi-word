@@ -188,28 +188,44 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   fi
 }
 
+# Below are variables that must be defined in outer
+# scope so that they are reachable in *-process()
+#
+# local right_brace_is_recognised_everywhere
+# integer path_dirs_was_set
+# integer multi_func_def
+# integer ointeractive_comments
+-hsmw-highlight-fill-option-variables() {
+  if [[ -o ignore_braces ]] || eval '[[ -o ignore_close_braces ]] 2>/dev/null'; then
+    right_brace_is_recognised_everywhere=0
+  else
+    right_brace_is_recognised_everywhere=1
+  fi
+
+  if [[ -o path_dirs ]]; then
+    path_dirs_was_set=1
+  else
+    path_dirs_was_set=0
+  fi
+
+  if [[ -o multi_func_def ]]; then
+    multi_func_def=1
+  else
+    multi_func_def=0
+  fi
+
+  if [[ -o interactive_comments ]]; then
+    ointeractive_comments=1
+  else
+    ointeractive_comments=0
+  fi
+}
+
 # Main syntax highlighting function.
 -hsmw-highlight-process()
 {
-  ## Before we even 'emulate -L', we must test a few options that would reset.
-  if [[ -o interactive_comments ]]; then
-    local interactive_comments= # set to empty
-  fi
-  if [[ -o ignore_braces ]] || eval '[[ -o ignore_close_braces ]] 2>/dev/null'; then
-    local right_brace_is_recognised_everywhere=0
-  else
-    local right_brace_is_recognised_everywhere=1
-  fi
-  if [[ -o path_dirs ]]; then
-    integer path_dirs_was_set=1
-  else
-    integer path_dirs_was_set=0
-  fi
-  if [[ -o multi_func_def ]]; then
-    integer multi_func_def=1
-  else
-    integer multi_func_def=0
-  fi
+  (( ointeractive_comments )) && local interactive_comments= # _set_ to empty
+
   emulate -L zsh
   setopt localoptions extendedglob bareglobqual nonomatch noksharrays
 

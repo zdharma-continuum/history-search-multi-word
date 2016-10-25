@@ -61,6 +61,11 @@ if [[ "$1" = "-o" || "$1" = "-oo" ]]; then
     SECONDS=0
 
     -hsmw-highlight-init
+
+    local right_brace_is_recognised_everywhere
+    integer path_dirs_was_set multi_func_def ointeractive_comments
+    -hsmw-highlight-fill-option-variables
+
     local line
     for line in "${long_input[@]}"; do
         reply=( )
@@ -79,6 +84,11 @@ elif [[ -r "$1" ]]; then
 
     reply=( )
     -hsmw-highlight-init
+
+    local right_brace_is_recognised_everywhere
+    integer path_dirs_was_set multi_func_def ointeractive_comments
+    -hsmw-highlight-fill-option-variables
+
     -hsmw-highlight-process "$buf"
 
     print "Running time: $SECONDS"

@@ -15,6 +15,11 @@
 # zstyle ":history-search-multi-word" highlight-color "fg=yellow,bold"
 # zstyle ":plugin:history-search-multi-word" synhl "yes"
 
+[[ "$__HSMW_MH_SOURCED" != "1" ]] && source "$HSMW_REPO_DIR/hsmw-highlight"
+local right_brace_is_recognised_everywhere
+integer path_dirs_was_set multi_func_def ointeractive_comments
+-hsmw-highlight-fill-option-variables
+
 emulate -LR zsh
 setopt typesetsilent extendedglob noshortloops localtraps
 
@@ -153,8 +158,6 @@ _hsmw_main() {
 
     region_highlight+=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) $__hsmw_active" )
 }
-
-[[ "$__HSMW_MH_SOURCED" != "1" ]] && source "$HSMW_REPO_DIR/hsmw-highlight"
 
 _hsmw_main
 

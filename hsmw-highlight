@@ -496,7 +496,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                           if [[ $arg[-2,-1] == '))' ]]; then
                             # ADD
                             reply+=("$(( end_pos - 2 )) $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
-                            already_added=1
                           fi
                         elif [[ $arg == '()' ]]; then
                           # anonymous function

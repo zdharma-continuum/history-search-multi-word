@@ -465,7 +465,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                           # Assignment to a scalar parameter or to array
                           # (For array assignments, the command doesn't start until the ")" token.)
                           [[ $arg[-1] == '(' ]] && in_array_assignment=1 || (( next_word = next_word | BIT_start ))
-                        elif [[ $arg[0,1] = $histchars[0,1] ]] && (( $#arg[0,2] == 2 )); then
+                        elif [[ $arg[1] = $histchars[1] && -n "${arg[2]}" ]]; then
                           style=history-expansion
                         elif [[ $arg[0,1] == $histchars[2,2] ]]; then
                           style=history-expansion

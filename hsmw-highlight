@@ -305,9 +305,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     style=unknown-token
     if (( this_word & BIT_start )); then
       in_array_assignment=0
-      if [[ $arg == 'noglob' ]]; then
-        highlight_glob=0
-      fi
+      [[ $arg == 'noglob' ]] && highlight_glob=0
     fi
 
     # Compute the new $start_pos and $end_pos, skipping over whitespace in $buf.

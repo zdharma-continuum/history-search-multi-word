@@ -561,7 +561,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     if (( already_added == 0 )); then
       # ADD
       [[ "${HSMW_HIGHLIGHT_STYLES[$style]}" != "none" ]] && reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
-      [[ $style == path || $style == path_prefix ]] && -hsmw-highlight-path-separators
+      [[ $style == "path" || $style == "path_prefix" ]] && -hsmw-highlight-path-separators
     fi
     if (( arg_type == 3 )); then
       if [[ $arg == ';' ]] && (( in_array_assignment )); then

@@ -493,7 +493,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                           braces_stack='R'"$braces_stack"
                         else
                           if -hsmw-highlight-check-path; then
-                            style=$REPLY
+                            style=path
                           else
                             style=unknown-token
                           fi
@@ -563,7 +563,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                    style=redirection
                  else
                    if -hsmw-highlight-check-path; then
-                     style=$REPLY
+                     style=path
                    else
                      style=default
                    fi
@@ -623,8 +623,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 -hsmw-highlight-check-path()
 {
   : ${expanded_path:=${(Q)~arg}}
-
-  REPLY=path
 
   [[ -z $expanded_path ]] && return 1
   [[ -L $expanded_path ]] && return 0

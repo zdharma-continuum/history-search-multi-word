@@ -1,4 +1,4 @@
-## Introduction
+# Introduction
 
 Binds `Ctrl-R` to a widget that searches for multiple keywords in `AND` fashion.
 In other words, you can enter multiple words, and history entries that match
@@ -12,7 +12,7 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
 
 [![asciicast](https://asciinema.org/a/89406.png)](https://asciinema.org/a/89406)
 
-## News
+# News
 * 24-10-2016
   - Workaround for Zsh versions like 5.0.2 has been added – **Ctrl-V** and **ESC** cancel search. On such Zsh
     versions Ctrl-C might not work. Fully problem-free Zsh version will be the upcoming 5.3, where
@@ -55,7 +55,7 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
     zstyle ":history-search-multi-word" page-size "5"
     ```
 
-## Installation
+# Installation
 
 **The plugin is "standalone"**, which means that only sourcing it is needed. So to
 install, unpack `history-search-multi-word` somewhere and add
@@ -96,9 +96,9 @@ psprint/history-search-multi-word` for testing before adding it to your
 Add `zgen load psprint/history-search-multi-word` to your .zshrc file in the same
 place you're doing your other `zgen load` calls in.
 
-## Customizing
+# Customizing
 
-### Zstyles
+## Zstyles
 
 ```zsh
 zstyle ":history-search-multi-word" page-size "8"                      # Number of entries to show, default is LINES/3
@@ -107,7 +107,7 @@ zstyle ":plugin:history-search-multi-word" synhl "yes"                 # Whether
 zstyle ":plugin:history-search-multi-word" active "underline"          # Effect on active history entry. Try: standout, bold, bg=blue
 ```
 
-### Syntax highlighting
+## Syntax highlighting
 
 Syntax highlighting is customized via `HSMW_HIGHLIGHT_STYLES` associative array.
 It has keys like `reserved-word`, `alias`, `command`, `path`, which are assigned
@@ -136,7 +136,7 @@ Following code will use 256 colors to highlight command separators (like ";" or 
 HSMW_HIGHLIGHT_STYLES[commandseparator]="fg=241,bg=17"
 ```
 
-## IRC Channel
+# IRC Channel
 
 Channel `#zplugin@freenode` is a support place for all author's projects. Connect to:
 [chat.freenode.net:6697](ircs://chat.freenode.net:6697/%23zplugin) (SSL) or [chat.freenode.net:6667](irc://chat.freenode.net:6667/%23zplugin)

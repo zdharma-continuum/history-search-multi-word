@@ -473,10 +473,8 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                           # ADD
                           reply+=("$start_pos $(( start_pos + 2 )) ${HSMW_HIGHLIGHT_STYLES[reserved-word]}")
                           already_added=1
-                          if [[ $arg[-2,-1] == '))' ]]; then
-                            # ADD
-                            reply+=("$(( end_pos - 2 )) $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
-                          fi
+                          # ADD
+                          [[ $arg[-2,-1] == '))' ]] && reply+=("$(( end_pos - 2 )) $end_pos ${HSMW_HIGHLIGHT_STYLES[reserved-word]}")
                         elif [[ $arg == '()' ]]; then
                           # anonymous function
                           style=reserved-word

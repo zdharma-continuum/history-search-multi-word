@@ -469,9 +469,9 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                           #
                           # We highlight just the opening parentheses, as a reserved word; this
                           # is how [[ ... ]] is highlighted, too.
-                          style=reserved-word
+
                           # ADD
-                          reply+=("$start_pos $(( start_pos + 2 )) ${HSMW_HIGHLIGHT_STYLES[$style]}")
+                          reply+=("$start_pos $(( start_pos + 2 )) ${HSMW_HIGHLIGHT_STYLES[reserved-word]}")
                           already_added=1
                           if [[ $arg[-2,-1] == '))' ]]; then
                             # ADD
@@ -527,15 +527,15 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
         '--'*)   style=double-hyphen-option;;
         '-'*)    style=single-hyphen-option;;
         "'"*)    style=single-quoted-argument;;
-        '"'*)    style=double-quoted-argument
+        '"'*)
                  # ADD
-                 reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
+                 reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[double-quoted-argument]}")
                  -hsmw-highlight-string
                  already_added=1
                  ;;
-        \$\'*)   style=dollar-quoted-argument
+        \$\'*)
                  # ADD
-                 reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
+                 reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[dollar-quoted-argument]}")
                  -hsmw-highlight-dollar-string
                  already_added=1
                  ;;

@@ -167,9 +167,10 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
   ## Variable declarations and initializations
   local start_pos=0 end_pos highlight_glob=true arg style
   local in_array_assignment=false # true between 'a=(' and the matching ')'
-  typeset -a __HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR
   typeset -a __HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS
   typeset -a __HSMW_HIGHLIGHT_TOKENS_CONTROL_FLOW
+  typeset -a __HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR
+  integer arg_type=0 # Can be 0, 1, 2 or 3 - look up ^
   local -a options_to_set # used in callees
   local buf="$1"
   integer len="${#buf}"
@@ -180,14 +181,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     options_to_set+=( PATH_DIRS )
   fi
   unset path_dirs_was_set
-
-  __HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR=(
-    '|' '||' ';' '&' '&&'
-    '|&'
-    '&!' '&|'
-    # ### 'case' syntax, but followed by a pattern, not by a command
-    # ';;' ';&' ';|'
-  )
 
   __HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS=(
     'builtin' 'command' 'exec' 'nocorrect' 'noglob'
@@ -212,7 +205,16 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     '!' # reserved word; unrelated to $histchars[1]
   )
 
+  __HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR=(
+    '|' '||' ';' '&' '&&'
+    '|&'
+    '&!' '&|'
+    # ### 'case' syntax, but followed by a pattern, not by a command
+    # ';;' ';&' ';|'
+  )
+
   local -a match mbegin mend
+  local MATCH; integer MBEGIN MEND
 
   # State machine
   #
@@ -305,6 +307,8 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       integer offset=$(( ${proc_buf[(i)$needle]} - 1 ))
       (( start_pos += offset ))
       (( end_pos = start_pos + $#arg ))
+
+      arg_type=3
     else
       integer offset=0
       if [[ "$proc_buf" = (#b)(#s)(([[:space:]]|\\[[:space:]])##)* ]]; then
@@ -313,6 +317,16 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       fi
       ((start_pos+=offset))
       ((end_pos=start_pos+${#arg}))
+
+      if [[ -n ${__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS[(r)$arg]} ]]; then
+        arg_type=1
+      elif [[ -n ${__HSMW_HIGHLIGHT_TOKENS_CONTROL_FLOW[(r)$arg]} ]]; then
+        arg_type=2
+      elif [[ -n ${__HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR[(r)$arg]} ]]; then
+        arg_type=3
+      else
+        arg_type=0
+      fi
     fi
 
     proc_buf="${proc_buf[offset + $#arg + 1,len]}"
@@ -343,10 +357,8 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       if (( this_word & BIT_sudo_opt )) && [[ $arg != -* ]]; then
         (( this_word = this_word ^ BIT_sudo_opt ))
       fi
-    fi
 
-    # Parse the sudo command line
-    if (( ! in_redirection )); then
+      # Parse the sudo command line
       if (( this_word & BIT_sudo_opt )); then
         case "$arg" in
           # Flag that requires an argument
@@ -376,7 +388,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
      style=reserved-word # de facto a reserved word, although not de jure
      (( next_word = BIT_start ))
    elif (( this_word & BIT_start )) && (( in_redirection == 0 )); then # $arg is the command word
-     if [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$arg"} ]]; then
+     if (( arg_type == 1 )); then
       style=precommand
      elif [[ "$arg" = "sudo" ]]; then
       style=precommand
@@ -384,23 +396,20 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       (( next_word = next_word | BIT_sudo_opt ))
       (( next_word = next_word | BIT_start ))
      else
-       : ${expanded_path::=${(Q)~arg}}
-      -hsmw-highlight-main-type $expanded_path
-      () {
-        # Special-case: command word is '$foo', like that, without braces or anything.
-        #
-        # That's not entirely correct --- if the parameter's value happens to be a reserved
-        # word, the parameter expansion will be highlighted as a reserved word --- but that
-        # incorrectness is outweighed by the usability improvement of permitting the use of
-        # parameters that refer to commands, functions, and builtins.
-        local MATCH; integer MBEGIN MEND
-        if [[ $REPLY == none ]] && (( ${+parameters} )) &&
-           [[ ${arg[1]} == \$ ]] && [[ ${arg:1} = (#m)([a-zA-Z_][a-zA-Z0-9_]#|[0-9]##) ]] &&
-           (( ${+parameters[${MATCH}]} ))
-           then
-          -hsmw-highlight-main-type ${(P)MATCH}
-        fi
-      }
+       # Special-case: command word is '$foo', like that, without braces or anything.
+       #
+       # That's not entirely correct --- if the parameter's value happens to be a reserved
+       # word, the parameter expansion will be highlighted as a reserved word --- but that
+       # incorrectness is outweighed by the usability improvement of permitting the use of
+       # parameters that refer to commands, functions, and builtins.
+       if [[ ${arg[1]} == \$ ]] && (( ${+parameters} )) && [[ ${arg:1} = (#m)([a-zA-Z_][a-zA-Z0-9_]#|[0-9]##) ]] &&
+          (( ${+parameters[${MATCH}]} ))
+          then
+         -hsmw-highlight-main-type ${(P)MATCH}
+       else
+         : ${expanded_path::=${(Q)~arg}}
+         -hsmw-highlight-main-type $expanded_path
+       fi
       case $REPLY in
         reserved)       # reserved word
                         style=reserved-word
@@ -435,7 +444,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
                             style=alias
                             -hsmw-highlight-resolve-alias $arg
                             local alias_target="$REPLY"
-                            [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$alias_target"} && -z ${(M)__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$arg"} ]] && __HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS+=($arg)
+                            [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$alias_target"} && "$arg_type" != "1" ]] && __HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS+=($arg)
                           fi
                         }
                         ;;
@@ -457,7 +466,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
                           style=history-expansion
                         elif [[ $arg[0,1] == $histchars[2,2] ]]; then
                           style=history-expansion
-                        elif [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
+                        elif (( arg_type == 3 )); then
                           if (( this_word & BIT_regular )); then
                             # This highlights empty commands (semicolon follows nothing) as an error.
                             # Zsh accepts them, though.
@@ -508,9 +517,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
                         ;;
       esac
      fi
-   fi
-   if (( ! already_added )) && [[ $style == unknown-token ]] && # not handled by the 'command word' codepath
-      { (( in_redirection )) || (( this_word & BIT_regular )) || (( this_word & BIT_sudo_opt )) || (( this_word & BIT_sudo_arg )) }
+   elif { (( in_redirection )) || (( this_word & BIT_regular )) || (( this_word & BIT_sudo_opt )) || (( this_word & BIT_sudo_arg )) }
    then # $arg is a non-command word
       case $arg in
         $'\x29') # subshell or end of array assignment
@@ -561,17 +568,12 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
         '`'*)    style=back-quoted-argument;;
         [*?]*|*[^\\][*?]*)
                  $highlight_glob && style=globbing || style=default;;
-        *)       if false; then
-                 elif [[ $arg = $'\x7d' ]] && $right_brace_is_recognised_everywhere; then
+        *)       if [[ $arg = $'\x7d' ]] && $right_brace_is_recognised_everywhere; then
                    # was handled by the $'\x7d' case above
                  elif [[ $arg[0,1] = $histchars[0,1] ]] && (( $#arg[0,2] == 2 )); then
                    style=history-expansion
-                 elif [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
-                   if (( this_word & BIT_regular )); then
+                 elif (( arg_type == 3 )); then
                      style=commandseparator
-                   else
-                     style=unknown-token
-                   fi
                  elif (( in_redirection == 2 )); then
                    style=redirection
                  else
@@ -589,7 +591,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
       [[ "${HSMW_HIGHLIGHT_STYLES[$style]}" != "none" ]] && reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
       [[ $style == path || $style == path_prefix ]] && -hsmw-highlight-path-separators
     fi
-    if [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_COMMANDSEPARATOR:#"$arg"} ]]; then
+    if (( arg_type == 3 )); then
       if [[ $arg == ';' ]] && $in_array_assignment; then
         # literal newline inside an array assignment
         (( next_word = BIT_regular ))
@@ -597,9 +599,9 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
         (( next_word = BIT_start ))
         highlight_glob=true
       fi
-    elif [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_CONTROL_FLOW:#"$arg"} ]] && (( this_word & BIT_start )); then
+    elif (( arg_type == 2 )) && (( this_word & BIT_start )); then
          (( next_word = BIT_start ))
-    elif [[ -n ${(M)__HSMW_HIGHLIGHT_TOKENS_PRECOMMANDS:#"$arg"} ]] && (( this_word & BIT_start )); then
+    elif (( arg_type == 1 )) && (( this_word & BIT_start )); then
          (( next_word = BIT_start ))
     elif [[ $arg == "repeat" ]] && (( this_word & BIT_start )); then
       # skip the repeat-count word
@@ -617,7 +619,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     if (( in_redirection == 0 )); then
       # This is the default/common codepath.
       (( this_word = next_word ))
-    else
+    #else
       # Stall $this_word.
     fi
   done
@@ -689,8 +691,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 # Highlight special chars inside dollar-quoted strings
 -hsmw-highlight-dollar-string()
 {
-  local -a match mbegin mend
-  local MATCH; integer MBEGIN MEND
   local i j k style
   local AA
   integer c

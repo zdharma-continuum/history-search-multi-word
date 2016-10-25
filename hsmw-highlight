@@ -517,7 +517,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
                         ;;
       esac
      fi
-   elif { (( in_redirection )) || (( this_word & BIT_regular )) || (( this_word & BIT_sudo_opt )) || (( this_word & BIT_sudo_arg )) }
+   elif (( in_redirection )) || (( this_word & BIT_regular )) || (( this_word & BIT_sudo_opt )) || (( this_word & BIT_sudo_arg ))
    then # $arg is a non-command word
       case $arg in
         $'\x29') # subshell or end of array assignment

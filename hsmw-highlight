@@ -601,12 +601,8 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
       (( this_word = BIT_start | BIT_regular ))
     fi
     start_pos=$end_pos
-    if (( in_redirection == 0 )); then
-      # This is the default/common codepath.
-      (( this_word = next_word ))
-    #else
-      # Stall $this_word.
-    fi
+    # This is the default/common codepath.
+    (( in_redirection == 0 )) && (( this_word = next_word )) #else # Stall $this_word.
   done
 }
 

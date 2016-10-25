@@ -568,10 +568,10 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                  (( highlight_glob )) && style=globbing || style=default;;
         *)       if [[ $arg = $'\x7d' ]] && (( right_brace_is_recognised_everywhere )); then
                    # was handled by the $'\x7d' case above
-                 elif [[ $arg[0,1] = $histchars[0,1] ]] && (( $#arg[0,2] == 2 )); then
+                 elif [[ $arg[1] = $histchars[1] && -n "${arg[2]}" ]]; then
                    style=history-expansion
                  elif (( arg_type == 3 )); then
-                     style=commandseparator
+                   style=commandseparator
                  elif (( in_redirection == 2 )); then
                    style=redirection
                  else

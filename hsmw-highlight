@@ -612,10 +612,8 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   style_pathsep=${style}_pathseparator
   [[ -z "$HSMW_HIGHLIGHT_STYLES[$style_pathsep]" || "$HSMW_HIGHLIGHT_STYLES[$style]" == "$HSMW_HIGHLIGHT_STYLES[$style_pathsep]" ]] && return 0
   for (( pos = start_pos; $pos <= end_pos; pos++ )) ; do
-    if [[ ${buf[pos]} == "/" ]]; then
-      # ADD
-      reply+=("$(( pos - 1 )) $pos ${HSMW_HIGHLIGHT_STYLES[$style_pathsep]}")
-    fi
+    # ADD
+    [[ ${buf[pos]} == "/" ]] && reply+=("$(( pos - 1 )) $pos ${HSMW_HIGHLIGHT_STYLES[$style_pathsep]}")
   done
 }
 

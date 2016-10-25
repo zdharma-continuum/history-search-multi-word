@@ -460,7 +460,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
         command)        style=command;;
         hashed)         style=hashed-command;;
         none)           # Assign?
-                        if [[ $arg == [[:alpha:]_][[:alnum:]_]#(|\[*\])(|[+])=* ]] || [[ $arg == [0-9]##(|[+])=* ]]; then
+                        if [[ $arg == [[:alpha:]_][[:alnum:]_]#(|\[[^\]]#\])(|[+])=* ]] || [[ $arg == [0-9]##(|[+])=* ]]; then
                           style=assign
                           if [[ $arg[-1] == '(' ]]; then
                             in_array_assignment=1

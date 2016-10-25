@@ -239,10 +239,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 
   local braces_stack # "R" for round, "Q" for square, "Y" for curly
 
-  if (( path_dirs_was_set )); then
-    options_to_set+=( PATH_DIRS )
-  fi
-  unset path_dirs_was_set
+  (( path_dirs_was_set )) && options_to_set+=( PATH_DIRS )
 
   local -a match mbegin mend
   local MATCH; integer MBEGIN MEND

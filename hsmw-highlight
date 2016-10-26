@@ -226,8 +226,11 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   local start_pos=0 end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack buf="$1" mybuf cdpath_dir
   # arg_type can be 0, 1, 2 or 3, i.e. precommand, control flow, command separator
   # idx and end_idx are used in sub-functions
-  integer arg_type=0 MBEGIN MEND in_redirection len=${#buf} already_added offset idx end_idx
+  # for this_word and next_word look below at commented integers and at state machine description
+  integer arg_type=0 MBEGIN MEND in_redirection len=${#buf} already_added offset idx end_idx this_word=1 next_word=0
   local -a match mbegin mend
+
+  # integer BIT_start=1 BIT_regular=2 BIT_sudo_opt=4 BIT_sudo_arg=8 BIT_always=16
 
   # State machine
   #
@@ -266,16 +269,13 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   # the operator is discarded.
   #
 
-  integer BIT_start=1 BIT_regular=2 BIT_sudo_opt=4 BIT_sudo_arg=8 BIT_always=16
-  integer this_word=BIT_start next_word=0
-
   # Processing buffer
   local proc_buf="$buf" needle
   for arg in ${interactive_comments-${(z)buf}} \
              ${interactive_comments+${(zZ+c+)buf}}; do
     # Initialize $next_word to its default value?
     (( in_redirection )) && (( --in_redirection ))
-    (( in_redirection == 0 )) && next_word=BIT_regular # else Stall $next_word.
+    (( in_redirection == 0 )) && next_word=2 # else Stall $next_word.
 
     # Initialize per-"simple command" [zshmisc(1)] variables:
     #
@@ -290,7 +290,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     # the string's color.
     already_added=0
     style=unknown-token
-    if (( this_word & BIT_start )); then
+    if (( this_word & 1 )); then
       in_array_assignment=0
       [[ $arg == 'noglob' ]] && highlight_glob=0
     fi
@@ -330,7 +330,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     #
     # We use the (Z+c+) flag so the entire comment is presented as one token in $arg.
     if [[ -n ${interactive_comments+'set'} && $arg[1] == $histchars[3] ]]; then
-      if (( this_word & BIT_regular + this_word & BIT_start )); then
+      if (( this_word & 3 )); then
         style=comment
       else
         style=unknown-token # prematurely terminated
@@ -348,47 +348,47 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 
     # Special-case the first word after 'sudo'.
     if (( ! in_redirection )); then
-      if (( this_word & BIT_sudo_opt )) && [[ $arg != -* ]]; then
-        (( this_word = this_word ^ BIT_sudo_opt ))
+      if (( this_word & 4 )) && [[ $arg != -* ]]; then
+        (( this_word = this_word ^ 4 ))
       fi
 
       # Parse the sudo command line
-      if (( this_word & BIT_sudo_opt )); then
+      if (( this_word & 4 )); then
         case "$arg" in
           # Flag that requires an argument
           '-'[Cgprtu])
-                       (( this_word & BIT_start )) && (( this_word = this_word ^ BIT_start ))
-                       (( next_word = BIT_sudo_arg ))
+                       (( this_word & 1 )) && (( this_word = this_word ^ 1 ))
+                       (( next_word = 8 ))
                        ;;
           # This prevents misbehavior with sudo -u -otherargument
           '-'*)
-                       (( this_word & BIT_start )) && (( this_word = this_word ^ BIT_start ))
-                       (( next_word = next_word | BIT_start ))
-                       (( next_word = next_word | BIT_sudo_opt ))
+                       (( this_word & 1 )) && (( this_word = this_word ^ 1 ))
+                       (( next_word = next_word | 1 ))
+                       (( next_word = next_word | 4 ))
                        ;;
           *)           ;;
         esac
-      elif (( this_word & BIT_sudo_arg )); then
-        (( next_word = next_word | BIT_sudo_opt ))
-        (( next_word = next_word | BIT_start ))
+      elif (( this_word & 8 )); then
+        (( next_word = next_word | 4 ))
+        (( next_word = next_word | 1 ))
       fi
    fi
 
    expanded_path=""
 
    # The Great Fork: is this a command word?  Is this a non-command word?
-   if (( this_word & BIT_always )) && [[ $arg == 'always' ]]; then
+   if (( this_word & 16 )) && [[ $arg == 'always' ]]; then
      # try-always construct
      style=reserved-word # de facto a reserved word, although not de jure
-     (( next_word = BIT_start ))
-   elif (( this_word & BIT_start )) && (( in_redirection == 0 )); then # $arg is the command word
+     (( next_word = 1 ))
+   elif (( this_word & 1 )) && (( in_redirection == 0 )); then # $arg is the command word
      if (( arg_type == 1 )); then
       style=precommand
      elif [[ "$arg" = "sudo" ]]; then
       style=precommand
-      (( next_word & BIT_regular )) && (( next_word = next_word ^ BIT_regular ))
-      (( next_word = next_word | BIT_sudo_opt ))
-      (( next_word = next_word | BIT_start ))
+      (( next_word & 2 )) && (( next_word = next_word ^ 2 ))
+      (( next_word = next_word | 4 ))
+      (( next_word = next_word | 1 ))
      else
        # Special-case: command word is '$foo', like that, without braces or anything.
        #
@@ -411,7 +411,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                         elif [[ $arg == $'\x7d' ]]; then
                           # We're at command word, so no need to check $right_brace_is_recognised_everywhere
                           -hsmw-highlight-stack-pop 'Y' style=reserved-word
-                          [[ $style == "reserved-word" ]] && (( next_word = next_word | BIT_always ))
+                          [[ $style == "reserved-word" ]] && (( next_word = next_word | 16 ))
                         fi
                         ;;
         'suffix alias') style=suffix-alias;;
@@ -448,7 +448,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                           style=assign
                           # Assignment to a scalar parameter or to array
                           # (For array assignments, the command doesn't start until the ")" token.)
-                          [[ $arg[-1] == '(' ]] && in_array_assignment=1 || (( next_word = next_word | BIT_start ))
+                          [[ $arg[-1] == '(' ]] && in_array_assignment=1 || (( next_word = next_word | 1 ))
                         elif [[ $arg[1] = $histchars[1] && -n "${arg[2]}" ]]; then
                           style=history-expansion
                         elif [[ $arg[1] == $histchars[2] ]]; then
@@ -456,7 +456,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                         elif (( arg_type == 3 )); then
                           # This highlights empty commands (semicolon follows nothing) as an error.
                           # Zsh accepts them, though.
-                          (( this_word & BIT_regular )) && style=commandseparator
+                          (( this_word & 2 )) && style=commandseparator
                         elif (( in_redirection == 2 )); then
                           style=redirection
                         elif [[ $arg[1,2] == '((' ]]; then
@@ -505,20 +505,21 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                         ;;
       esac
      fi
-   elif (( in_redirection )) || (( this_word & BIT_regular )) || (( this_word & BIT_sudo_opt )) || (( this_word & BIT_sudo_arg ))
+   # in_redirection || BIT_regular || BIT_sudo_opt || BIT_sudo_arg
+   elif (( in_redirection + this_word & 14 ))
    then # $arg is a non-command word
       case $arg in
         $'\x29') # subshell or end of array assignment
                  if (( in_array_assignment )); then
                    style=assign
                    in_array_assignment=0
-                   (( next_word = next_word | BIT_start ))
+                   (( next_word = next_word | 1 ))
                  else
                    -hsmw-highlight-stack-pop 'R' style=reserved-word
                  fi;;
         $'\x28\x29') # possibly a function definition
                  # || false # TODO: or if the previous word was a command word
-                 (( multi_func_def )) && (( next_word = next_word | BIT_start ))
+                 (( multi_func_def )) && (( next_word = next_word | 1 ))
                  style=reserved-word
                  ;;
         $'\x7d') # right brace
@@ -529,7 +530,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                  #     tt(IGNORE_BRACES) option nor the tt(IGNORE_CLOSE_BRACES) option is set."""
                  if (( right_brace_is_recognised_everywhere )); then
                    -hsmw-highlight-stack-pop 'Y' style=reserved-word
-                   [[ $style == reserved-word ]] && (( next_word = next_word | BIT_always ))
+                   [[ $style == reserved-word ]] && (( next_word = next_word | 16 ))
                  #else
                    # Fall through to the catchall case at the end.
                  fi
@@ -587,14 +588,14 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     if (( arg_type == 3 )); then
       if [[ $arg == ';' ]] && (( in_array_assignment )); then
         # literal newline inside an array assignment
-        (( next_word = BIT_regular ))
+        (( next_word = 2 ))
       else
-        (( next_word = BIT_start ))
+        (( next_word = 1 ))
         highlight_glob=1
       fi
-    elif (( arg_type == 1 || arg_type == 2 )) && (( this_word & BIT_start )); then
-         (( next_word = BIT_start ))
-    elif [[ $arg == "repeat" ]] && (( this_word & BIT_start )); then
+    elif (( arg_type == 1 || arg_type == 2 )) && (( this_word & 1 )); then
+         (( next_word = 1 ))
+    elif [[ $arg == "repeat" ]] && (( this_word & 1 )); then
       # skip the repeat-count word
       in_redirection=2
       # The redirection mechanism assumes $this_word describes the word
@@ -604,7 +605,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
       # or a command separator (`repeat 2; ls` or `repeat 2; do ls; done`).
       #
       # The repeat-count word will be handled like a redirection target.
-      (( this_word = BIT_start | BIT_regular ))
+      (( this_word = 3 ))
     fi
     start_pos=$end_pos
     # This is the default/common codepath.

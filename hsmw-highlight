@@ -548,7 +548,17 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                    style=redirection
                  else
                    if -hsmw-highlight-check-path; then
-                     style=path
+                     # ADD
+                     reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[path]}")
+                     already_added=1
+
+                     [[ -n "$HSMW_HIGHLIGHT_STYLES[path_pathseparator]" && "$HSMW_HIGHLIGHT_STYLES[path]" != "$HSMW_HIGHLIGHT_STYLES[path_pathseparator]" ]] && {
+                       local pos
+                       for (( pos = start_pos; pos <= end_pos; pos++ )) ; do
+                         # ADD
+                         [[ ${buf[pos]} == "/" ]] && reply+=("$(( pos - 1 )) $pos ${HSMW_HIGHLIGHT_STYLES[path_pathseparator]}")
+                       done
+                     }
                    else
                      style=default
                    fi
@@ -559,13 +569,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     if (( already_added == 0 )); then
       # ADD
       [[ "${HSMW_HIGHLIGHT_STYLES[$style]}" != "none" ]] && reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
-      [[ $style == "path" && -n "$HSMW_HIGHLIGHT_STYLES[path_pathseparator]" && "$HSMW_HIGHLIGHT_STYLES[path]" != "$HSMW_HIGHLIGHT_STYLES[path_pathseparator]" ]] && {
-        local pos
-        for (( pos = start_pos; pos <= end_pos; pos++ )) ; do
-          # ADD
-          [[ ${buf[pos]} == "/" ]] && reply+=("$(( pos - 1 )) $pos ${HSMW_HIGHLIGHT_STYLES[$style_pathsep]}")
-        done
-      }
     fi
     if (( arg_type == 3 )); then
       if [[ $arg == ';' ]] && (( in_array_assignment )); then

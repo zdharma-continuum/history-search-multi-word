@@ -222,8 +222,8 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   # Variable declarations and initializations
   # in_array_assignment true between 'a=(' and the matching ')'
   # braces_stack: "R" for round, "Q" for square, "Y" for curly
-  # mybuf is used in sub-functions
-  local start_pos=0 end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack buf=$1 mybuf
+  # mybuf, cdpath_dir are used in sub-functions
+  local start_pos=0 end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack buf=$1 mybuf cdpath_dir
   # arg_type can be 0, 1, 2 or 3, i.e. precommand, control flow, command separator
   # idx and end_idx are used in sub-functions
   integer arg_type=0 MBEGIN MEND in_redirection len=${#buf} already_added offset idx end_idx
@@ -623,7 +623,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   [[ -e $expanded_path ]] && return 0
 
   # Search the path in CDPATH
-  local cdpath_dir
   for cdpath_dir in $cdpath ; do
     [[ -e "$cdpath_dir/$expanded_path" ]] && return 0
   done

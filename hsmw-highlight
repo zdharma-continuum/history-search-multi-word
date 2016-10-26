@@ -571,9 +571,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
         (( next_word = BIT_start ))
         highlight_glob=1
       fi
-    elif (( arg_type == 2 )) && (( this_word & BIT_start )); then
-         (( next_word = BIT_start ))
-    elif (( arg_type == 1 )) && (( this_word & BIT_start )); then
+    elif (( arg_type == 1 || arg_type == 2 )) && (( this_word & BIT_start )); then
          (( next_word = BIT_start ))
     elif [[ $arg == "repeat" ]] && (( this_word & BIT_start )); then
       # skip the repeat-count word

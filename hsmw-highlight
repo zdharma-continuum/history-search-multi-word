@@ -222,9 +222,11 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   # Variable declarations and initializations
   # in_array_assignment true between 'a=(' and the matching ')'
   # braces_stack: "R" for round, "Q" for square, "Y" for curly
-  local start_pos=0 end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack buf=$1
+  # mybuf is used in sub-functions
+  local start_pos=0 end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack buf=$1 mybuf
   # arg_type can be 0, 1, 2 or 3, i.e. precommand, control flow, command separator
-  integer arg_type=0 MBEGIN MEND in_redirection len=${#buf}
+  # idx and end_idx are used in sub-functions
+  integer arg_type=0 MBEGIN MEND in_redirection len=${#buf} already_added offset idx end_idx
   local -a match mbegin mend
 
   # State machine
@@ -265,7 +267,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   #
 
   integer BIT_start=1 BIT_regular=2 BIT_sudo_opt=4 BIT_sudo_arg=8 BIT_always=16
-  integer this_word=BIT_start next_word=0 already_added offset
+  integer this_word=BIT_start next_word=0
 
   # Processing buffer
   local proc_buf=$buf needle
@@ -635,8 +637,8 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 {
   local -a match mbegin mend
 
-  local mybuf=$arg
-  integer idx=start_pos end_idx
+  mybuf=$arg
+  idx=start_pos
 
   while [[ $mybuf = (#b)[^\$\\]#((\$[a-zA-Z0-9_]##(\[[^\]]#\])(#c0,1))|(\$[{](\([a-zA-Z0@%#]##\))(#c0,1)[a-zA-Z0-9_]##(\[[^\]]#\])(#c0,1)[}])|[\\][\'\"\$]|[\\](*))(*) ]]; do
     [[ -n ${match[7]} ]] && {

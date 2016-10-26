@@ -559,7 +559,13 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     if (( already_added == 0 )); then
       # ADD
       [[ "${HSMW_HIGHLIGHT_STYLES[$style]}" != "none" ]] && reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
-      [[ $style == "path" ]] && -hsmw-highlight-path-separators
+      [[ $style == "path" && -n "$HSMW_HIGHLIGHT_STYLES[path_pathseparator]" && "$HSMW_HIGHLIGHT_STYLES[path]" != "$HSMW_HIGHLIGHT_STYLES[path_pathseparator]" ]] && {
+        local pos
+        for (( pos = start_pos; pos <= end_pos; pos++ )) ; do
+          # ADD
+          [[ ${buf[pos]} == "/" ]] && reply+=("$(( pos - 1 )) $pos ${HSMW_HIGHLIGHT_STYLES[$style_pathsep]}")
+        done
+      }
     fi
     if (( arg_type == 3 )); then
       if [[ $arg == ';' ]] && (( in_array_assignment )); then
@@ -586,16 +592,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     start_pos=$end_pos
     # This is the default/common codepath.
     (( in_redirection == 0 )) && (( this_word = next_word )) #else # Stall $this_word.
-  done
-}
-
--hsmw-highlight-path-separators()
-{
-  [[ -z "$HSMW_HIGHLIGHT_STYLES[path_pathseparator]" || "$HSMW_HIGHLIGHT_STYLES[path]" == "$HSMW_HIGHLIGHT_STYLES[path_pathseparator]" ]] && return 0
-  local pos
-  for (( pos = start_pos; pos <= end_pos; pos++ )) ; do
-    # ADD
-    [[ ${buf[pos]} == "/" ]] && reply+=("$(( pos - 1 )) $pos ${HSMW_HIGHLIGHT_STYLES[$style_pathsep]}")
   done
 }
 

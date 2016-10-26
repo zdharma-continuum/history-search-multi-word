@@ -635,8 +635,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 # Highlight special chars inside double-quoted strings
 -hsmw-highlight-string()
 {
-  local -a match mbegin mend
-
   mybuf=$arg
   idx=start_pos
 

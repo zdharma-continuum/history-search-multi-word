@@ -118,7 +118,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 # The result will be stored in REPLY.
 -hsmw-highlight-main-type() {
   REPLY=$__hsmw_highlight_main__command_type_cache[(e)$1]
-  [[ -n "$REPLY" ]] && return
+  [[ -n $REPLY ]] && return
 
   if zmodload -e zsh/parameter; then
     if (( $+commands[(e)$1] )); then
@@ -145,7 +145,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     fi
   fi
 
-  [[ -z "$REPLY" ]] && REPLY="${$(LC_ALL=C builtin type -w -- $1 2>/dev/null)#*: }"
+  [[ -z $REPLY ]] && REPLY="${$(LC_ALL=C builtin type -w -- $1 2>/dev/null)#*: }"
 
   __hsmw_highlight_main__command_type_cache[(e)$1]=$REPLY
 }
@@ -222,9 +222,9 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   # Variable declarations and initializations
   # in_array_assignment true between 'a=(' and the matching ')'
   # braces_stack: "R" for round, "Q" for square, "Y" for curly
-  local start_pos=0 end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack buf="$1"
+  local start_pos=0 end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack buf=$1
   # arg_type can be 0, 1, 2 or 3, i.e. precommand, control flow, command separator
-  integer arg_type=0 MBEGIN MEND in_redirection len="${#buf}"
+  integer arg_type=0 MBEGIN MEND in_redirection len=${#buf}
   local -a match mbegin mend
 
   # State machine
@@ -268,7 +268,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   integer this_word=BIT_start next_word=0 already_added offset
 
   # Processing buffer
-  local proc_buf="$buf" needle
+  local proc_buf=$buf needle
   for arg in ${interactive_comments-${(z)buf}} \
              ${interactive_comments+${(zZ+c+)buf}}; do
     # Initialize $next_word to its default value?
@@ -311,9 +311,9 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
       arg_type=3
     else
       offset=0
-      if [[ "$proc_buf" = (#b)(#s)(([[:space:]]|\\[[:space:]])##)* ]]; then
+      if [[ $proc_buf = (#b)(#s)(([[:space:]]|\\[[:space:]])##)* ]]; then
           # The first, outer parenthesis
-          offset="${mend[1]}"
+          offset=${mend[1]}
       fi
       ((start_pos+=offset))
       ((end_pos=start_pos+${#arg}))
@@ -322,7 +322,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
       arg_type=${__HSMW_HIGHLIGHT_TOKENS_TYPES[$arg]}
     fi
 
-    proc_buf="${proc_buf[offset + $#arg + 1,len]}"
+    proc_buf=${proc_buf[offset + $#arg + 1,len]}
 
     # Handle the INTERACTIVE_COMMENTS option.
     #
@@ -382,7 +382,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
    elif (( this_word & BIT_start )) && (( in_redirection == 0 )); then # $arg is the command word
      if (( arg_type == 1 )); then
       style=precommand
-     elif [[ "$arg" = "sudo" ]]; then
+     elif [[ $arg = "sudo" ]]; then
       style=precommand
       (( next_word & BIT_regular )) && (( next_word = next_word ^ BIT_regular ))
       (( next_word = next_word | BIT_sudo_opt ))
@@ -432,8 +432,8 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                           else
                             style=alias
                             -hsmw-highlight-resolve-alias $arg
-                            local alias_target="$REPLY"
-                            [[ ${__HSMW_HIGHLIGHT_TOKENS_TYPES[$alias_target]} = "1" && "$arg_type" != "1" ]] && __HSMW_HIGHLIGHT_TOKENS_TYPES[$arg]="1"
+                            local alias_target=$REPLY
+                            [[ ${__HSMW_HIGHLIGHT_TOKENS_TYPES[$alias_target]} = "1" && $arg_type != "1" ]] && __HSMW_HIGHLIGHT_TOKENS_TYPES[$arg]="1"
                           fi
                         }
                         ;;
@@ -447,7 +447,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                           # Assignment to a scalar parameter or to array
                           # (For array assignments, the command doesn't start until the ")" token.)
                           [[ $arg[-1] == '(' ]] && in_array_assignment=1 || (( next_word = next_word | BIT_start ))
-                        elif [[ $arg[1] = $histchars[1] && -n "${arg[2]}" ]]; then
+                        elif [[ $arg[1] = $histchars[1] && -n ${arg[2]} ]]; then
                           style=history-expansion
                         elif [[ $arg[1] == $histchars[2] ]]; then
                           style=history-expansion
@@ -540,7 +540,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                  (( highlight_glob )) && style=globbing || style=default;;
         *)       if [[ $arg = $'\x7d' ]] && (( right_brace_is_recognised_everywhere )); then
                    # was handled by the $'\x7d' case above
-                 elif [[ $arg[1] = $histchars[1] && -n "${arg[2]}" ]]; then
+                 elif [[ $arg[1] = $histchars[1] && -n ${arg[2]} ]]; then
                    style=history-expansion
                  elif (( arg_type == 3 )); then
                    style=commandseparator
@@ -552,7 +552,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                      reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[path]}")
                      already_added=1
 
-                     [[ -n "$HSMW_HIGHLIGHT_STYLES[path_pathseparator]" && "$HSMW_HIGHLIGHT_STYLES[path]" != "$HSMW_HIGHLIGHT_STYLES[path_pathseparator]" ]] && {
+                     [[ -n $HSMW_HIGHLIGHT_STYLES[path_pathseparator] && $HSMW_HIGHLIGHT_STYLES[path] != $HSMW_HIGHLIGHT_STYLES[path_pathseparator] ]] && {
                        local pos
                        for (( pos = start_pos; pos <= end_pos; pos++ )) ; do
                          # ADD
@@ -568,7 +568,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     fi
 
     # ADD
-    (( already_added == 0 )) && [[ "${HSMW_HIGHLIGHT_STYLES[$style]}" != "none" ]] && reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
+    (( already_added == 0 )) && [[ ${HSMW_HIGHLIGHT_STYLES[$style]} != none ]] && reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
 
     if (( arg_type == 3 )); then
       if [[ $arg == ';' ]] && (( in_array_assignment )); then
@@ -623,17 +623,17 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 {
   local -a match mbegin mend
 
-  local mybuf="$arg"
+  local mybuf=$arg
   integer idx=start_pos end_idx
 
-  while [[ "$mybuf" = (#b)[^\$\\]#((\$[a-zA-Z0-9_]##(\[[^\]]#\])(#c0,1))|(\$[{](\([a-zA-Z0@%#]##\))(#c0,1)[a-zA-Z0-9_]##(\[[^\]]#\])(#c0,1)[}])|[\\][\'\"\$]|[\\](*))(*) ]]; do
-    [[ -n "${match[7]}" ]] && {
+  while [[ $mybuf = (#b)[^\$\\]#((\$[a-zA-Z0-9_]##(\[[^\]]#\])(#c0,1))|(\$[{](\([a-zA-Z0@%#]##\))(#c0,1)[a-zA-Z0-9_]##(\[[^\]]#\])(#c0,1)[}])|[\\][\'\"\$]|[\\](*))(*) ]]; do
+    [[ -n ${match[7]} ]] && {
       idx+=${mbegin[1]}
-      mybuf="${match[7]}"
+      mybuf=${match[7]}
     } || {
       idx+=${mbegin[1]}-1
       end_idx=idx+${mend[1]}-${mbegin[1]}+1
-      mybuf="${match[8]}"
+      mybuf=${match[8]}
 
       # ADD
       reply+=("$idx $end_idx ${HSMW_HIGHLIGHT_STYLES[back-or-dollar-double-quoted-argument]}")
@@ -656,7 +656,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     case "$arg[$i]" in
       "\\") style=back-dollar-quoted-argument
             for (( c = i + 1 ; c <= end_pos - start_pos ; c += 1 )); do
-              [[ "$arg[$c]" != ([0-9xXuUa-fA-F]) ]] && break
+              [[ $arg[$c] != ([0-9xXuUa-fA-F]) ]] && break
             done
             AA=$arg[$i+1,$c-1]
             # Matching for HEX and OCT values like \0xA6, \xA6 or \012

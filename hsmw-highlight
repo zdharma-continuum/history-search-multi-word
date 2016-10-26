@@ -45,8 +45,6 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 : ${HSMW_HIGHLIGHT_STYLES[hashed-command]:=fg=green}
 : ${HSMW_HIGHLIGHT_STYLES[path]:=fg=magenta}
 : ${HSMW_HIGHLIGHT_STYLES[path_pathseparator]:=}
-: ${HSMW_HIGHLIGHT_STYLES[path_prefix]:=fg=magenta}
-: ${HSMW_HIGHLIGHT_STYLES[path_prefix_pathseparator]:=}
 : ${HSMW_HIGHLIGHT_STYLES[globbing]:=fg=blue,bold}
 : ${HSMW_HIGHLIGHT_STYLES[history-expansion]:=fg=blue,bold}
 : ${HSMW_HIGHLIGHT_STYLES[single-hyphen-option]:=none}
@@ -561,7 +559,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     if (( already_added == 0 )); then
       # ADD
       [[ "${HSMW_HIGHLIGHT_STYLES[$style]}" != "none" ]] && reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
-      [[ $style == "path" || $style == "path_prefix" ]] && -hsmw-highlight-path-separators
+      [[ $style == "path" ]] && -hsmw-highlight-path-separators
     fi
     if (( arg_type == 3 )); then
       if [[ $arg == ';' ]] && (( in_array_assignment )); then
@@ -593,9 +591,8 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 
 -hsmw-highlight-path-separators()
 {
-  local pos style_pathsep
-  style_pathsep=${style}_pathseparator
-  [[ -z "$HSMW_HIGHLIGHT_STYLES[$style_pathsep]" || "$HSMW_HIGHLIGHT_STYLES[$style]" == "$HSMW_HIGHLIGHT_STYLES[$style_pathsep]" ]] && return 0
+  local pos
+  [[ -z "$HSMW_HIGHLIGHT_STYLES[path_pathseparator]" || "$HSMW_HIGHLIGHT_STYLES[path]" == "$HSMW_HIGHLIGHT_STYLES[path_pathseparator]" ]] && return 0
   for (( pos = start_pos; pos <= end_pos; pos++ )) ; do
     # ADD
     [[ ${buf[pos]} == "/" ]] && reply+=("$(( pos - 1 )) $pos ${HSMW_HIGHLIGHT_STYLES[$style_pathsep]}")

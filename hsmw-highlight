@@ -481,7 +481,19 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                           style=reserved-word
                           braces_stack='R'"$braces_stack"
                         else
-                          -hsmw-highlight-check-path && style=path
+                          -hsmw-highlight-check-path && {
+                            # ADD
+                            reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[path]}")
+                            already_added=1
+
+                            [[ -n $HSMW_HIGHLIGHT_STYLES[path_pathseparator] && $HSMW_HIGHLIGHT_STYLES[path] != $HSMW_HIGHLIGHT_STYLES[path_pathseparator] ]] && {
+                              local pos
+                              for (( pos = start_pos; pos <= end_pos; pos++ )) ; do
+                                # ADD
+                                [[ ${buf[pos]} == "/" ]] && reply+=("$(( pos - 1 )) $pos ${HSMW_HIGHLIGHT_STYLES[path_pathseparator]}")
+                              done
+                            }
+                          }
                         fi
                         ;;
         *)

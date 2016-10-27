@@ -31,9 +31,9 @@ autoload is-at-least
 
 typeset -g __hsmw_hcw_index
 typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
-typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl __hsmw_active __hsmw_recedit_trap_executed
+typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl __hsmw_active
 typeset -ga __hsmw_disp_list
-typeset -gi __hsmw_page_start_idx
+typeset -gi __hsmw_page_start_idx __hsmw_prev_offset __hsmw_recedit_trap_executed
 typeset -gaU __hsmw_hcw_found
 
 (( __hsmw_hcw_call_count ++ ))
@@ -60,6 +60,7 @@ _hsmw_main() {
         __hsmw_hcw_finished="0"
         __hsmw_hcw_restart="0"
         __hsmw_page_start_idx=0
+        __hsmw_prev_offset=0
     else
         # Consecutive call
         [[ "$WIDGET" = *-word ]] && (( __hsmw_hcw_index ++ ))
@@ -115,8 +116,6 @@ _hsmw_main() {
         # ... and truncated to display width, and
         # also preceeded by two spaces
         __hsmw_disp_list=( "${(@)__hsmw_disp_list/(#m)*/  ${MATCH[1,COLUMNS-8]}}" )
-
-        __hsmw_page_start_idx=page_start_idx
     }
 
     #
@@ -138,23 +137,30 @@ _hsmw_main() {
     integer offset=${#preamble}+${#BUFFER}
     POSTDISPLAY="$preamble$text"
 
-    region_highlight=( )
-    if [[ "$__hsmw_synhl" = "yes" ]]; then
-        integer pre_index=0
-        local line
-        for line in "${__hsmw_disp_list[@]}"; do
-            reply=( )
-            -hsmw-highlight-process "$line"
-            region_highlight+=( "${reply[@]//(#b)([[:digit:]]##) ([[:digit:]]##)/$(( ${match[1]} + pre_index + offset )) $(( ${match[2]} + pre_index + offset ))}" )
-            pre_index+=${#line}+1
-        done
+    if (( page_start_idx != __hsmw_page_start_idx || offset != __hsmw_prev_offset )); then
+        region_highlight=( )
+        if [[ "$__hsmw_synhl" = "yes" ]]; then
+            integer pre_index=0
+            local line
+            for line in "${__hsmw_disp_list[@]}"; do
+                reply=( )
+                -hsmw-highlight-process "$line"
+                region_highlight+=( "${reply[@]//(#b)([[:digit:]]##) ([[:digit:]]##)/$(( ${match[1]} + pre_index + offset )) $(( ${match[2]} + pre_index + offset ))}" )
+                pre_index+=${#line}+1
+            done
+        fi
+
+        if [ -n "$colsearch_pattern" ]; then
+            local nl=$'\n'
+            # Following line is taken from Zaw (GH zsh-users/zaw) – license is named "Zaw", it is in LICENSE file
+            region_highlight+=( "${(f)${(S)text//*(#bi)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) ${__hsmw_hl_color}${nl}}%$nl*}" )
+        fi
+    else
+        region_highlight[-1]=()
     fi
 
-    if [ -n "$colsearch_pattern" ]; then
-        local nl=$'\n'
-        # Following line is taken from Zaw (GH zsh-users/zaw) – license is named "Zaw", it is in LICENSE file
-        region_highlight+=( "${(f)${(S)text//*(#bi)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) ${__hsmw_hl_color}${nl}}%$nl*}" )
-    fi
+    __hsmw_page_start_idx=page_start_idx
+    __hsmw_prev_offset=offset
 
     region_highlight+=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) $__hsmw_active" )
 }

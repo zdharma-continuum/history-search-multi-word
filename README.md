@@ -13,9 +13,10 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
 [![asciicast](https://asciinema.org/a/89406.png)](https://asciinema.org/a/89406)
 
 # News
+
 * 27-10-2016
   - New optimizations – **30%** speed up of syntax highlighting!
-  - Architectural change – syntax highlighting is now computed rarely, so any possible performance problems are now solved!
+  - Architectural change – syntax highlighting is now computed rarely, so any possible performance problems are now solved, in advance!
 
 * 24-10-2016
   - Workaround for Zsh versions like 5.0.2 has been added – **Ctrl-V** and **ESC** cancel search. On such Zsh

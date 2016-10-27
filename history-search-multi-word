@@ -196,6 +196,12 @@ _hsmw_cancel_accept() {
     zle .accept-line
 }
 
+_hsmw_backward_kill_word() {
+    zle .backward-kill-word
+    __hsmw_hcw_restart="1"
+    _hsmw_simulate_widget
+}
+
 if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     # Make the hsmw keymap a copy of the current main
     bindkey -N hsmw emacs
@@ -247,7 +253,8 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     bindkey -M hsmw '^[W' .forward-word
     bindkey -M hsmw '^K' .kill-whole-line
     bindkey -M hsmw '^U' .kill-whole-line
-    bindkey -M hsmw '^W' .backward-kill-word
+    zle -N _hsmw_backward_kill_word
+    bindkey -M hsmw '^W' _hsmw_backward_kill_word
 
     # Additional keys
     bindkey -M hsmw '^P' "$up_widget"

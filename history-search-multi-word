@@ -31,7 +31,7 @@ autoload is-at-least
 
 typeset -g __hsmw_hcw_index
 typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
-typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl __hsmw_active
+typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl __hsmw_active __hsmw_recedit_trap_executed
 typeset -ga __hsmw_disp_list
 typeset -gi __hsmw_page_start_idx
 typeset -gaU __hsmw_hcw_found
@@ -283,7 +283,8 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     bindkey -M hsmw "^[" _hsmw_cancel_accept
 
     # Trap INT to manually interrupt Zle to work around a bug
-    trap 'zle && zle .send-break' INT
+    __hsmw_recedit_trap_executed=0
+    trap '(( __hsmw_recedit_trap_executed == 0 )) && zle && { __hsmw_recedit_trap_executed=1; zle .send-break; }' INT
 
     if zle .recursive-edit -K hsmw; then
         trap '' INT

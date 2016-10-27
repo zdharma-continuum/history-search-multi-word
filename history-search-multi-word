@@ -82,7 +82,7 @@ _hsmw_main() {
         repeat 1; do
             # Tip: these are equal:
             #__hsmw_hcw_found=( "${(@M)history:#(#i)*$~search_pattern*}" )
-            __hsmw_hcw_found=( "${(@)history[(R)(#i)*$~search_pattern*]}" )
+            [[ -z "$search_pattern" ]] && __hsmw_hcw_found=( ${(@)history} ) || __hsmw_hcw_found=( "${(@)history[(R)(#i)*$~search_pattern*]}" )
         done
     fi
 

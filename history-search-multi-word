@@ -245,6 +245,8 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     bindkey -M hsmw '^[F' .forward-word
     bindkey -M hsmw '^[w' .forward-word
     bindkey -M hsmw '^[W' .forward-word
+    bindkey -M hsmw '^K' .vi-kill-line
+    bindkey -M hsmw '^W' .backward-kill-word
 
     # Additional keys
     bindkey -M hsmw '^P' "$up_widget"

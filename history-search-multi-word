@@ -286,6 +286,8 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     trap 'zle && zle .send-break' INT
 
     if zle .recursive-edit -K hsmw; then
+        trap '' INT
+
         if [[ "$__hsmw_hcw_index" -gt "0" ]]; then
             BUFFER="${__hsmw_hcw_found[__hsmw_hcw_index]}"
             CURSOR="${#BUFFER}"
@@ -293,6 +295,8 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
             BUFFER=""
         fi
     else
+        trap '' INT
+
         BUFFER=""
     fi
     POSTDISPLAY=""

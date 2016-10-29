@@ -277,28 +277,28 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     bindkey -M hsmw '^R' "$down_widget"
 
     # Substitute self-insert, backward-delete-char, delete-char
-    zle -A self-insert saved-self-insert
-    zle -A backward-delete-char saved-backward-delete-char
-    zle -A delete-char saved-delete-char
+    zle -A self-insert hsmw-saved-self-insert
+    zle -A backward-delete-char hsmw-saved-backward-delete-char
+    zle -A delete-char hsmw-saved-delete-char
     zle -N self-insert _hsmw_self_insert
     zle -N backward-delete-char _hsmw_backward_delete_char
     zle -N delete-char _hsmw_delete_char
 
     # OMZ does funny things with zle-keymap-select
     zle -la zle-keymap-select && {
-        zle -A zle-keymap-select saved-zle-keymap-select
+        zle -A zle-keymap-select hsmw-saved-zle-keymap-select
         zle -D zle-keymap-select
     }
 
     # Override ourselves with what we actually are
     # because zsh-autosuggestions change us
-    zle -A "$down_widget" saved-"$down_widget"
-    zle -A "$up_widget" saved-"$up_widget"
+    zle -A "$down_widget" hsmw-saved-"$down_widget"
+    zle -A "$up_widget" hsmw-saved-"$up_widget"
     zle -N "$down_widget" _hsmw_simulate_widget
     zle -N "$up_widget" _hsmw_simulate_widget
 
-    zle -A "$pdown_widget" saved-"$pdown_widget"
-    zle -A "$pup_widget" saved-"$pup_widget"
+    zle -A "$pdown_widget" hsmw-saved-"$pdown_widget"
+    zle -A "$pup_widget" hsmw-saved-"$pup_widget"
     zle -N "$pdown_widget" _hsmw_simulate_widget
     zle -N "$pup_widget" _hsmw_simulate_widget
 
@@ -329,23 +329,23 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     POSTDISPLAY=""
 
     # Restore self-insert, backward-delete-char, delete-char
-    zle -A saved-self-insert self-insert
-    zle -A saved-backward-delete-char backward-delete-char
-    zle -A saved-delete-char delete-char
-    zle -D saved-self-insert saved-backward-delete-char saved-delete-char
-    zle -la saved-zle-keymap-select && {
-        zle -A saved-zle-keymap-select zle-keymap-select
-        zle -D saved-zle-keymap-select
+    zle -A hsmw-saved-self-insert self-insert
+    zle -A hsmw-saved-backward-delete-char backward-delete-char
+    zle -A hsmw-saved-delete-char delete-char
+    zle -D hsmw-saved-self-insert hsmw-saved-backward-delete-char hsmw-saved-delete-char
+    zle -la hsmw-saved-zle-keymap-select && {
+        zle -A hsmw-saved-zle-keymap-select zle-keymap-select
+        zle -D hsmw-saved-zle-keymap-select
     }
 
     # Restore ourselves
-    zle -A saved-"$down_widget" "$down_widget"
-    zle -A saved-"$up_widget" "$up_widget"
-    zle -D saved-"$down_widget" saved-"$up_widget"
+    zle -A hsmw-saved-"$down_widget" "$down_widget"
+    zle -A hsmw-saved-"$up_widget" "$up_widget"
+    zle -D hsmw-saved-"$down_widget" hsmw-saved-"$up_widget"
 
-    zle -A saved-"$pdown_widget" "$pdown_widget"
-    zle -A saved-"$pup_widget" "$pup_widget"
-    zle -D saved-"$pdown_widget" saved-"$pup_widget"
+    zle -A hsmw-saved-"$pdown_widget" "$pdown_widget"
+    zle -A hsmw-saved-"$pup_widget" "$pup_widget"
+    zle -D hsmw-saved-"$pdown_widget" hsmw-saved-"$pup_widget"
 
     # Full reinitialisation at next call
     __hsmw_hcw_call_count="0"

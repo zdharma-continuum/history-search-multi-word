@@ -285,8 +285,10 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     zle -N delete-char _hsmw_delete_char
 
     # OMZ does funny things with zle-keymap-select
-    zle -A zle-keymap-select saved-zle-keymap-select
-    zle -D zle-keymap-select
+    zle -la zle-keymap-select && {
+        zle -A zle-keymap-select saved-zle-keymap-select
+        zle -D zle-keymap-select
+    }
 
     # Override ourselves with what we actually are
     # because zsh-autosuggestions change us
@@ -330,8 +332,11 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     zle -A saved-self-insert self-insert
     zle -A saved-backward-delete-char backward-delete-char
     zle -A saved-delete-char delete-char
-    zle -A saved-zle-keymap-select zle-keymap-select
-    zle -D saved-self-insert saved-backward-delete-char saved-delete-char saved-zle-keymap-select
+    zle -D saved-self-insert saved-backward-delete-char saved-delete-char
+    zle -la saved-zle-keymap-select && {
+        zle -A saved-zle-keymap-select zle-keymap-select
+        zle -D saved-zle-keymap-select
+    }
 
     # Restore ourselves
     zle -A saved-"$down_widget" "$down_widget"

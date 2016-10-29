@@ -21,7 +21,7 @@ integer path_dirs_was_set multi_func_def ointeractive_comments
 -hsmw-highlight-fill-option-variables
 
 emulate -LR zsh
-setopt typesetsilent extendedglob noshortloops localtraps
+setopt typesetsilent extendedglob noshortloops localtraps promptsubst
 
 # When an error, then no cursor keys bindings
 zmodload zsh/terminfo 2>/dev/null

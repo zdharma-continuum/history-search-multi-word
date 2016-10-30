@@ -145,7 +145,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
     fi
   fi
 
-  [[ -z "$REPLY" ]] && REPLY="${$(LC_ALL=C builtin type -w -- $1 2>/dev/null)#*: }"
+  [[ -z "$REPLY" ]] && REPLY="${$(LC_ALL=C builtin type -w -- $1 2>/dev/null)##*: }"
 
   __hsmw_highlight_main__command_type_cache[(e)$1]=$REPLY
 }
@@ -488,7 +488,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                         ;;
         *)
                         # ADD
-                        reply+=("$start_pos $end_pos commandtypefromthefuture-$REPLY")
+                        # reply+=("$start_pos $end_pos commandtypefromthefuture-$REPLY")
                         already_added=1
                         ;;
       esac

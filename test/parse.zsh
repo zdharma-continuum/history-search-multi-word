@@ -30,6 +30,8 @@ fi
 zmodload zsh/zprof
 autoload is-at-least
 
+setopt interactive_comments
+
 # Own input?
 if [[ "$1" = "-o" || "$1" = "-oo" ]]; then
     typeset -a input

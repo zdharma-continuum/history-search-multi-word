@@ -96,7 +96,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
     # zsh 5.2 and older have a bug whereby running 'type -w ./sudo' implicitly
     # runs 'hash ./sudo=/usr/local/bin/./sudo' (assuming /usr/local/bin/sudo
     # exists and is in $PATH).  Avoid triggering the bug, at the expense of
-    # falling through to the $() below, incurring a fork.  (Issue #354.)
+    # falling through to the $(x) below, incurring a fork.  (Issue #354.)
     #
     # The second disjunct mimics the isrelative() C call from the zsh bug.
     elif {  [[ $1 != */* ]] || is-at-least 5.3 } &&

@@ -509,6 +509,9 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
    elif (( in_redirection + this_word & 14 ))
    then # $arg is a non-command word
       case $arg in
+        ']]')
+                 style=reserved-word
+                 ;;
         $'\x29') # subshell or end of array assignment
                  if (( in_array_assignment )); then
                    style=assign

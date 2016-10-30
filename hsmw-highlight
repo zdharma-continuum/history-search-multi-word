@@ -495,7 +495,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                                 [[ ${buf[pos]} == "/" ]] && reply+=("$(( pos - 1 )) $pos ${HSMW_HIGHLIGHT_STYLES[path_pathseparator]}")
                               done
                             }
-                          }
+                          } || (( this_word & 14 )) && style=default
                         fi
                         ;;
         *)

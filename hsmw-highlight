@@ -318,6 +318,14 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
         proc_buf="${proc_buf[offset + $#arg + 1,len]}"
         start_pos=$end_pos
         continue
+      else
+        # One more short path – for ';' command separator
+        (( in_array_assignment )) && (( this_word = 2 )) || { (( this_word = 1 )); highlight_glob=1; }
+        in_redirection=0
+        [[ "${HSMW_HIGHLIGHT_STYLES[commandseparator]}" != "none" ]] && reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[commandseparator]}")
+        proc_buf="${proc_buf[offset + $#arg + 1,len]}"
+        start_pos=$end_pos
+        continue
       fi
 
       arg_type=3

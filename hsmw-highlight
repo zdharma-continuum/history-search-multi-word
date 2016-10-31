@@ -58,6 +58,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 : ${HSMW_HIGHLIGHT_STYLES[assign]:=none}
 : ${HSMW_HIGHLIGHT_STYLES[redirection]:=none}
 : ${HSMW_HIGHLIGHT_STYLES[comment]:=fg=black,bold}
+: ${HSMW_HIGHLIGHT_STYLES[newline]:=fg=black,bold}  # '\n' strings
 
 
 typeset -gA __HSMW_HIGHLIGHT_TOKENS_TYPES
@@ -315,6 +316,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
       if [[ "${proc_buf[offset+1]}" = $'\n' ]]; then
         (( in_array_assignment )) && (( this_word = 2 )) || { (( this_word = 1 )); highlight_glob=1; }
         in_redirection=0
+        reply+=("$(( start_pos - 1)) $end_pos ${HSMW_HIGHLIGHT_STYLES[newline]}")
         proc_buf="${proc_buf[offset + $#arg + 1,len]}"
         start_pos=$end_pos
         continue

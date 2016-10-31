@@ -223,7 +223,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   # in_array_assignment true between 'a=(' and the matching ')'
   # braces_stack: "R" for round, "Q" for square, "Y" for curly
   # mybuf, cdpath_dir are used in sub-functions
-  local start_pos=0 end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack buf="$1" mybuf cdpath_dir cur_cmd
+  local start_pos="$2" end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack buf="$1" mybuf cdpath_dir cur_cmd
   # arg_type can be 0, 1, 2 or 3, i.e. precommand, control flow, command separator
   # idx and end_idx are used in sub-functions
   # for this_word and next_word look below at commented integers and at state machine description

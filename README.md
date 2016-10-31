@@ -14,6 +14,9 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
 
 # News
 
+* 31-10-2016
+  - New lines do not disturb the parser anymore, and are also highlighted with a dark color – [video](https://asciinema.org/a/91159)
+
 * 27-10-2016
   - New optimizations – **30%** speed up of syntax highlighting!
   - Architectural change – syntax highlighting is now computed rarely, so any possible performance problems are now solved, in advance!

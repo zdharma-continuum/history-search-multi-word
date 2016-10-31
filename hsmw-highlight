@@ -309,6 +309,17 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
       (( start_pos += offset ))
       (( end_pos = start_pos + $#arg ))
 
+      # Do not run default code for case when there is a new line
+      # It shouldn't be treated as ';', i.e. shouldn't be highlighted
+      # as unknown-token when appears after command-starting arg like "{"
+      if [[ "${proc_buf[offset+1]}" = $'\n' ]]; then
+        (( in_array_assignment )) && (( this_word = 2 )) || { (( this_word = 1 )); highlight_glob=1; }
+        in_redirection=0
+        proc_buf="${proc_buf[offset + $#arg + 1,len]}"
+        start_pos=$end_pos
+        continue
+      fi
+
       arg_type=3
     else
       offset=0

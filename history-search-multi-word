@@ -30,7 +30,7 @@ zmodload zsh/termcap 2>/dev/null
 typeset -g __hsmw_hcw_index
 typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
 typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl __hsmw_active
-typeset -ga __hsmw_disp_list
+typeset -ga __hsmw_disp_list __hsmw_disp_list_newlines
 typeset -gi __hsmw_page_start_idx __hsmw_prev_offset __hsmw_recedit_trap_executed
 typeset -gaU __hsmw_hcw_found
 
@@ -70,7 +70,7 @@ _hsmw_main() {
     fi
 
     # Find history entries matching pattern *word1*~^*word2*~^*word3* etc.
-    local search_buffer="${BUFFER%% ##}" search_pattern="" colsearch_pattern=""
+    local search_buffer="${BUFFER%% ##}" search_pattern="" colsearch_pattern="" nl=$'\n'
     search_buffer="${search_buffer## ##}"
     search_buffer="${search_buffer//(#m)[][*?|#~^()><\\]/\\$MATCH}"
     # Pattern will be *foo*~^*bar* (inventor: Mikael Magnusson)
@@ -111,11 +111,17 @@ _hsmw_main() {
     (( page_start_idx != __hsmw_page_start_idx )) && {
         __hsmw_disp_list=( "${(@)__hsmw_hcw_found[page_start_idx,page_start_idx+page_size-1]}" )
 
-        # All entries should have multilines replaced
+        # Don't do @ splitting, it's slower
+        __hsmw_disp_list_newlines=( $__hsmw_disp_list )
+
+        # Replace all new lines with "\n" text
         __hsmw_disp_list=( "${(@)__hsmw_disp_list//$'\n'/\\n}" )
-        # ... and truncated to display width, and
-        # also preceeded by two spaces
+        # Truncate to display width, preceede by two spaces
         __hsmw_disp_list=( "${(@)__hsmw_disp_list/(#m)*/  ${MATCH[1,COLUMNS-8]}}" )
+
+        # The same with newlines adapted for syntax highlighting
+        __hsmw_disp_list_newlines=( "${(@)__hsmw_disp_list_newlines//$'\n'/ $nl}" )
+        __hsmw_disp_list_newlines=( "${(@)__hsmw_disp_list_newlines/(#m)*/  ${MATCH[1,COLUMNS-8]}}" )
     }
 
     #
@@ -142,7 +148,7 @@ _hsmw_main() {
         if [[ "$__hsmw_synhl" = "yes" ]]; then
             integer pre_index=0
             local line
-            for line in "${__hsmw_disp_list[@]}"; do
+            for line in "${__hsmw_disp_list_newlines[@]}"; do
                 reply=( )
                 -hsmw-highlight-process "$line"
                 region_highlight+=( "${reply[@]//(#b)([[:digit:]]##) ([[:digit:]]##)/$(( ${match[1]} + pre_index + offset )) $(( ${match[2]} + pre_index + offset ))}" )
@@ -151,7 +157,6 @@ _hsmw_main() {
         fi
 
         if [ -n "$colsearch_pattern" ]; then
-            local nl=$'\n'
             # Following line is taken from Zaw (GH zsh-users/zaw) – license is named "Zaw", it is in LICENSE file
             region_highlight+=( "${(f)${(S)text//*(#bi)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) ${__hsmw_hl_color}${nl}}%$nl*}" )
         fi

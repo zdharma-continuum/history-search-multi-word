@@ -468,8 +468,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                           # This highlights empty commands (semicolon follows nothing) as an error.
                           # Zsh accepts them, though.
                           (( this_word & 2 )) && style=commandseparator
-                        elif (( in_redirection == 2 )); then
-                          style=redirection
                         elif [[ $arg[1,2] == '((' ]]; then
                           # Arithmetic evaluation.
                           #

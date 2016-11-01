@@ -70,7 +70,7 @@ _hsmw_main() {
     fi
 
     # Find history entries matching pattern *word1*~^*word2*~^*word3* etc.
-    local search_buffer="${BUFFER%% ##}" search_pattern="" colsearch_pattern="" nl=$'\n'
+    local search_buffer="${BUFFER%% ##}" search_pattern="" colsearch_pattern="" nl=$'\n' nul=$'\0'
     search_buffer="${search_buffer## ##}"
     search_buffer="${search_buffer//(#m)[][*?|#~^()><\\]/\\$MATCH}"
     # Pattern will be *foo*~^*bar* (inventor: Mikael Magnusson)
@@ -157,8 +157,8 @@ _hsmw_main() {
         fi
 
         if [ -n "$colsearch_pattern" ]; then
-            # Following line is taken from Zaw (GH zsh-users/zaw) – license is named "Zaw", it is in LICENSE file
-            region_highlight+=( "${(f)${(S)text//*(#bi)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) ${__hsmw_hl_color}${nl}}%$nl*}" )
+            # Following line is taken from Zaw (GH zsh-users/zaw) and modified – license of original parts is named "Zaw", it is in LICENSE file
+            region_highlight+=( "${(0)${(S)text//*(#bi)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) ${__hsmw_hl_color}${nul}}%$nul*}" )
         fi
     else
         region_highlight[-1]=()

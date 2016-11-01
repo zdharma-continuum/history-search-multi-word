@@ -650,8 +650,10 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 
   while [[ "$mybuf" = (#b)[^\$\\]#((\$[a-zA-Z0-9_:]##(\[[^\]]#\])(#c0,1))|(\$[{](\([a-zA-Z0@%#]##\))(#c0,1)[a-zA-Z0-9_:#]##(\[[^\]]#\])(#c0,1)[}])|[\\][\'\"\$]|[\\](*))(*) ]]; do
     [[ -n "${match[7]}" ]] && {
-      idx+=${mbegin[1]}
-      mybuf="${match[7]}"
+      # Skip following char – it is quoted. Choice is
+      # made to not highlight such quoting
+      idx+=${mbegin[1]}+1
+      mybuf="${match[7]:1}"
     } || {
       idx+=${mbegin[1]}-1
       end_idx=idx+${mend[1]}-${mbegin[1]}+1

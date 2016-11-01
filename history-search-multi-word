@@ -30,7 +30,7 @@ zmodload zsh/termcap 2>/dev/null
 typeset -g __hsmw_hcw_index
 typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
 typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl __hsmw_active
-typeset -ga __hsmw_disp_list __hsmw_disp_list_newlines
+typeset -ga __hsmw_disp_list __hsmw_disp_list_newlines __hsmw_region_highlight_data
 typeset -gi __hsmw_page_start_idx __hsmw_prev_offset __hsmw_recedit_trap_executed
 typeset -gaU __hsmw_hcw_found
 
@@ -70,7 +70,7 @@ _hsmw_main() {
     fi
 
     # Find history entries matching pattern *word1*~^*word2*~^*word3* etc.
-    local search_buffer="${BUFFER%% ##}" search_pattern="" colsearch_pattern="" nl=$'\n' nul=$'\0'
+    local search_buffer="${BUFFER%% ##}" search_pattern="" colsearch_pattern="" nl=$'\n' MATCH MBEGIN MEND
     search_buffer="${search_buffer## ##}"
     search_buffer="${search_buffer//(#m)[][*?|#~^()><\\]/\\$MATCH}"
     # Pattern will be *foo*~^*bar* (inventor: Mikael Magnusson)
@@ -157,8 +157,9 @@ _hsmw_main() {
         fi
 
         if [ -n "$colsearch_pattern" ]; then
-            # Following line is taken from Zaw (GH zsh-users/zaw) and modified – license of original parts is named "Zaw", it is in LICENSE file
-            region_highlight+=( "${(0)${(S)text//*(#bi)(${~colsearch_pattern})/$(( offset + mbegin[1] - 1 )) $(( offset + mend[1] )) ${__hsmw_hl_color}${nul}}%$nul*}" )
+            __hsmw_region_highlight_data=( )
+            : "${text//(#mi)(${~colsearch_pattern})/$(( hsmw_append(MBEGIN,MEND) ))}"
+            region_highlight+=( $__hsmw_region_highlight_data )
         fi
     else
         region_highlight[-1]=()
@@ -169,6 +170,11 @@ _hsmw_main() {
 
     region_highlight+=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) $__hsmw_active" )
 }
+
+_hsmw_shappend() {
+    __hsmw_region_highlight_data+=( "$(( offset + $1 - 1 )) $(( offset + $2 )) ${__hsmw_hl_color}" )
+}
+functions -M hsmw_append 2 2 _hsmw_shappend
 
 fi
 

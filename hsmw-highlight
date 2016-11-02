@@ -346,6 +346,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
       fi
       # ADD
       reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[$style]}")
+      start_pos=$end_pos
       continue
     fi
 

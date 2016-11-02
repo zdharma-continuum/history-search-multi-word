@@ -264,7 +264,6 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
     bindkey -M hsmw '^[F' .forward-word
     bindkey -M hsmw '^[w' .forward-word
     bindkey -M hsmw '^[W' .forward-word
-    bindkey -M hsmw '^K' .kill-whole-line
     bindkey -M hsmw '^U' .kill-whole-line
     zle -N _hsmw_backward_kill_word
     bindkey -M hsmw '^W' _hsmw_backward_kill_word

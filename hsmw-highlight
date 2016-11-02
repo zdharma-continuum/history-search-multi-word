@@ -154,15 +154,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 
 # Check that the top of $braces_stack has the expected value.  If it does, set
 # the style according to $2; otherwise, set style=unknown-token.
-#
-# $1: character expected to be at the top of $braces_stack
-# $2: assignment to execute it if matches
--hsmw-highlight-stack-pop() {
-  [[ $braces_stack[1] == $1 ]] && {
-    braces_stack[1]=""
-    style=reserved-word
-  }
-}
+#-hsmw-highlight-stack-pop() {
 
 # Below are variables that must be defined in outer
 # scope so that they are reachable in *-process()
@@ -417,10 +409,11 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                         style=reserved-word
                         if [[ $arg == $'\x7b' ]]; then
                           braces_stack='Y'"$braces_stack"
-                        elif [[ $arg == $'\x7d' ]]; then
+                        elif [[ $arg == $'\x7d' && $braces_stack[1] == "Y" ]]; then
                           # We're at command word, so no need to check $right_brace_is_recognised_everywhere
-                          -hsmw-highlight-stack-pop 'Y'
-                          [[ $style == "reserved-word" ]] && (( next_word = next_word | 16 ))
+                          braces_stack[1]=""
+                          style=reserved-word
+                          (( next_word = next_word | 16 ))
                         fi
                         ;;
         'suffix alias') style=suffix-alias;;
@@ -511,8 +504,9 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                    style=assign
                    in_array_assignment=0
                    (( next_word = next_word | 1 ))
-                 else
-                   -hsmw-highlight-stack-pop 'R'
+                 elif [[ $braces_stack[1] == "R" ]]; then
+                   braces_stack[1]=""
+                   style=reserved-word
                  fi;;
         $'\x28\x29') # possibly a function definition
                  # || false # TODO: or if the previous word was a command word
@@ -525,12 +519,13 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                  #
                  #     Additionally, `tt(})' is recognized in any position if neither the
                  #     tt(IGNORE_BRACES) option nor the tt(IGNORE_CLOSE_BRACES) option is set."""
-                 if (( right_brace_is_recognised_everywhere )); then
-                   -hsmw-highlight-stack-pop 'Y'
-                   [[ $style == reserved-word ]] && (( next_word = next_word | 16 ))
+                 (( right_brace_is_recognised_everywhere )) && [[ $braces_stack[1] == "Y" ]] && {
+                   braces_stack[1]=""
+                   style=reserved-word
+                   (( next_word = next_word | 16 ))
+                 }
                  #else
                    # Fall through to the catchall case at the end.
-                 fi
                  ;|
         '--'*)   style=double-hyphen-option;;
         '-'*)    style=single-hyphen-option;;

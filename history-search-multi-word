@@ -156,7 +156,7 @@ _hsmw_main() {
             done
         fi
 
-        if [ -n "$colsearch_pattern" ]; then
+        if [[ -n "$colsearch_pattern" ]]; then
             __hsmw_region_highlight_data=( )
             : "${text//(#mi)(${~colsearch_pattern})/$(( hsmw_append(MBEGIN,MEND) ))}"
             region_highlight+=( $__hsmw_region_highlight_data )
@@ -215,7 +215,7 @@ _hsmw_backward_kill_word() {
     _hsmw_simulate_widget
 }
 
-if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
+if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
     # Make the hsmw keymap a copy of the current main
     bindkey -N hsmw emacs
 
@@ -229,20 +229,20 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     bindkey -M hsmw '^[OB' "$down_widget"
     bindkey -M hsmw '^[[A' "$up_widget"
     bindkey -M hsmw '^[[B' "$down_widget"
-    [ -n "$termcap[ku]" ] && bindkey -M hsmw "$termcap[ku]" "$up_widget"
-    [ -n "$termcap[kd]" ] && bindkey -M hsmw "$termcap[kd]" "$down_widget"
-    [ -n "$termcap[kD]" ] && bindkey -M hsmw "$termcap[kD]" .delete-char
-    [ -n "$terminfo[kcuu1]" ] && bindkey -M hsmw "$terminfo[kcuu1]" "$up_widget"
-    [ -n "$terminfo[kcud1]" ] && bindkey -M hsmw "$terminfo[kcud1]" "$down_widget"
-    [ -n "$terminfo[kdch1]" ] && bindkey -M hsmw "$terminfo[kdch1]" .delete-char
+    [[ -n "$termcap[ku]" ]] && bindkey -M hsmw "$termcap[ku]" "$up_widget"
+    [[ -n "$termcap[kd]" ]] && bindkey -M hsmw "$termcap[kd]" "$down_widget"
+    [[ -n "$termcap[kD]" ]] && bindkey -M hsmw "$termcap[kD]" .delete-char
+    [[ -n "$terminfo[kcuu1]" ]] && bindkey -M hsmw "$terminfo[kcuu1]" "$up_widget"
+    [[ -n "$terminfo[kcud1]" ]] && bindkey -M hsmw "$terminfo[kcud1]" "$down_widget"
+    [[ -n "$terminfo[kdch1]" ]] && bindkey -M hsmw "$terminfo[kdch1]" .delete-char
 
     # More bindkeys, to remove influence of plugins that overload things (z-sy-h, z-au-s)
     bindkey -M hsmw '^[[D' .backward-char
     bindkey -M hsmw '^[[C' .forward-char
-    [ -n "$termcap[kl]" ] && bindkey -M hsmw "$termcap[kl]" .backward-char
-    [ -n "$termcap[kr]" ] && bindkey -M hsmw "$termcap[kr]" .forward-char
-    [ -n "$terminfo[kcub1]" ] && bindkey -M hsmw "$terminfo[kcub1]" .backward-char
-    [ -n "$terminfo[kcuf1]" ] && bindkey -M hsmw "$terminfo[kcuf1]" .forward-char
+    [[ -n "$termcap[kl]" ]] && bindkey -M hsmw "$termcap[kl]" .backward-char
+    [[ -n "$termcap[kr]" ]] && bindkey -M hsmw "$termcap[kr]" .forward-char
+    [[ -n "$terminfo[kcub1]" ]] && bindkey -M hsmw "$terminfo[kcub1]" .backward-char
+    [[ -n "$terminfo[kcuf1]" ]] && bindkey -M hsmw "$terminfo[kcuf1]" .forward-char
     # Now Home/End keys, first few recorded in my .zshrc during the years sequences
     bindkey -M hsmw "\e[1~" .beginning-of-line
     bindkey -M hsmw "\e[7~" .beginning-of-line
@@ -250,10 +250,10 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     bindkey -M hsmw "\e[4~" .end-of-line
     bindkey -M hsmw "\e[F"  .end-of-line
     bindkey -M hsmw "\e[8~" .end-of-line
-    [ -n "$termcap[kh]" ] && bindkey -M hsmw "$termcap[kh]" .beginning-of-line
-    [ -n "$termcap[@7]" ] && bindkey -M hsmw "$termcap[@7]" .end-of-line
-    [ -n "$terminfo[khome]" ] && bindkey -M hsmw "$terminfo[khome]" .beginning-of-line
-    [ -n "$terminfo[kend]" ] && bindkey -M hsmw "$terminfo[kend]" .end-of-line
+    [[ -n "$termcap[kh]" ]] && bindkey -M hsmw "$termcap[kh]" .beginning-of-line
+    [[ -n "$termcap[@7]" ]] && bindkey -M hsmw "$termcap[@7]" .end-of-line
+    [[ -n "$terminfo[khome]" ]] && bindkey -M hsmw "$terminfo[khome]" .beginning-of-line
+    [[ -n "$terminfo[kend]" ]] && bindkey -M hsmw "$terminfo[kend]" .end-of-line
     # The same for Ctrl-E, Ctrl-F
     bindkey -M hsmw '^A' .beginning-of-line
     bindkey -M hsmw '^E' .end-of-line
@@ -274,10 +274,10 @@ if [ "$__hsmw_hcw_call_count" -eq "1" ]; then
     bindkey -M hsmw '^N' "$down_widget"
 
     # Page Up, Page Down keys
-    [ -n "$termcap[kP]" ] && bindkey -M hsmw "$termcap[kP]" "$pup_widget"
-    [ -n "$termcap[kN]" ] && bindkey -M hsmw "$termcap[kN]" "$pdown_widget"
-    [ -n "$terminfo[kpp]" ] && bindkey -M hsmw "$terminfo[kpp]" "$pup_widget"
-    [ -n "$terminfo[knp]" ] && bindkey -M hsmw "$terminfo[knp]" "$pdown_widget"
+    [[ -n "$termcap[kP]" ]] && bindkey -M hsmw "$termcap[kP]" "$pup_widget"
+    [[ -n "$termcap[kN]" ]] && bindkey -M hsmw "$termcap[kN]" "$pdown_widget"
+    [[ -n "$terminfo[kpp]" ]] && bindkey -M hsmw "$terminfo[kpp]" "$pup_widget"
+    [[ -n "$terminfo[knp]" ]] && bindkey -M hsmw "$terminfo[knp]" "$pdown_widget"
 
     # Needed for Fedora 23, zsh-5.1.1
     bindkey -M hsmw ' ' self-insert

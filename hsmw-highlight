@@ -152,19 +152,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   }
 }
 
-# Resolve alias.
-#
-# Takes a single argument.
-#
-# The result will be stored in REPLY.
--hsmw-highlight-resolve-alias() {
-  if zmodload -e zsh/parameter; then
-    REPLY=${aliases[$arg]}
-  else
-    REPLY="${"$(alias -- $arg)"#*=}"
-  fi
-}
-
 # Check that the top of $braces_stack has the expected value.  If it does, set
 # the style according to $2; otherwise, set style=unknown-token.
 #
@@ -225,7 +212,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   # in_array_assignment true between 'a=(' and the matching ')'
   # braces_stack: "R" for round, "Q" for square, "Y" for curly
   # mybuf, cdpath_dir are used in sub-functions
-  local start_pos="$2" end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack buf="$1" mybuf cdpath_dir cur_cmd
+  local start_pos="$2" end_pos highlight_glob=1 arg style in_array_assignment=0 MATCH expanded_path braces_stack buf="$1" mybuf cdpath_dir cur_cmd alias_target
   # arg_type can be 0, 1, 2 or 3, i.e. precommand, control flow, command separator
   # idx and end_idx are used in sub-functions
   # for this_word and next_word look below at commented integers and at state machine description
@@ -456,8 +443,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                             style=unknown-token
                           else
                             style=alias
-                            -hsmw-highlight-resolve-alias $arg
-                            local alias_target="$REPLY"
+                            zmodload -e zsh/parameter && alias_target=${aliases[$arg]} || alias_target="${"$(alias -- $arg)"#*=}"
                             [[ ${__HSMW_HIGHLIGHT_TOKENS_TYPES[$alias_target]} = "1" && "$arg_type" != "1" ]] && __HSMW_HIGHLIGHT_TOKENS_TYPES[$arg]="1"
                           fi
                         }

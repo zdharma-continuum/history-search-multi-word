@@ -206,7 +206,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   # arg_type can be 0, 1, 2 or 3, i.e. precommand, control flow, command separator
   # idx and end_idx are used in sub-functions
   # for this_word and next_word look below at commented integers and at state machine description
-  integer arg_type=0 MBEGIN MEND in_redirection len=${#buf} already_added offset idx end_idx this_word=1 next_word=0
+  integer arg_type=0 MBEGIN MEND in_redirection len=${#buf} already_added offset idx end_idx this_word=1 next_word=0 insane_alias
   local -a match mbegin mend
 
   # integer BIT_start=1 BIT_regular=2 BIT_sudo_opt=4 BIT_sudo_arg=8 BIT_always=16
@@ -417,8 +417,8 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                         fi
                         ;;
         'suffix alias') style=suffix-alias;;
-        alias)          () {
-                          integer insane_alias
+        alias)
+                          insane_alias=0
                           case $arg in 
                             # Issue #263: aliases with '=' on their LHS.
                             #
@@ -438,7 +438,6 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                             zmodload -e zsh/parameter && alias_target=${aliases[$arg]} || alias_target="${"$(alias -- $arg)"#*=}"
                             [[ ${__HSMW_HIGHLIGHT_TOKENS_TYPES[$alias_target]} = "1" && "$arg_type" != "1" ]] && __HSMW_HIGHLIGHT_TOKENS_TYPES[$arg]="1"
                           fi
-                        }
                         ;;
         builtin)        style=builtin;;
         function)       style=function;;

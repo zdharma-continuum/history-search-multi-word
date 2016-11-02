@@ -119,7 +119,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 # The result will be stored in REPLY.
 -hsmw-highlight-main-type() {
   REPLY=$__hsmw_highlight_main__command_type_cache[(e)$1]
-  [[ -n "$REPLY" ]] && return
+  [[ -z "$REPLY" ]] && {
 
   if zmodload -e zsh/parameter; then
     if (( $+commands[(e)$1] )); then
@@ -148,6 +148,8 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   [[ -z "$REPLY" ]] && REPLY="${$(LC_ALL=C builtin type -w -- $1 2>/dev/null)##*: }"
 
   __hsmw_highlight_main__command_type_cache[(e)$1]=$REPLY
+
+  }
 }
 
 # Resolve alias.

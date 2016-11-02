@@ -158,12 +158,10 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 # $1: character expected to be at the top of $braces_stack
 # $2: assignment to execute it if matches
 -hsmw-highlight-stack-pop() {
-  if [[ $braces_stack[1] == $1 ]]; then
-    braces_stack=${braces_stack:1}
+  [[ $braces_stack[1] == $1 ]] && {
+    braces_stack[1]=""
     style=reserved-word
-  else
-    style=unknown-token
-  fi
+  }
 }
 
 # Below are variables that must be defined in outer

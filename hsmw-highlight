@@ -59,6 +59,7 @@ typeset -gA HSMW_HIGHLIGHT_STYLES
 : ${HSMW_HIGHLIGHT_STYLES[redirection]:=none}
 : ${HSMW_HIGHLIGHT_STYLES[comment]:=fg=black,bold}
 : ${HSMW_HIGHLIGHT_STYLES[newline]:=fg=black,bold}  # '\n' strings
+: ${HSMW_HIGHLIGHT_STYLES[variable]:=none}
 
 
 typeset -gA __HSMW_HIGHLIGHT_TOKENS_TYPES
@@ -526,6 +527,9 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                  reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[dollar-quoted-argument]}")
                  -hsmw-highlight-dollar-string
                  already_added=1
+                 ;;
+        \$[^\(]*)
+                 style=variable
                  ;;
         '`'*)    style=back-quoted-argument;;
         [*?]*|*[^\\][*?]*)

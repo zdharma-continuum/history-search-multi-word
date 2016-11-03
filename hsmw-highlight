@@ -512,6 +512,8 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                  # || false # TODO: or if the previous word was a command word
                  (( multi_func_def )) && (( next_word = next_word | 1 ))
                  style=reserved-word
+                 # Remove possible annoying unknown-token style, or misleading function style
+                 reply[-1]=()
                  ;;
         '--'*)   style=double-hyphen-option;;
         '-'*)    style=single-hyphen-option;;

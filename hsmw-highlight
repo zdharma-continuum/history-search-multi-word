@@ -546,7 +546,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
                  elif (( in_redirection == 2 )); then
                    style=redirection
                  else
-                   if -hsmw-highlight-check-path; then
+                   if (( __hsmw_no_check_paths == 0 )) && -hsmw-highlight-check-path; then
                      # ADD
                      reply+=("$start_pos $end_pos ${HSMW_HIGHLIGHT_STYLES[path]}")
                      already_added=1

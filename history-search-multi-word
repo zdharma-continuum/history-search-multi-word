@@ -46,10 +46,9 @@ _hsmw_main() {
             # Read configuration data
             zstyle -s ':history-search-multi-word' page-size __hsmw_page_size || __hsmw_page_size=$(( LINES / 3 ))
             zstyle -s ':history-search-multi-word' highlight-color __hsmw_hl_color || __hsmw_hl_color="fg=yellow,bold"
-            zstyle -s ":plugin:history-search-multi-word" synhl __hsmw_synhl || __hsmw_synhl="yes"
+            zstyle -T ":plugin:history-search-multi-word" synhl && __hsmw_synhl=1 || __hsmw_synhl=0
             zstyle -s ":plugin:history-search-multi-word" active __hsmw_active || __hsmw_active="underline"
             zstyle -T ":plugin:history-search-multi-word" check-paths && __hsmw_no_check_paths=0 || __hsmw_no_check_paths=1
-            [[ "$__hsmw_synhl" != "1" && "$__hsmw_synhl" != "yes" && "$__hsmw_synhl" != "true" ]] && __hsmw_synhl="no" || __hsmw_synhl="yes"
             -hsmw-highlight-init
         fi
 
@@ -146,7 +145,7 @@ _hsmw_main() {
 
     if (( page_start_idx != __hsmw_page_start_idx || offset != __hsmw_prev_offset )); then
         region_highlight=( )
-        if [[ "$__hsmw_synhl" = "yes" ]]; then
+        if (( __hsmw_synhl )); then
             integer pre_index=$offset
             local line
             for line in "${__hsmw_disp_list_newlines[@]}"; do

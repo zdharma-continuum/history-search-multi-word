@@ -29,7 +29,7 @@ zmodload zsh/termcap 2>/dev/null
 
 typeset -g __hsmw_hcw_index
 typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
-typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl __hsmw_active
+typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl __hsmw_active __hsmw_no_check_paths
 typeset -ga __hsmw_disp_list __hsmw_disp_list_newlines __hsmw_region_highlight_data
 typeset -gi __hsmw_page_start_idx __hsmw_prev_offset __hsmw_recedit_trap_executed
 typeset -gaU __hsmw_hcw_found
@@ -48,6 +48,7 @@ _hsmw_main() {
             zstyle -s ':history-search-multi-word' highlight-color __hsmw_hl_color || __hsmw_hl_color="fg=yellow,bold"
             zstyle -s ":plugin:history-search-multi-word" synhl __hsmw_synhl || __hsmw_synhl="yes"
             zstyle -s ":plugin:history-search-multi-word" active __hsmw_active || __hsmw_active="underline"
+            zstyle -T ":plugin:history-search-multi-word" check-paths && __hsmw_no_check_paths=0 || __hsmw_no_check_paths=1
             [[ "$__hsmw_synhl" != "1" && "$__hsmw_synhl" != "yes" && "$__hsmw_synhl" != "true" ]] && __hsmw_synhl="no" || __hsmw_synhl="yes"
             -hsmw-highlight-init
         fi

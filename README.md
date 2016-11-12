@@ -14,6 +14,10 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
 
 # News
 
+* 12-11-2016
+  - HSMW can now show context of selected history entry! Just hit `Ctrl-K`, [video](https://asciinema.org/a/92516)
+  - More performance optimizations
+
 * 31-10-2016
   - Newlines do not disturb the parser anymore, and are also highlighted with a dark color – [video](https://asciinema.org/a/91159)
 

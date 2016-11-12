@@ -141,7 +141,7 @@ _hsmw_ctx_main() {
     echo "$preamble$text" >> /tmp/reply
 
     if (( page_start_idx != __hsmw_ctx_page_start_idx || offset != __hsmw_ctx_prev_offset )); then
-        region_highlight=( "1 $offset bg=22" )
+        region_highlight=( "${#BUFFER} $offset bg=22" )
         if (( __hsmw_synhl )); then
             integer pre_index=$offset
             local line

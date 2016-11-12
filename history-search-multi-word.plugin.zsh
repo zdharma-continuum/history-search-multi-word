@@ -10,7 +10,7 @@ if [[ -z "$ZPLG_CUR_PLUGIN" && "${fpath[(r)$HSMW_REPO_DIR]}" != $HSMW_REPO_DIR ]
     fpath+=( "$HSMW_REPO_DIR" )
 fi
 
-autoload history-search-multi-word
+autoload history-search-multi-word hsmw-context-main
 zle -N history-search-multi-word
 zle -N history-search-multi-word-backwards history-search-multi-word
 zle -N history-search-multi-word-pbackwards history-search-multi-word

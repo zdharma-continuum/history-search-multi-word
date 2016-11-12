@@ -34,6 +34,13 @@ typeset -ga __hsmw_disp_list __hsmw_disp_list_newlines __hsmw_region_highlight_d
 typeset -gi __hsmw_page_start_idx __hsmw_prev_offset __hsmw_recedit_trap_executed
 typeset -gaU __hsmw_hcw_found
 
+# Context variables
+typeset -gi __hsmw_ctx __hsmw_ctx_idx __hsmw_ctx_text_idx __hsmw_ctx_which
+typeset -gi __hsmw_ctx_page_start_idx __hsmw_ctx_prev_offset
+typeset -g __hsmw_ctx_to_search
+typeset -ga __hsmw_ctx_disp_list
+typeset -gaU __hsmw_ctx_found
+
 (( __hsmw_hcw_call_count ++ ))
 trap '(( __hsmw_hcw_call_count -- )); return 0;' INT
 
@@ -61,7 +68,15 @@ _hsmw_main() {
         __hsmw_hcw_restart="0"
         __hsmw_page_start_idx=0
         __hsmw_prev_offset=0
+
+        (( __hsmw_ctx )) && (( ${+functions[_hsmw_ctx_off]} )) && _hsmw_ctx_off 0
     else
+        # Showing context?
+        if (( __hsmw_ctx )); then
+            hsmw-context-main
+            return
+        fi
+
         # Consecutive call
         [[ "$WIDGET" = *-word ]] && (( __hsmw_hcw_index ++ ))
         [[ "$WIDGET" = *-backwards ]] && (( __hsmw_hcw_index -- ))
@@ -139,7 +154,7 @@ _hsmw_main() {
     # Colorify
     #
 
-    local preamble=$'\n'"Searching for: $BUFFER"$'\n'"Element #$__hsmw_hcw_index of $max_index"$'\n'
+    local preamble=$'\n'"Ctrl-K for context of selected entry. Element #$__hsmw_hcw_index of $max_index"$'\n'
     integer offset=${#preamble}+${#BUFFER}
     POSTDISPLAY="$preamble$text"
 
@@ -271,12 +286,17 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
     # Additional keys
     bindkey -M hsmw '^P' "$up_widget"
     bindkey -M hsmw '^N' "$down_widget"
+    bindkey -M hsmw '^L' "$down_widget"
 
     # Page Up, Page Down keys
     [[ -n "$termcap[kP]" ]] && bindkey -M hsmw "$termcap[kP]" "$pup_widget"
     [[ -n "$termcap[kN]" ]] && bindkey -M hsmw "$termcap[kN]" "$pdown_widget"
     [[ -n "$terminfo[kpp]" ]] && bindkey -M hsmw "$terminfo[kpp]" "$pup_widget"
     [[ -n "$terminfo[knp]" ]] && bindkey -M hsmw "$terminfo[knp]" "$pdown_widget"
+
+    # Context binding
+    zle -N -- hsmw-context-main
+    bindkey -M hsmw '^K' hsmw-context-main
 
     # Needed for Fedora 23, zsh-5.1.1
     bindkey -M hsmw ' ' self-insert
@@ -324,7 +344,16 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
         trap '' INT
 
         if [[ "$__hsmw_hcw_index" -gt "0" ]]; then
-            BUFFER="${__hsmw_hcw_found[__hsmw_hcw_index]}"
+            if (( __hsmw_ctx )); then
+                integer final_hist_found_idx the_index
+                final_hist_found_idx=__hsmw_ctx_text_idx+__hsmw_ctx_which-1
+                the_index="${__hsmw_ctx_found[final_hist_found_idx]}"
+                the_index+=__hsmw_ctx_idx
+
+                BUFFER="${history[$the_index]}"
+            else
+                BUFFER="${__hsmw_hcw_found[__hsmw_hcw_index]}"
+            fi
             CURSOR="${#BUFFER}"
         else
             BUFFER=""
@@ -334,7 +363,9 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
 
         BUFFER=""
     fi
+
     POSTDISPLAY=""
+    (( ${+functions[_hsmw_ctx_off]} )) && _hsmw_ctx_off 0
 
     # Restore self-insert, backward-delete-char, delete-char
     zle -A hsmw-saved-self-insert self-insert

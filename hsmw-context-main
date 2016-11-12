@@ -1,0 +1,167 @@
+[[ "$WIDGET" = *-word ]] && (( __hsmw_ctx_idx -- ))
+[[ "$WIDGET" = *-backwards ]] && (( __hsmw_ctx_idx ++ ))
+[[ "$WIDGET" = *-pforwards ]] && (( __hsmw_ctx_idx = __hsmw_ctx_idx - __hsmw_page_size ))
+[[ "$WIDGET" = *-pbackwards ]] && (( __hsmw_ctx_idx = __hsmw_ctx_idx + __hsmw_page_size ))
+
+_hsmw_ctx_up() {
+    (( __hsmw_ctx_which -- ))
+    (( __hsmw_ctx_which < 0 )) && __hsmw_ctx_which=${#__hsmw_ctx_found}-1
+    _hsmw_ctx_main
+}
+
+_hsmw_ctx_down() {
+    (( __hsmw_ctx_which ++ ))
+    (( __hsmw_ctx_which >= ${#__hsmw_ctx_found} )) && __hsmw_ctx_which=0
+    _hsmw_ctx_main
+}
+
+_hsmw_ctx_off() {
+    __hsmw_ctx_to_search=""
+    __hsmw_ctx_found=( )
+    __hsmw_ctx_which=0
+    __hsmw_ctx_idx=0
+    __hsmw_ctx_page_start_idx=0
+    __hsmw_ctx_prev_offset=0
+    __hsmw_ctx=0
+
+    # Reset main state so that it re-highlights
+    __hsmw_prev_offset=0
+
+    zle -la _hsmw_ctx_down && zle -D _hsmw_ctx_down
+    zle -la _hsmw_ctx_up && zle -D _hsmw_ctx_up
+
+    bindkey -M hsmw '^N' "history-search-multi-word"
+    bindkey -M hsmw '^P' "history-search-multi-word-backwards"
+
+    (( ${1}+0 )) && _hsmw_simulate_widget
+}
+
+if [[ "$WIDGET" = "hsmw-context-main" ]]; then
+    __hsmw_ctx=1-__hsmw_ctx
+    if (( __hsmw_ctx == 0 )); then
+        _hsmw_ctx_off 1
+        return
+    fi
+
+    zle -N _hsmw_ctx_down
+    zle -N _hsmw_ctx_up
+    bindkey -M hsmw '^N' "_hsmw_ctx_down"
+    bindkey -M hsmw '^P' "_hsmw_ctx_up"
+fi
+
+_hsmw_ctx_main() {
+
+    # The repeat will make the matching work on a fresh heap arena
+    local to_search="${__hsmw_hcw_found[__hsmw_hcw_index]}" nl=$'\n'
+    to_search="${to_search//(#m)[][*?|#~^()><\\]/\\$MATCH}"
+
+    if [[ "$to_search" != "$__hsmw_ctx_to_search" ]]; then
+        __hsmw_ctx_to_search="$to_search"
+        repeat 1; do
+            __hsmw_ctx_found=( "${(@kv)history[(R)$to_search]}" )
+            __hsmw_ctx_text_idx="${__hsmw_ctx_found[(I)$to_search]}"
+            if [[ "$__hsmw_ctx_text_idx" = "0" ]]; then
+                _hsmw_ctx_off 1
+                return 0
+            fi
+            __hsmw_ctx_found[__hsmw_ctx_text_idx]=()
+        done
+    fi
+
+    integer final_hist_found_idx
+    final_hist_found_idx=__hsmw_ctx_text_idx+__hsmw_ctx_which-1
+
+    integer the_index="${__hsmw_ctx_found[final_hist_found_idx]}"
+    the_index=the_index+__hsmw_ctx_idx
+
+    integer max_index=$(( ${${(k)history[@]}[1]} + 1 ))
+    if [[ "$max_index" -le "0" ]]; then
+        POSTDISPLAY=$'\n'"No matches found"
+        return 0
+    fi
+
+    #
+    # Pagination, index value guards
+    #
+
+    integer page_size="$__hsmw_page_size"
+    [[ "$page_size" -gt "$max_index" ]] && page_size="$max_index"
+    [[ "$the_index" -le 0 ]] && the_index="$max_index"
+    [[ "$the_index" -gt "$max_index" ]] && the_index=1
+    integer page_start_idx=$(( ((the_index-1)/page_size)*page_size+1 ))
+    integer on_page_idx=$(( page_size - (the_index - page_start_idx) ))
+
+    #
+    # Prepare display
+    #
+
+    if [[ "$page_start_idx" != "$__hsmw_ctx_page_start_idx" ]]; then
+        integer idx
+        __hsmw_ctx_disp_list=( )
+        for (( idx = page_start_idx + page_size - 1; idx >= page_start_idx ; idx -- )); do
+            __hsmw_ctx_disp_list+=( "${history[$idx]}" )
+        done
+
+        # Don't do @ splitting, it's slower
+        __hsmw_ctx_disp_list_newlines=( "${__hsmw_ctx_disp_list[@]}" )
+
+        # Replace all new lines with "\n" text
+        __hsmw_ctx_disp_list=( "${(@)__hsmw_ctx_disp_list//$'\n'/\\n}" )
+        # Truncate to display width, preceede by two spaces
+        __hsmw_ctx_disp_list=( "${(@)__hsmw_ctx_disp_list/(#m)*/  ${MATCH[1,COLUMNS-8]}}" )
+
+        # The same with newlines adapted for syntax highlighting
+        __hsmw_ctx_disp_list_newlines=( "${(@)__hsmw_ctx_disp_list_newlines//$'\n'/ $nl}" )
+        __hsmw_ctx_disp_list_newlines=( "${(@)__hsmw_ctx_disp_list_newlines/(#m)*/  ${MATCH[1,COLUMNS-8]}}" )
+    fi
+
+    #
+    # Detect where "> .." entry starts, add the ">" mark
+    #
+
+    local txt_before="${(F)${(@)__hsmw_ctx_disp_list[1,on_page_idx-1]}}"
+    local entry="${__hsmw_ctx_disp_list[on_page_idx]}"
+    local text="${(F)__hsmw_ctx_disp_list}"
+    integer replace_idx=${#txt_before}+2
+    (( replace_idx == 2 )) && replace_idx=1
+    text[replace_idx]=">"
+
+    #
+    # Colorify
+    #
+
+    local preamble=$'\n'"Showing context of history entry. Ctrl-K to return to search."
+    local preamble2=$'\n'"Ctrl-N/P: next/previous occurence. Occurence #$(( __hsmw_ctx_which + 1 )) of ${#__hsmw_ctx_found}"
+    preamble2=${(r:${#preamble}:: :)preamble2}$'\n'
+    preamble+=$preamble2
+
+    integer offset=${#preamble}+${#BUFFER}
+    POSTDISPLAY="$preamble$text"
+
+    echo "$preamble$text" >> /tmp/reply
+
+    if (( page_start_idx != __hsmw_ctx_page_start_idx || offset != __hsmw_ctx_prev_offset )); then
+        region_highlight=( "1 $offset bg=22" )
+        if (( __hsmw_synhl )); then
+            integer pre_index=$offset
+            local line
+            for line in "${__hsmw_ctx_disp_list_newlines[@]}"; do
+                reply=( )
+                -hsmw-highlight-process "$line" "$pre_index"
+                region_highlight+=( $reply )
+                pre_index+=${#line}+1
+            done
+        fi
+    else
+        region_highlight[-1]=()
+    fi
+
+    __hsmw_ctx_page_start_idx=page_start_idx
+    __hsmw_ctx_prev_offset=offset
+
+    region_highlight+=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) $__hsmw_active" )
+}
+
+_hsmw_ctx_main
+
+# vim:ft=zsh

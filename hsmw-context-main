@@ -6,12 +6,14 @@
 _hsmw_ctx_up() {
     (( __hsmw_ctx_which -- ))
     (( __hsmw_ctx_which < 0 )) && __hsmw_ctx_which=${#__hsmw_ctx_found}-1
+    __hsmw_ctx_idx=0
     _hsmw_ctx_main
 }
 
 _hsmw_ctx_down() {
     (( __hsmw_ctx_which ++ ))
     (( __hsmw_ctx_which >= ${#__hsmw_ctx_found} )) && __hsmw_ctx_which=0
+    __hsmw_ctx_idx=0
     _hsmw_ctx_main
 }
 

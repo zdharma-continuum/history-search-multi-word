@@ -230,6 +230,22 @@ _hsmw_backward_kill_word() {
     _hsmw_simulate_widget
 }
 
+_hsmw_jump_entry() {
+    local entry
+    if (( __hsmw_ctx )); then
+        integer final_hist_found_idx the_index
+        final_hist_found_idx=__hsmw_ctx_text_idx+__hsmw_ctx_which-1
+        the_index="${__hsmw_ctx_found[final_hist_found_idx]}"
+        the_index+=__hsmw_ctx_idx
+
+        entry="${history[$the_index]}"
+    else
+        entry="${__hsmw_hcw_found[__hsmw_hcw_index]}"
+    fi
+
+    print -S "$entry"
+}
+
 if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
     # Make the hsmw keymap a copy of the current main
     bindkey -N hsmw emacs
@@ -303,6 +319,10 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
 
     # Removal of default Ctrl-R binding
     bindkey -M hsmw '^R' "$down_widget"
+
+    # Jump binding
+    zle -N -- _hsmw_jump_entry
+    bindkey -M hsmw '^J' _hsmw_jump_entry
 
     # Substitute self-insert, backward-delete-char, delete-char
     zle -A self-insert hsmw-saved-self-insert

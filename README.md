@@ -14,6 +14,9 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
 
 # News
 
+* 27-01-2017
+  - Input-driven case-sensivity of search – if your query contains capital latin letters, search will be case-sensitive
+
 * 12-11-2016
   - HSMW can now show context of selected history entry! Just hit `Ctrl-K`, [video](https://asciinema.org/a/92516)
   - More performance optimizations

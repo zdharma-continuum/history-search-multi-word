@@ -140,8 +140,6 @@ _hsmw_ctx_main() {
     integer offset=${#preamble}+${#BUFFER}
     POSTDISPLAY="$preamble$text"
 
-    echo "$preamble$text" >> /tmp/reply
-
     if (( page_start_idx != __hsmw_ctx_page_start_idx || offset != __hsmw_ctx_prev_offset )); then
         region_highlight=( "${#BUFFER} $offset bg=22" )
         if (( __hsmw_synhl )); then

@@ -24,9 +24,6 @@
 # IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
 # OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # -------------------------------------------------------------------------------------------------
-# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-
-# vim: ft=zsh sw=2 ts=2 et
-# -------------------------------------------------------------------------------------------------
 
 typeset -gA __hsmw_highlight_main__command_type_cache
 
@@ -698,4 +695,5 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 
 __HSMW_MH_SOURCED=1
 
-# vim:ft=zsh:sw=2
+# vim:ft=zsh:sw=2:et:sts=2
+# -*- mode: zsh; sh-indentation: 2; indent-tabs-mode: nil; sh-basic-offset: 2; -*-

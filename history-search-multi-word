@@ -32,7 +32,7 @@ typeset -g __hsmw_hcw_widget_name __hsmw_hcw_restart __hsmw_hcw_call_count
 typeset -g __hsmw_page_size __hsmw_hl_color __hsmw_synhl __hsmw_active __hsmw_no_check_paths
 typeset -ga __hsmw_disp_list __hsmw_disp_list_newlines __hsmw_region_highlight_data
 typeset -gi __hsmw_page_start_idx __hsmw_prev_offset __hsmw_recedit_trap_executed
-typeset -gaU __hsmw_hcw_found
+typeset -ga __hsmw_hcw_found
 
 # Context variables
 typeset -gi __hsmw_ctx __hsmw_ctx_idx __hsmw_ctx_text_idx __hsmw_ctx_which
@@ -99,9 +99,9 @@ _hsmw_main() {
             if [[ "$search_pattern" != *[A-Z]* ]]; then
                 # Tip: these are equal:
                 #__hsmw_hcw_found=( "${(@M)history:#(#i)*$~search_pattern*}" )
-                [[ -z "$search_pattern" ]] && __hsmw_hcw_found=( ${(@)history} ) || __hsmw_hcw_found=( "${(@)history[(R)(#i)*$~search_pattern*]}" )
+                [[ -z "$search_pattern" ]] && __hsmw_hcw_found=( ${(u@)history} ) || __hsmw_hcw_found=( "${(u@)history[(R)(#i)*$~search_pattern*]}" )
             else
-                __hsmw_hcw_found=( "${(@)history[(R)*$~search_pattern*]}" )
+                __hsmw_hcw_found=( "${(u@)history[(R)*$~search_pattern*]}" )
             fi
         done
     fi

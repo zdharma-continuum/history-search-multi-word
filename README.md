@@ -18,6 +18,9 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
 
 # News
 
+* 05-04-2017
+  - 17% performance optimization
+
 * 27-01-2017
   - Input-driven case-sensivity of search – if your query contains capital latin letters, search will be case-sensitive
 

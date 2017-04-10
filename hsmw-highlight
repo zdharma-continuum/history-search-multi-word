@@ -498,6 +498,9 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
         ']]')
                  style=reserved-word
                  ;;
+        ']')
+                 style=builtin
+                 ;;
         $'\x29') # subshell or end of array assignment
                  if (( in_array_assignment )); then
                    style=assign

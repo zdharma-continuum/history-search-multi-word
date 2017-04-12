@@ -18,6 +18,13 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
 
 # News
 
+* 12-04-2017
+  - Page size can be relative to screen height, e.g.:
+
+    ```zsh
+    zstyle ":history-search-multi-word" page-size "LINES/4"
+    ```
+
 * 05-04-2017
   - 17% performance optimization
 

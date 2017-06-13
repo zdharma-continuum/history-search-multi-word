@@ -1,3 +1,6 @@
+# -*- Mode: sh; sh-indentation: 4; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+# vim:ft=zsh:sw=4:sts=4:et
+
 [[ "$WIDGET" = *-word ]] && (( __hsmw_ctx_idx -- ))
 [[ "$WIDGET" = *-backwards ]] && (( __hsmw_ctx_idx ++ ))
 [[ "$WIDGET" = *-pforwards ]] && (( __hsmw_ctx_idx = __hsmw_ctx_idx - __hsmw_page_size ))
@@ -163,5 +166,3 @@ _hsmw_ctx_main() {
 }
 
 _hsmw_ctx_main
-
-# vim:ft=zsh

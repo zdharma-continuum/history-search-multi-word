@@ -1,3 +1,6 @@
+# -*- Mode: sh; sh-indentation: 4; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
+# vim:ft=zsh:sw=4:sts=4:et
+
 # To use (when not using as plugin) copy to site-functions and issue
 # (add to ~/.zshrc):
 #
@@ -418,5 +421,3 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
 elif (( __hsmw_hcw_call_count > 0 )); then
     (( __hsmw_hcw_call_count -- ))
 fi
-
-# vim:ft=zsh

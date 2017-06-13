@@ -49,154 +49,154 @@ trap '(( __hsmw_hcw_call_count -- )); return 0;' INT
 
 if (( ${+functions[_hsmw_main]} == 0 )); then
 
-_hsmw_main() {
-    # First call or restart?
-    if [[ "$__hsmw_hcw_call_count" -le 1 || "$__hsmw_hcw_restart" = "1" ]]; then
-        if [[ "$__hsmw_hcw_call_count" -le 1 ]]; then
-            # Read configuration data
-            zstyle -s ':history-search-multi-word' page-size __hsmw_page_size || __hsmw_page_size=$(( LINES / 3 ))
-            zstyle -s ':history-search-multi-word' highlight-color __hsmw_hl_color || __hsmw_hl_color="fg=yellow,bold"
-            zstyle -T ":plugin:history-search-multi-word" synhl && __hsmw_synhl=1 || __hsmw_synhl=0
-            zstyle -s ":plugin:history-search-multi-word" active __hsmw_active || __hsmw_active="underline"
-            zstyle -T ":plugin:history-search-multi-word" check-paths && __hsmw_no_check_paths=0 || __hsmw_no_check_paths=1
-            -hsmw-highlight-init
-        fi
-
-        # '0' will get changed into $to_display limit
-        [[ "$WIDGET" = *-word || "$WIDGET" = *-pforwards ]] && __hsmw_hcw_index="1"
-        [[ "$WIDGET" = *-backwards || "$WIDGET" = *-pbackwards ]] && __hsmw_hcw_index="0"
-        __hsmw_hcw_widget_name="${${${WIDGET%-backwards}-pbackwards}-pforwards}"
-        __hsmw_hcw_found=( )
-        __hsmw_hcw_finished="0"
-        __hsmw_hcw_restart="0"
-        __hsmw_page_start_idx=0
-        __hsmw_prev_offset=0
-
-        (( __hsmw_ctx )) && (( ${+functions[_hsmw_ctx_off]} )) && _hsmw_ctx_off 0
-    else
-        # Showing context?
-        if (( __hsmw_ctx )); then
-            hsmw-context-main
-            return
-        fi
-
-        # Consecutive call
-        [[ "$WIDGET" = *-word ]] && (( __hsmw_hcw_index ++ ))
-        [[ "$WIDGET" = *-backwards ]] && (( __hsmw_hcw_index -- ))
-        [[ "$WIDGET" = *-pforwards ]] && (( __hsmw_hcw_index = __hsmw_hcw_index + __hsmw_page_size ))
-        [[ "$WIDGET" = *-pbackwards ]] && (( __hsmw_hcw_index = __hsmw_hcw_index - __hsmw_page_size ))
-    fi
-
-    # Find history entries matching pattern *word1*~^*word2*~^*word3* etc.
-    local search_buffer="${BUFFER%% ##}" search_pattern="" colsearch_pattern="" nl=$'\n' MATCH MBEGIN MEND
-    search_buffer="${search_buffer## ##}"
-    search_buffer="${search_buffer//(#m)[][*?|#~^()><\\]/\\$MATCH}"
-    # Pattern will be *foo*~^*bar* (inventor: Mikael Magnusson)
-    # It's: foo and not what doesn't contain bar, etc.
-    search_pattern="${search_buffer// ##/*~^*}"
-    colsearch_pattern="${search_buffer// ##/|}"
-
-    if [[ "${#__hsmw_hcw_found[@]}" -eq "0" ]]; then
-        # The repeat will make the matching work on a fresh heap arena
-        repeat 1; do
-            if [[ "$search_pattern" != *[A-Z]* ]]; then
-                # Tip: these are equal:
-                #__hsmw_hcw_found=( "${(@M)history:#(#i)*$~search_pattern*}" )
-                [[ -z "$search_pattern" ]] && __hsmw_hcw_found=( ${(u@)history} ) || __hsmw_hcw_found=( "${(u@)history[(R)(#i)*$~search_pattern*]}" )
-            else
-                __hsmw_hcw_found=( "${(u@)history[(R)*$~search_pattern*]}" )
+    _hsmw_main() {
+        # First call or restart?
+        if [[ "$__hsmw_hcw_call_count" -le 1 || "$__hsmw_hcw_restart" = "1" ]]; then
+            if [[ "$__hsmw_hcw_call_count" -le 1 ]]; then
+                # Read configuration data
+                zstyle -s ':history-search-multi-word' page-size __hsmw_page_size || __hsmw_page_size=$(( LINES / 3 ))
+                zstyle -s ':history-search-multi-word' highlight-color __hsmw_hl_color || __hsmw_hl_color="fg=yellow,bold"
+                zstyle -T ":plugin:history-search-multi-word" synhl && __hsmw_synhl=1 || __hsmw_synhl=0
+                zstyle -s ":plugin:history-search-multi-word" active __hsmw_active || __hsmw_active="underline"
+                zstyle -T ":plugin:history-search-multi-word" check-paths && __hsmw_no_check_paths=0 || __hsmw_no_check_paths=1
+                -hsmw-highlight-init
             fi
-        done
-    fi
 
-    integer max_index="${#__hsmw_hcw_found[@]}"
-    if [[ "$max_index" -le "0" ]]; then
-        POSTDISPLAY=$'\n'"No matches found"
-        return 0
-    fi
+            # '0' will get changed into $to_display limit
+            [[ "$WIDGET" = *-word || "$WIDGET" = *-pforwards ]] && __hsmw_hcw_index="1"
+            [[ "$WIDGET" = *-backwards || "$WIDGET" = *-pbackwards ]] && __hsmw_hcw_index="0"
+            __hsmw_hcw_widget_name="${${${WIDGET%-backwards}-pbackwards}-pforwards}"
+            __hsmw_hcw_found=( )
+            __hsmw_hcw_finished="0"
+            __hsmw_hcw_restart="0"
+            __hsmw_page_start_idx=0
+            __hsmw_prev_offset=0
 
-    #
-    # Pagination, index value guards
-    #
+            (( __hsmw_ctx )) && (( ${+functions[_hsmw_ctx_off]} )) && _hsmw_ctx_off 0
+        else
+            # Showing context?
+            if (( __hsmw_ctx )); then
+                hsmw-context-main
+                return
+            fi
 
-    integer page_size="$__hsmw_page_size"
-    [[ "$page_size" -gt "$max_index" ]] && page_size="$max_index"
-    [[ "$__hsmw_hcw_index" -le 0 ]] && __hsmw_hcw_index="$max_index"
-    [[ "$__hsmw_hcw_index" -gt "$max_index" ]] && __hsmw_hcw_index=1
-    integer page_start_idx=$(( ((__hsmw_hcw_index-1)/page_size)*page_size+1 ))
-    integer on_page_idx=$(( (__hsmw_hcw_index-1) % page_size + 1 ))
+            # Consecutive call
+            [[ "$WIDGET" = *-word ]] && (( __hsmw_hcw_index ++ ))
+            [[ "$WIDGET" = *-backwards ]] && (( __hsmw_hcw_index -- ))
+            [[ "$WIDGET" = *-pforwards ]] && (( __hsmw_hcw_index = __hsmw_hcw_index + __hsmw_page_size ))
+            [[ "$WIDGET" = *-pbackwards ]] && (( __hsmw_hcw_index = __hsmw_hcw_index - __hsmw_page_size ))
+        fi
 
-    #
-    # Prepare display
-    #
+        # Find history entries matching pattern *word1*~^*word2*~^*word3* etc.
+        local search_buffer="${BUFFER%% ##}" search_pattern="" colsearch_pattern="" nl=$'\n' MATCH MBEGIN MEND
+        search_buffer="${search_buffer## ##}"
+        search_buffer="${search_buffer//(#m)[][*?|#~^()><\\]/\\$MATCH}"
+        # Pattern will be *foo*~^*bar* (inventor: Mikael Magnusson)
+        # It's: foo and not what doesn't contain bar, etc.
+        search_pattern="${search_buffer// ##/*~^*}"
+        colsearch_pattern="${search_buffer// ##/|}"
 
-    (( page_start_idx != __hsmw_page_start_idx )) && {
-        __hsmw_disp_list=( "${(@)__hsmw_hcw_found[page_start_idx,page_start_idx+page_size-1]}" )
-
-        # Don't do @ splitting, it's slower
-        __hsmw_disp_list_newlines=( $__hsmw_disp_list )
-
-        # Replace all new lines with "\n" text
-        __hsmw_disp_list=( "${(@)__hsmw_disp_list//$'\n'/\\n}" )
-        # Truncate to display width, preceede by two spaces
-        __hsmw_disp_list=( "${(@)__hsmw_disp_list/(#m)*/  ${MATCH[1,COLUMNS-8]}}" )
-
-        # The same with newlines adapted for syntax highlighting
-        __hsmw_disp_list_newlines=( "${(@)__hsmw_disp_list_newlines//$'\n'/ $nl}" )
-        __hsmw_disp_list_newlines=( "${(@)__hsmw_disp_list_newlines/(#m)*/  ${MATCH[1,COLUMNS-8]}}" )
-    }
-
-    #
-    # Detect where "> .." entry starts, add the ">" mark
-    #
-
-    local txt_before="${(F)${(@)__hsmw_disp_list[1,on_page_idx-1]}}"
-    local entry="${__hsmw_disp_list[on_page_idx]}"
-    local text="${(F)__hsmw_disp_list}"
-    integer replace_idx=${#txt_before}+2
-    (( replace_idx == 2 )) && replace_idx=1
-    text[replace_idx]=">"
-
-    #
-    # Colorify
-    #
-
-    local preamble=$'\n'"Ctrl-K – context, Ctrl-J – bump. Entry #$__hsmw_hcw_index of $max_index"$'\n'
-    integer offset=${#preamble}+${#BUFFER}
-    POSTDISPLAY="$preamble$text"
-
-    if (( page_start_idx != __hsmw_page_start_idx || offset != __hsmw_prev_offset )); then
-        region_highlight=( )
-        if (( __hsmw_synhl )); then
-            integer pre_index=$offset
-            local line
-            for line in "${__hsmw_disp_list_newlines[@]}"; do
-                reply=( )
-                -hsmw-highlight-process "$line" "$pre_index"
-                region_highlight+=( $reply )
-                pre_index+=${#line}+1
+        if [[ "${#__hsmw_hcw_found[@]}" -eq "0" ]]; then
+            # The repeat will make the matching work on a fresh heap arena
+            repeat 1; do
+                if [[ "$search_pattern" != *[A-Z]* ]]; then
+                    # Tip: these are equal:
+                    #__hsmw_hcw_found=( "${(@M)history:#(#i)*$~search_pattern*}" )
+                    [[ -z "$search_pattern" ]] && __hsmw_hcw_found=( ${(u@)history} ) || __hsmw_hcw_found=( "${(u@)history[(R)(#i)*$~search_pattern*]}" )
+                else
+                    __hsmw_hcw_found=( "${(u@)history[(R)*$~search_pattern*]}" )
+                fi
             done
         fi
 
-        if [[ -n "$colsearch_pattern" ]]; then
-            __hsmw_region_highlight_data=( )
-            : "${text//(#mi)(${~colsearch_pattern})/$(( hsmw_append(MBEGIN,MEND) ))}"
-            region_highlight+=( $__hsmw_region_highlight_data )
+        integer max_index="${#__hsmw_hcw_found[@]}"
+        if [[ "$max_index" -le "0" ]]; then
+            POSTDISPLAY=$'\n'"No matches found"
+            return 0
         fi
-    else
-        region_highlight[-1]=()
-    fi
 
-    __hsmw_page_start_idx=page_start_idx
-    __hsmw_prev_offset=offset
+        #
+        # Pagination, index value guards
+        #
 
-    region_highlight+=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) $__hsmw_active" )
-}
+        integer page_size="$__hsmw_page_size"
+        [[ "$page_size" -gt "$max_index" ]] && page_size="$max_index"
+        [[ "$__hsmw_hcw_index" -le 0 ]] && __hsmw_hcw_index="$max_index"
+        [[ "$__hsmw_hcw_index" -gt "$max_index" ]] && __hsmw_hcw_index=1
+        integer page_start_idx=$(( ((__hsmw_hcw_index-1)/page_size)*page_size+1 ))
+        integer on_page_idx=$(( (__hsmw_hcw_index-1) % page_size + 1 ))
 
-_hsmw_shappend() {
-    __hsmw_region_highlight_data+=( "$(( offset + $1 - 1 )) $(( offset + $2 )) ${__hsmw_hl_color}" )
-}
-functions -M hsmw_append 2 2 _hsmw_shappend
+        #
+        # Prepare display
+        #
+
+        (( page_start_idx != __hsmw_page_start_idx )) && {
+            __hsmw_disp_list=( "${(@)__hsmw_hcw_found[page_start_idx,page_start_idx+page_size-1]}" )
+
+            # Don't do @ splitting, it's slower
+            __hsmw_disp_list_newlines=( $__hsmw_disp_list )
+
+            # Replace all new lines with "\n" text
+            __hsmw_disp_list=( "${(@)__hsmw_disp_list//$'\n'/\\n}" )
+            # Truncate to display width, preceede by two spaces
+            __hsmw_disp_list=( "${(@)__hsmw_disp_list/(#m)*/  ${MATCH[1,COLUMNS-8]}}" )
+
+            # The same with newlines adapted for syntax highlighting
+            __hsmw_disp_list_newlines=( "${(@)__hsmw_disp_list_newlines//$'\n'/ $nl}" )
+            __hsmw_disp_list_newlines=( "${(@)__hsmw_disp_list_newlines/(#m)*/  ${MATCH[1,COLUMNS-8]}}" )
+        }
+
+        #
+        # Detect where "> .." entry starts, add the ">" mark
+        #
+
+        local txt_before="${(F)${(@)__hsmw_disp_list[1,on_page_idx-1]}}"
+        local entry="${__hsmw_disp_list[on_page_idx]}"
+        local text="${(F)__hsmw_disp_list}"
+        integer replace_idx=${#txt_before}+2
+        (( replace_idx == 2 )) && replace_idx=1
+        text[replace_idx]=">"
+
+        #
+        # Colorify
+        #
+
+        local preamble=$'\n'"Ctrl-K – context, Ctrl-J – bump. Entry #$__hsmw_hcw_index of $max_index"$'\n'
+        integer offset=${#preamble}+${#BUFFER}
+        POSTDISPLAY="$preamble$text"
+
+        if (( page_start_idx != __hsmw_page_start_idx || offset != __hsmw_prev_offset )); then
+            region_highlight=( )
+            if (( __hsmw_synhl )); then
+                integer pre_index=$offset
+                local line
+                for line in "${__hsmw_disp_list_newlines[@]}"; do
+                    reply=( )
+                    -hsmw-highlight-process "$line" "$pre_index"
+                    region_highlight+=( $reply )
+                    pre_index+=${#line}+1
+                done
+            fi
+
+            if [[ -n "$colsearch_pattern" ]]; then
+                __hsmw_region_highlight_data=( )
+                : "${text//(#mi)(${~colsearch_pattern})/$(( hsmw_append(MBEGIN,MEND) ))}"
+                region_highlight+=( $__hsmw_region_highlight_data )
+            fi
+        else
+            region_highlight[-1]=()
+        fi
+
+        __hsmw_page_start_idx=page_start_idx
+        __hsmw_prev_offset=offset
+
+        region_highlight+=( "$(( offset + ${#txt_before} )) $(( offset + ${#txt_before} + ${#entry} + 1 )) $__hsmw_active" )
+    }
+
+    _hsmw_shappend() {
+        __hsmw_region_highlight_data+=( "$(( offset + $1 - 1 )) $(( offset + $2 )) ${__hsmw_hl_color}" )
+    }
+    functions -M hsmw_append 2 2 _hsmw_shappend
 
 fi
 

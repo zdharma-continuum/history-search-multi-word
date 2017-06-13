@@ -17,6 +17,7 @@
 # zstyle ":history-search-multi-word" page-size "8"
 # zstyle ":history-search-multi-word" highlight-color "fg=yellow,bold"
 # zstyle ":plugin:history-search-multi-word" synhl "yes"
+# zstyle ":plugin:history-search-multi-word" clear-on-cancel "no"
 
 [[ "$__HSMW_MH_SOURCED" != "1" ]] && source "$HSMW_REPO_DIR/hsmw-highlight"
 local right_brace_is_recognised_everywhere
@@ -226,7 +227,8 @@ _hsmw_delete_char() {
 }
 
 _hsmw_cancel_accept() {
-    BUFFER=""
+    (( __hsmw_conc )) && BUFFER=""
+    unset __hsmw_conc
     __hsmw_hcw_index=-1
     zle .accept-line
 }
@@ -363,6 +365,10 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
     bindkey -M hsmw "^V" _hsmw_cancel_accept
     bindkey -M hsmw "^[" _hsmw_cancel_accept
 
+    # Load cancel behavior
+    local __hsmw_conc
+    zstyle -t ":plugin:history-search-multi-word" clear-on-cancel && __hsmw_conc=1 || __hsmw_conc=0
+
     # Trap INT to manually interrupt Zle to work around a bug
     __hsmw_recedit_trap_executed=0
     trap '(( __hsmw_recedit_trap_executed == 0 )) && zle && { __hsmw_recedit_trap_executed=1; zle .send-break; }' INT
@@ -383,12 +389,13 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
             fi
             CURSOR="${#BUFFER}"
         else
-            BUFFER=""
+            (( __hsmw_conc )) && BUFFER=""
+            unset __hsmw_conc
         fi
     else
         trap '' INT
-
-        BUFFER=""
+        (( __hsmw_conc )) && BUFFER=""
+        unset __hsmw_conc
     fi
 
     POSTDISPLAY=""

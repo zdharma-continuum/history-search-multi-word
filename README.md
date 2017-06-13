@@ -20,6 +20,13 @@ HSMW is **FAST** – highlighting 20 concurrent complex history entries does not
 
 # News
 
+* 13-06-2017
+  - Canceling search doesn't clear entered query. Change to previous behavior via:
+
+    ```zsh
+    zstyle ":plugin:history-search-multi-word" clear-on-cancel "yes"
+    ```
+
 * 12-04-2017
   - Page size can be relative to screen height, e.g.:
 
@@ -137,6 +144,7 @@ zstyle ":history-search-multi-word" highlight-color "fg=yellow,bold"   # Color i
 zstyle ":plugin:history-search-multi-word" synhl "yes"                 # Whether to perform syntax highlighting (default true)
 zstyle ":plugin:history-search-multi-word" active "underline"          # Effect on active history entry. Try: standout, bold, bg=blue (default underline)
 zstyle ":plugin:history-search-multi-word" check-paths "yes"           # Whether to check paths for existence and mark with magenta (default true)
+zstyle ":plugin:history-search-multi-word" clear-on-cancel "no"        # Whether pressing Ctrl-C or ESC should clear entered query
 ```
 
 ## Syntax highlighting

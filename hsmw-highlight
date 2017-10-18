@@ -701,4 +701,4 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
   __hsmw_highlight_main__command_type_cache=()
 }
 
-__HSMW_MH_SOURCED=1
+typeset -g __HSMW_MH_SOURCED=1

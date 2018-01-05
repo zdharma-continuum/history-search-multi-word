@@ -14,9 +14,10 @@ Video – view on [asciinema](https://asciinema.org/a/88954). You can resize th
 
 [![asciicast](https://asciinema.org/a/88954.png)](https://asciinema.org/a/88954)
 
-HSMW is **FAST** – highlighting 20 concurrent complex history entries does not cause real slow down:
+HSMW has feature called **context viewing** – see all occurrences of a command together
+with surrounding commands:
 
-[![asciicast](https://asciinema.org/a/89406.png)](https://asciinema.org/a/89406)
+[![asciicast](https://asciinema.org/a/155704.png)](https://asciinema.org/a/155704)
 
 # News
 

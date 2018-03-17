@@ -148,6 +148,14 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
 
   [[ -z "$REPLY" ]] && REPLY="${$(LC_ALL=C builtin type -w -- $1 2>/dev/null)##*: }"
 
+  [[ "$REPLY" = "none" ]] && {
+    [[ -d "$1" ]] && REPLY="dirpath" || {
+      for cdpath_dir in $cdpath; do
+        [[ -d "$cdpath_dir/$1" ]] && { REPLY="dirpath"; break; }
+      done
+    }
+  }
+
   __hsmw_highlight_main__command_type_cache[(e)$1]=$REPLY
 
   }
@@ -446,6 +454,7 @@ __HSMW_HIGHLIGHT_TOKENS_TYPES=(
         function)       style=function;;
         command)        style=command;;
         hashed)         style=hashed-command;;
+        dirpath)        style=path;;
         none)           # Assign?
                         if [[ $arg == [[:alpha:]_][[:alnum:]_]#(|\[[^\]]#\])(|[+])=* ]] || [[ $arg == [0-9]##(|[+])=* ]]; then
                           style=assign

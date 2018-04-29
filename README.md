@@ -110,29 +110,29 @@ other too, and also install with `Oh My Zsh` (by copying directory to
 `~/.oh-my-zsh/custom/plugins`).
 
 
-### [Zplugin](https://github.com/psprint/zplugin)
+### [Zplugin](https://github.com/zdharma/zplugin)
 
-Add `zplugin load psprint/history-search-multi-word` to your `.zshrc` file.
+Add `zplugin load zdharma/history-search-multi-word` to your `.zshrc` file.
 Zplugin will handle cloning the plugin for you automatically the next time you
 start zsh.
 
 ### Antigen
 
-Add `antigen bundle psprint/history-search-multi-word` to your `.zshrc` file.
+Add `antigen bundle zdharma/history-search-multi-word` to your `.zshrc` file.
 Antigen will handle cloning the plugin for you automatically the next time you
 start zsh. You can also add the plugin to a running zsh with `antigen bundle
-psprint/history-search-multi-word` for testing before adding it to your
+zdharma/history-search-multi-word` for testing before adding it to your
 `.zshrc`.
 
 ### Oh-My-Zsh
 
 1. `cd ~/.oh-my-zsh/custom/plugins`
-2. `git clone git@github.com:psprint/history-search-multi-word.git`
+2. `git clone git@github.com:zdharma/history-search-multi-word.git`
 3. Add `history-search-multi-word` to your plugin list
 
 ### Zgen
 
-Add `zgen load psprint/history-search-multi-word` to your .zshrc file in the same
+Add `zgen load zdharma/history-search-multi-word` to your .zshrc file in the same
 place you're doing your other `zgen load` calls in.
 
 # Customizing
@@ -154,7 +154,7 @@ Syntax highlighting is customized via `HSMW_HIGHLIGHT_STYLES` associative array.
 It has keys like `reserved-word`, `alias`, `command`, `path`, etc. which are assigned
 with strings like `fg=blue,bold`, to configure how given elements are to be
 colored. If you assign this array before or after loading `hsmw` you will change the defaults. Complete list
-of available keys is [at the beginning](https://github.com/psprint/history-search-multi-word/blob/master/hsmw-highlight#L34-L62)
+of available keys is [at the beginning](https://github.com/zdharma/history-search-multi-word/blob/master/hsmw-highlight#L34-L62)
 of `hsmw-highlight` file. Example `~/.zshrc` addition that sets `path` key –
 paths that exist will be highlighted with background magenta, foreground white, bold:
 

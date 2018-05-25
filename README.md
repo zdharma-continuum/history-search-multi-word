@@ -20,6 +20,14 @@ with surrounding commands:
 [![asciicast](https://asciinema.org/a/155704.png)](https://asciinema.org/a/155704)
 
 # News
+* 25-05-2018
+  - Hash holding paths that shouldn't be grepped (globbed) – blacklist for slow disks, mounts, etc.:
+
+    ```zsh
+    typeset -gA FAST_BLIST_PATTERNS
+    FAST_BLIST_PATTERNS[/mount/nfs1/*]=1
+    FAST_BLIST_PATTERNS[/mount/disk2/*]=1
+    ```
 
 * 13-06-2017
   - Canceling search doesn't clear entered query. Change to previous behavior via:

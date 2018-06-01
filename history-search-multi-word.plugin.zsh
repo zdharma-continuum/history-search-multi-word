@@ -7,8 +7,8 @@
 # to ~/.zshrc.
 #
 
-ZERO="${(%):-%N}" # this gives immunity to functionargzero being unset
-HSMW_REPO_DIR="${ZERO%/*}"
+0="${(%):-%N}" # this gives immunity to functionargzero being unset
+HSMW_REPO_DIR="${0%/*}"
 if [[ -z "$ZPLG_CUR_PLUGIN" && "${fpath[(r)$HSMW_REPO_DIR]}" != $HSMW_REPO_DIR ]]; then
     fpath+=( "$HSMW_REPO_DIR" )
 fi

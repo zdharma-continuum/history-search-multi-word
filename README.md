@@ -19,6 +19,16 @@ with surrounding commands:
 
 [![asciicast](https://asciinema.org/a/155704.png)](https://asciinema.org/a/155704)
 
+Set:
+
+```zsh
+    zstyle :plugin:history-search-multi-word reset-prompt-protect 1
+```
+
+to be able to use `zle reset-prompt` in your e.g. `sched` calls, in presence of `zdharma/fast-syntax-highlighting`,
+`zsh-users/zsh-syntax-highlighting`, `zsh-users/zsh-autosuggestions` and other plugins that hook up into Zshell by
+overloading Zle widgets. In general, HSMW should be loaded in bulk (no gap) with all those plugins, right before them.
+
 # News
 * 25-05-2018
   - Hash holding paths that shouldn't be grepped (globbed) – blacklist for slow disks, mounts, etc.:

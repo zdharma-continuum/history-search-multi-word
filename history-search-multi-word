@@ -259,7 +259,7 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
     # Make the hsmw keymap a copy of the current main
     bindkey -N hsmw emacs
 
-    local down_widget="${${${WIDGET%-backwards}%-pbackwards}-pforwards}"
+    local down_widget="${${${WIDGET%-backwards}%-pbackwards}%-pforwards}"
     local up_widget="${down_widget}-backwards"
     local pdown_widget="${down_widget}-pforwards"
     local pup_widget="${down_widget}-pbackwards"

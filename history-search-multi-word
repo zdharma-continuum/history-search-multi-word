@@ -66,7 +66,7 @@ if (( ${+functions[_hsmw_main]} == 0 )); then
             # '0' will get changed into $to_display limit
             [[ "$WIDGET" = *-word || "$WIDGET" = *-pforwards ]] && __hsmw_hcw_index="1"
             [[ "$WIDGET" = *-backwards || "$WIDGET" = *-pbackwards ]] && __hsmw_hcw_index="0"
-            __hsmw_hcw_widget_name="${${${WIDGET%-backwards}-pbackwards}-pforwards}"
+            __hsmw_hcw_widget_name="${${${WIDGET%-backwards}%-pbackwards}%-pforwards}"
             __hsmw_hcw_found=( )
             __hsmw_hcw_finished="0"
             __hsmw_hcw_restart="0"

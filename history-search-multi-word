@@ -64,8 +64,10 @@ if (( ${+functions[_hsmw_main]} == 0 )); then
             fi
 
             # '0' will get changed into $to_display limit
-            [[ "$WIDGET" = *-word || "$WIDGET" = *-pforwards ]] && __hsmw_hcw_index="1"
-            [[ "$WIDGET" = *-backwards || "$WIDGET" = *-pbackwards ]] && __hsmw_hcw_index="0"
+            [[ "$NO_MOVE" != 1 ]] && {
+                [[ "$WIDGET" = *-word || "$WIDGET" = *-pforwards ]] && __hsmw_hcw_index="1"
+                [[ "$WIDGET" = *-backwards || "$WIDGET" = *-pbackwards ]] && __hsmw_hcw_index="0"
+            }
             __hsmw_hcw_widget_name="${${${WIDGET%-backwards}%-pbackwards}%-pforwards}"
             __hsmw_hcw_found=( )
             __hsmw_hcw_finished="0"
@@ -82,10 +84,12 @@ if (( ${+functions[_hsmw_main]} == 0 )); then
             fi
 
             # Consecutive call
-            [[ "$WIDGET" = *-word ]] && (( __hsmw_hcw_index ++ ))
-            [[ "$WIDGET" = *-backwards ]] && (( __hsmw_hcw_index -- ))
-            [[ "$WIDGET" = *-pforwards ]] && (( __hsmw_hcw_index = __hsmw_hcw_index + __hsmw_page_size ))
-            [[ "$WIDGET" = *-pbackwards ]] && (( __hsmw_hcw_index = __hsmw_hcw_index - __hsmw_page_size ))
+            [[ "$NO_MOVE" != 1 ]] && {
+                [[ "$WIDGET" = *-word ]] && (( __hsmw_hcw_index ++ ))
+                [[ "$WIDGET" = *-backwards ]] && (( __hsmw_hcw_index -- ))
+                [[ "$WIDGET" = *-pforwards ]] && (( __hsmw_hcw_index = __hsmw_hcw_index + __hsmw_page_size ))
+                [[ "$WIDGET" = *-pbackwards ]] && (( __hsmw_hcw_index = __hsmw_hcw_index - __hsmw_page_size ))
+            }
         fi
 
         # Find history entries matching pattern *word1*~^*word2*~^*word3* etc.
@@ -239,6 +243,12 @@ _hsmw_backward_kill_word() {
     _hsmw_simulate_widget
 }
 
+_hsmw_reset_prompt() {
+    zle .reset-prompt
+    local NO_MOVE=1
+    _hsmw_simulate_widget
+}
+
 _hsmw_jump_entry() {
     local entry
     if (( __hsmw_ctx )); then
@@ -256,6 +266,10 @@ _hsmw_jump_entry() {
 }
 
 if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
+    # Load config of reset-prompt protection
+    local __hsmw_reset_prompt_protect
+    zstyle -t ":plugin:history-search-multi-word" reset-prompt-protect && __hsmw_reset_prompt_protect=1 || __hsmw_reset_prompt_protect=0
+
     # Make the hsmw keymap a copy of the current main
     bindkey -N hsmw emacs
 
@@ -337,9 +351,11 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
     zle -A self-insert hsmw-saved-self-insert
     zle -A backward-delete-char hsmw-saved-backward-delete-char
     zle -A delete-char hsmw-saved-delete-char
+    (( __hsmw_reset_prompt_protect )) && zle -A reset-prompt hsmw-saved-reset-prompt
     zle -N self-insert _hsmw_self_insert
     zle -N backward-delete-char _hsmw_backward_delete_char
     zle -N delete-char _hsmw_delete_char
+    (( __hsmw_reset_prompt_protect )) && zle -N reset-prompt _hsmw_reset_prompt
 
     # OMZ does funny things with zle-keymap-select
     zle -la zle-keymap-select && {
@@ -405,7 +421,9 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
     zle -A hsmw-saved-self-insert self-insert
     zle -A hsmw-saved-backward-delete-char backward-delete-char
     zle -A hsmw-saved-delete-char delete-char
+    (( __hsmw_reset_prompt_protect )) && zle -A hsmw-saved-reset-prompt reset-prompt
     zle -D hsmw-saved-self-insert hsmw-saved-backward-delete-char hsmw-saved-delete-char
+    (( __hsmw_reset_prompt_protect )) && zle -D hsmw-saved-reset-prompt
     zle -la hsmw-saved-zle-keymap-select && {
         zle -A hsmw-saved-zle-keymap-select zle-keymap-select
         zle -D hsmw-saved-zle-keymap-select

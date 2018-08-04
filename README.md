@@ -153,6 +153,20 @@ zdharma/history-search-multi-word` for testing before adding it to your
 Add `zgen load zdharma/history-search-multi-word` to your .zshrc file in the same
 place you're doing your other `zgen load` calls in.
 
+
+### Arch Linux
+
+1. Install [`zsh-history-search-multi-word-git`](https://aur.archlinux.org/packages/zsh-history-search-multi-word-git/) from the [AUR](https://wiki.archlinux.org/index.php/Arch_User_Repository).
+
+2. Add the following to your `.zshrc`:
+
+    ```sh
+    source /usr/share/zsh/plugins/history-search-multi-word/history-search-multi-word.plugin.zsh
+    ```
+
+3. Start a new terminal session
+
+
 # Customizing
 
 ## Zstyles

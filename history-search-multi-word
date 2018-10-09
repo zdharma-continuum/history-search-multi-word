@@ -357,6 +357,16 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
     zle -N delete-char _hsmw_delete_char
     (( __hsmw_reset_prompt_protect )) && zle -N reset-prompt _hsmw_reset_prompt
 
+    if (( ${+functions[azhw:zle-line-pre-redraw]} )); then
+        functions[zle-line-pre-redraw-bkp]=${functions[azhw:zle-line-pre-redraw]}
+        functions[azhw:zle-line-pre-redraw]=":"
+    fi
+    
+    if (( ${+functions[azhw:zle-line-finish]} )); then
+        functions[zle-line-finish-bkp]=${functions[azhw:zle-line-finish]}
+        functions[azhw:zle-line-finish]=":"
+    fi
+
     # OMZ does funny things with zle-keymap-select
     zle -la zle-keymap-select && {
         zle -A zle-keymap-select hsmw-saved-zle-keymap-select
@@ -437,6 +447,14 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
     zle -A hsmw-saved-"$pdown_widget" "$pdown_widget"
     zle -A hsmw-saved-"$pup_widget" "$pup_widget"
     zle -D hsmw-saved-"$pdown_widget" hsmw-saved-"$pup_widget"
+
+    if (( ${+functions[azhw:zle-line-pre-redraw]} )); then
+        functions[azhw:zle-line-pre-redraw]=${functions[zle-line-pre-redraw-bkp]}
+    fi
+    
+    if (( ${+functions[azhw:zle-line-finish]} )); then
+        functions[azhw:zle-line-finish]=${functions[zle-line-finish-bkp]}
+    fi
 
     # Full reinitialisation at next call
     __hsmw_hcw_call_count="0"

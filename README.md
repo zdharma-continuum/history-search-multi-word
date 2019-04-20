@@ -28,9 +28,26 @@ Set:
     zstyle :plugin:history-search-multi-word reset-prompt-protect 1
 ```
 
-to be able to use `zle reset-prompt` in your e.g. `sched` calls, in presence of `zdharma/fast-syntax-highlighting`,
-`zsh-users/zsh-syntax-highlighting`, `zsh-users/zsh-autosuggestions` and other plugins that hook up into Zshell by
-overloading Zle widgets. In general, HSMW should be loaded in bulk (no gap) with all those plugins, right before them.
+to be able to use `zle reset-prompt` in your e.g. `sched` calls, in presence of
+`zdharma/fast-syntax-highlighting`, `zsh-users/zsh-syntax-highlighting`,
+`zsh-users/zsh-autosuggestions` and other plugins that hook up into Zshell by
+overloading Zle widgets. You could e.g. use `sched` in following way:
+
+```zsh
+PROMPT=%B%F{yellow}%D{%H:%M:%S}%B%b%f
+schedprompt() {
+    zle && zle reset-prompt
+    sched +1 schedprompt
+}
+
+zmodload -i zsh/sched
+schedprompt
+```
+
+to refresh the clock in prompt every second. The `reset-prompt-protect` zstyle
+needs to be set to 1 for correct cooperation with HSMW. Or, you could use `zle
+.reset-prompt` (i.e. with the dot in front) to call the original, not
+overloaded (by F-Sy-H, zsh-autosuggestsions, etc.) `reset-prompt` widget.
 
 # News
 * 25-05-2018

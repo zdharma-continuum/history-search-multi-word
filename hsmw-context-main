@@ -1,6 +1,8 @@
 # -*- Mode: sh; sh-indentation: 4; indent-tabs-mode: nil; sh-basic-offset: 4; -*-
 # vim:ft=zsh:sw=4:sts=4:et
 
+__hsmw_ctx_prev_idx="$__hsmw_ctx_idx"
+
 [[ "$WIDGET" = *-word ]] && (( __hsmw_ctx_idx -- ))
 [[ "$WIDGET" = *-backwards ]] && (( __hsmw_ctx_idx ++ ))
 [[ "$WIDGET" = *-pforwards ]] && (( __hsmw_ctx_idx = __hsmw_ctx_idx - __hsmw_page_size ))
@@ -91,8 +93,8 @@ _hsmw_ctx_main() {
 
     integer page_size="$__hsmw_page_size"
     [[ "$page_size" -gt "$max_index" ]] && page_size="$max_index"
-    [[ "$the_index" -le 0 ]] && the_index="$max_index"
-    [[ "$the_index" -gt "$max_index" ]] && the_index=1
+    [[ "$the_index" -le 0 ]] && { __hsmw_ctx_idx="$__hsmw_ctx_prev_idx"; the_index=1; }
+    [[ "$the_index" -gt "$(( max_index - 1))" ]] && { __hsmw_ctx_idx="$__hsmw_ctx_prev_idx"; the_index="$(( max_index - 1 ))"; }
     integer page_start_idx=$(( ((the_index-1)/page_size)*page_size+1 ))
     integer on_page_idx=$(( page_size - (the_index - page_start_idx) ))
 

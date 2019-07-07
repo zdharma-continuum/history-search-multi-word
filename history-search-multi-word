@@ -39,7 +39,7 @@ typeset -gi __hsmw_page_start_idx __hsmw_prev_offset __hsmw_recedit_trap_execute
 typeset -ga __hsmw_hcw_found
 
 # Context variables
-typeset -gi __hsmw_ctx __hsmw_ctx_idx __hsmw_ctx_text_idx __hsmw_ctx_which
+typeset -gi __hsmw_ctx __hsmw_ctx_idx __hsmw_ctx_prev_idx __hsmw_ctx_text_idx __hsmw_ctx_which
 typeset -gi __hsmw_ctx_page_start_idx __hsmw_ctx_prev_offset
 typeset -g __hsmw_ctx_to_search
 typeset -ga __hsmw_ctx_disp_list

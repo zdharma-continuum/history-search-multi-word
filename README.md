@@ -50,6 +50,11 @@ needs to be set to 1 for correct cooperation with HSMW. Or, you could use `zle
 overloaded (by F-Sy-H, zsh-autosuggestsions, etc.) `reset-prompt` widget.
 
 # News
+* 28-10-2019
+  - `^` – if first – matches beginning of the command's string, $ – if last –
+    its end. So that it's possible to enter `'^ls'` and have only commands
+    starting with `ls` matched.
+
 * 25-05-2018
   - Hash holding paths that shouldn't be grepped (globbed) – blacklist for slow disks, mounts, etc.:
 

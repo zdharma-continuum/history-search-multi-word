@@ -376,6 +376,10 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
         zle -D zle-keymap-select
     }
 
+    zle -la zle-line-pre-redraw && {
+        zle -A zle-line-pre-redraw hsmw-saved-zle-line-pre-redraw
+        zle -D zle-line-pre-redraw
+    }
     # Override ourselves with what we actually are
     # because zsh-autosuggestions change us
     zle -A "$down_widget" hsmw-saved-"$down_widget"
@@ -432,6 +436,7 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
 
     # Restore self-insert, backward-delete-char, delete-char
     zle -A hsmw-saved-self-insert self-insert
+    zle -A hsmw-saved-zle-line-pre-redraw zle-line-pre-redraw
     zle -A hsmw-saved-backward-delete-char backward-delete-char
     zle -A hsmw-saved-delete-char delete-char
     (( __hsmw_reset_prompt_protect )) && zle -A hsmw-saved-reset-prompt reset-prompt

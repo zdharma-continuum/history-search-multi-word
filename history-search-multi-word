@@ -470,6 +470,8 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
     # Full reinitialisation at next call
     __hsmw_hcw_call_count="0"
 
+    zle reset-prompt
+
     # Free memory
     #__hsmw_hcw_found=( )
 elif (( __hsmw_hcw_call_count > 0 )); then

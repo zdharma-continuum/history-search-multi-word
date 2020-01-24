@@ -7,10 +7,16 @@
 # to ~/.zshrc.
 #
 
-0="${(%):-%N}" # this gives immunity to functionargzero being unset
-HSMW_REPO_DIR="${0%/*}"
-if [[ -z "$ZPLG_CUR_PLUGIN" && "${fpath[(r)$HSMW_REPO_DIR]}" != $HSMW_REPO_DIR ]]; then
-    fpath+=( "$HSMW_REPO_DIR" )
+# According to the standard:
+# http://zdharma.org/Zsh-100-Commits-Club/Zsh-Plugin-Standard.html
+0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
+0="${${(M)0:#/*}:-$PWD/$0}"
+
+HSMW_REPO_DIR="${0:h}"
+
+if [[ ${zsh_loaded_plugins[-1]} != */history-search-multi-word && -z ${fpath[(r)${0:h}]} ]]
+then
+    fpath+=( "${0:h}" )
 fi
 
 autoload history-search-multi-word hsmw-context-main

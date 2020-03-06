@@ -352,12 +352,12 @@ if [[ "$__hsmw_hcw_call_count" -eq "1" ]]; then
 
     # Substitute self-insert, backward-delete-char, delete-char
     zle -A self-insert hsmw-saved-self-insert
-    zle -A backward-delete-char hsmw-saved-backward-delete-char
-    zle -A delete-char hsmw-saved-delete-char
-    (( __hsmw_reset_prompt_protect )) && zle -A reset-prompt hsmw-saved-reset-prompt
     zle -N self-insert _hsmw_self_insert
+    zle -A backward-delete-char hsmw-saved-backward-delete-char
     zle -N backward-delete-char _hsmw_backward_delete_char
+    zle -A delete-char hsmw-saved-delete-char
     zle -N delete-char _hsmw_delete_char
+    (( __hsmw_reset_prompt_protect )) && zle -A reset-prompt hsmw-saved-reset-prompt
     (( __hsmw_reset_prompt_protect )) && zle -N reset-prompt _hsmw_reset_prompt
 
     if (( ${+functions[azhw:zle-line-pre-redraw]} )); then

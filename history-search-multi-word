@@ -94,10 +94,11 @@ if (( ${+functions[_hsmw_main]} == 0 )); then
 
         # Find history entries matching pattern *word1*~^*word2*~^*word3* etc.
         local search_buffer="${BUFFER%% ##}" search_pattern="" colsearch_pattern="" nl=$'\n' MATCH MBEGIN MEND
-        search_buffer="${search_buffer//(#m)[][*?|#~^()><\\]/\\$MATCH}"
+        local specch="][*?|#~^()><\\"
+        search_buffer="${search_buffer//(#b)((\[?##\])|([$specch]))/${${match[2]:+$match[2]}:-\\${match[3]}}}"
         search_buffer="${search_buffer/(#s)\\\^/(#s)}"
         search_buffer="${search_buffer/\$(#e)/(#e)}"
-        search_buffer="${search_buffer## ##}"
+        search_buffer="${search_buffer##[ ]##}"
         # Pattern will be *foo*~^*bar* (inventor: Mikael Magnusson)
         # It's: foo and not what doesn't contain bar, etc.
         search_pattern="${search_buffer// ##/*~^*}"

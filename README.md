@@ -50,6 +50,11 @@ needs to be set to 1 for correct cooperation with HSMW. Or, you could use `zle
 overloaded (by F-Sy-H, zsh-autosuggestsions, etc.) `reset-prompt` widget.
 
 # News
+* 14-07-2020
+  - If an `[…]` string will occur in the search query, it'll be interpreted as
+    pattern. So that it's possible to enter as the search query e.g.: `print
+    ["a-zA-Z0-9_-]` or `print [^[:alpha:]]`, etc.
+
 * 28-10-2019
   - `^` – if first – matches beginning of the command's string, $ – if last –
     its end. So that it's possible to enter `'^ls'` and have only commands

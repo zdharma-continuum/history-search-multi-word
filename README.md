@@ -2,11 +2,6 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](./LICENSE)
 ![ZSH 5.0.0](https://img.shields.io/badge/zsh-v5.0.0-orange.svg?style=flat-square)
 
-[![paypal](https://img.shields.io/badge/-Donate-yellow.svg?longCache=true&style=for-the-badge)](https://www.paypal.me/ZdharmaInitiative)
-[![patreon](https://img.shields.io/badge/-Patreon-orange.svg?longCache=true&style=for-the-badge)](https://www.patreon.com/psprint)
-<br/>You can request a feature when donating, even fancy or advanced ones get implemented this way. [There are
-reports](DONATIONS.md) about what is being done with the money received.
-
 # Introduction
 
 Binds `Ctrl-R` to a widget that searches for multiple keywords in `AND` fashion.

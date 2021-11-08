@@ -24,7 +24,7 @@ Set:
 ```
 
 to be able to use `zle reset-prompt` in your e.g. `sched` calls, in presence of
-`zdharma/fast-syntax-highlighting`, `zsh-users/zsh-syntax-highlighting`,
+`zdharma-continuum/fast-syntax-highlighting`, `zsh-users/zsh-syntax-highlighting`,
 `zsh-users/zsh-autosuggestions` and other plugins that hook up into Zshell by
 overloading Zle widgets. You could e.g. use `sched` in following way:
 
@@ -148,34 +148,34 @@ source {where-hsmw-is}/history-search-multi-word.plugin.zsh
 
 to `zshrc`.
 
-If using a plugin manager, then `Zplugin` is recommended, but you can use any
+If using a plugin manager, then `Zinit` is recommended, but you can use any
 other too, and also install with `Oh My Zsh` (by copying directory to
 `~/.oh-my-zsh/custom/plugins`).
 
 
-### [Zplugin](https://github.com/zdharma/zplugin)
+### [Zinit](https://github.com/zdharma-continuum/zinit)
 
-Add `zplugin load zdharma/history-search-multi-word` to your `.zshrc` file.
-Zplugin will handle cloning the plugin for you automatically the next time you
+Add `zinit load zdharma-continuum/history-search-multi-word` to your `.zshrc` file.
+Zinit will handle cloning the plugin for you automatically the next time you
 start zsh.
 
 ### Antigen
 
-Add `antigen bundle zdharma/history-search-multi-word` to your `.zshrc` file.
+Add `antigen bundle zdharma-continuum/history-search-multi-word` to your `.zshrc` file.
 Antigen will handle cloning the plugin for you automatically the next time you
 start zsh. You can also add the plugin to a running zsh with `antigen bundle
-zdharma/history-search-multi-word` for testing before adding it to your
+zdharma-continuum/history-search-multi-word` for testing before adding it to your
 `.zshrc`.
 
 ### Oh-My-Zsh
 
 1. `cd ~/.oh-my-zsh/custom/plugins`
-2. `git clone git@github.com:zdharma/history-search-multi-word.git`
+2. `git clone git@github.com:zdharma-continuum/history-search-multi-word.git`
 3. Add `history-search-multi-word` to your plugin list
 
 ### Zgen
 
-Add `zgen load zdharma/history-search-multi-word` to your .zshrc file in the same
+Add `zgen load zdharma-continuum/history-search-multi-word` to your .zshrc file in the same
 place you're doing your other `zgen load` calls in.
 
 
@@ -211,7 +211,7 @@ Syntax highlighting is customized via `HSMW_HIGHLIGHT_STYLES` associative array.
 It has keys like `reserved-word`, `alias`, `command`, `path`, etc. which are assigned
 with strings like `fg=blue,bold`, to configure how given elements are to be
 colored. If you assign this array before or after loading `hsmw` you will change the defaults. Complete list
-of available keys is [at the beginning](https://github.com/zdharma/history-search-multi-word/blob/master/hsmw-highlight#L34-L62)
+of available keys is [at the beginning](https://github.com/zdharma-continuum/history-search-multi-word/blob/master/hsmw-highlight#L34-L62)
 of `hsmw-highlight` file. Example `~/.zshrc` addition that sets `path` key –
 paths that exist will be highlighted with background magenta, foreground white, bold:
 
@@ -236,8 +236,8 @@ HSMW_HIGHLIGHT_STYLES[commandseparator]="fg=241,bg=17"
 
 # IRC Channel
 
-Channel `#zplugin@freenode` is a support place for all author's projects. Connect to:
-[chat.freenode.net:6697](ircs://chat.freenode.net:6697/%23zplugin) (SSL) or [chat.freenode.net:6667](irc://chat.freenode.net:6667/%23zplugin)
- and join #zplugin.
+Channel `#zinit@freenode` is a support place for all author's projects. Connect to:
+[chat.freenode.net:6697](ircs://chat.freenode.net:6697/%23zinit) (SSL) or [chat.freenode.net:6667](irc://chat.freenode.net:6667/%23zinit)
+ and join #zinit.
 
-Following is a quick access via Webchat [![IRC](https://kiwiirc.com/buttons/chat.freenode.net/zplugin.png)](https://kiwiirc.com/client/chat.freenode.net:+6697/#zplugin)
+Following is a quick access via Webchat [![IRC](https://kiwiirc.com/buttons/chat.freenode.net/zinit.png)](https://kiwiirc.com/client/chat.freenode.net:+6697/#zinit)

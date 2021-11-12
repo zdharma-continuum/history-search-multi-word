@@ -1,6 +1,7 @@
 [![License (GPL version 3)](https://img.shields.io/badge/license-GNU%20GPL%20version%203-blue.svg?style=flat-square)](./LICENSE)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](./LICENSE)
 ![ZSH 5.0.0](https://img.shields.io/badge/zsh-v5.0.0-orange.svg?style=flat-square)
+[![Gitter][gitter-image]][gitter-link]
 
 # Introduction
 
@@ -234,10 +235,5 @@ Following code will use 256 colors to highlight command separators (like ";" or 
 HSMW_HIGHLIGHT_STYLES[commandseparator]="fg=241,bg=17"
 ```
 
-# IRC Channel
-
-Channel `#zinit@freenode` is a support place for all author's projects. Connect to:
-[chat.freenode.net:6697](ircs://chat.freenode.net:6697/%23zinit) (SSL) or [chat.freenode.net:6667](irc://chat.freenode.net:6667/%23zinit)
- and join #zinit.
-
-Following is a quick access via Webchat [![IRC](https://kiwiirc.com/buttons/chat.freenode.net/zinit.png)](https://kiwiirc.com/client/chat.freenode.net:+6697/#zinit)
+[gitter-image]: https://badges.gitter.im/zdharma-continuum/community.svg
+[gitter-link]: https://gitter.im/zdharma-continuum/community

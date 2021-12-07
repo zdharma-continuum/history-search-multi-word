@@ -14,10 +14,9 @@
 
 HSMW_REPO_DIR="${0:h}"
 
-if [[ ${zsh_loaded_plugins[-1]} != */history-search-multi-word && -z ${fpath[(r)${0:h}]} ]]
-then
-    fpath+=( "${0:h}" )
-fi
+if [[ $PMSPEC != *f* ]] {
+  fpath+=( "${0:h}/functions" )
+}
 
 autoload history-search-multi-word hsmw-context-main
 zle -N history-search-multi-word

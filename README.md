@@ -179,6 +179,15 @@ zdharma-continuum/history-search-multi-word` for testing before adding it to you
 Add `zgen load zdharma-continuum/history-search-multi-word` to your .zshrc file in the same
 place you're doing your other `zgen load` calls in.
 
+### [Sheldon](https://github.com/rossmacarthur/sheldon)
+
+Run 
+```bash
+sheldon add history-search-multi-word --github zdharma-continuum/history-search-multi-word
+```
+
+and add `bindkey "^R" history-search-multi-word` to `.zshrc` to enable the keybinding.
+
 
 ### Arch Linux
 

@@ -78,7 +78,7 @@ handle cloning the plugin for you the next time you start zsh. You can also add 
 ### Zgen
 
 ```zsh
-zgen load zdharma-continuum/history-search-multi-word
+zgen load zdharma-continuum/history-search-multi-word . main
 ```
 
 to your .zshrc file in the same place you're doing your other `zgen load` calls in.

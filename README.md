@@ -127,7 +127,7 @@ Syntax highlighting is customized via `HSMW_HIGHLIGHT_STYLES` associative array.
 `alias`, `command`, `path`, etc., which are assigned with strings like `fg=blue,bold` to configure how given elements
 are to be colored. If you assign this array before or after loading `hsmw`, you will change the defaults. The complete
 list of available keys is
-[at the beginning](https://github.com/zdharma-continuum/history-search-multi-word/blob/master/hsmw-highlight#L34-L62) of
+[at the beginning](https://github.com/zdharma-continuum/history-search-multi-word/blob/main/hsmw-highlight#L13-L41) of
 `hsmw-highlight` file. Example `~/.zshrc` addition that sets `path` key – paths that exist will be highlighted with
 background magenta, foreground white, bold:
 
